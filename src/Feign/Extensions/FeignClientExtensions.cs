@@ -16,10 +16,19 @@ namespace Feign
             return feignClient as IFallbackFeignClient<TService>;
         }
 
+        public static IFallbackFeignClient<TService> AsFallback<TService>(this IFeignClient<object> feignClient)
+        {
+            return feignClient as IFallbackFeignClient<TService>;
+        }
 
-        public static object GetFallback<TService>(this IFeignClient<TService> feignClient) where TService : class
+        public static TService GetFallback<TService>(this IFeignClient<TService> feignClient) where TService : class
         {
             return feignClient.AsFallback()?.Fallback;
+        }
+
+        public static object GetFallback<TService>(this IFeignClient<object> feignClient) where TService : class
+        {
+            return feignClient.AsFallback()?.Fallback as TService;
         }
 
     }

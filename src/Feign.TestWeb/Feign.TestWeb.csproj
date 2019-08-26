@@ -7,10 +7,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Steeltoe.Discovery.ClientCore" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Feign.DependencyInjection\Feign.DependencyInjection.csproj" />
+    <ProjectReference Include="..\Feign.Standalone\Feign.Standalone.csproj" />
+    <ProjectReference Include="..\Feign.Steeltoe\Feign.Steeltoe.csproj" />
     <ProjectReference Include="..\Feign.Tests\Feign.Tests.csproj" />
     <ProjectReference Include="..\Feign\Feign.csproj" />
   </ItemGroup>

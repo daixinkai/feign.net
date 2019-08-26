@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
-
+using Autofac;
+using Castle.Windsor;
 using Feign.Cache;
 using Feign.Logging;
 using Feign.Reflection;
 using Feign.Request;
+using Feign.Standalone;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Feign.Tests.NET45
@@ -27,123 +30,123 @@ namespace Feign.Tests.NET45
             feignClientTypeBuilder.Save();
         }
 
-        //[TestMethod]
-        //public void TestMethod_Autofac()
-        //{
-        //    ContainerBuilder containerBuilder = new ContainerBuilder();
+        [TestMethod]
+        public void TestMethod_Autofac()
+        {
+            ContainerBuilder containerBuilder = new ContainerBuilder();
 
-        //    IFeignBuilder feignBuilder = containerBuilder.AddFeignClients(options =>
-        //    {
-        //        options.Assemblies.Add(typeof(ITestService).Assembly);
-        //        options.FeignClientPipeline.ReceivingQueryResult();
-        //    });
+            IFeignBuilder feignBuilder = containerBuilder.AddFeignClients(options =>
+            {
+                options.Assemblies.Add(typeof(ITestService).Assembly);
+                options.FeignClientPipeline.ReceivingQueryResult();
+            });
 
-        //    IContainer container = containerBuilder.Build();
+            IContainer container = containerBuilder.Build();
 
-        //    using (ILifetimeScope lifetimeScope = container.BeginLifetimeScope())
-        //    {
-        //        ITestService testService = lifetimeScope.Resolve<ITestService>();
-        //        var result = testService.GetQueryResultValue("1", null);
-        //    }
+            using (ILifetimeScope lifetimeScope = container.BeginLifetimeScope())
+            {
+                ITestService testService = lifetimeScope.Resolve<ITestService>();
+                var result = testService.GetQueryResultValue("1", null);
+            }
 
 
 
-        //}
+        }
 
-        //[TestMethod]
-        //public void TestMethod_CastleWindsor()
-        //{
-        //    IWindsorContainer windsorContainer = new WindsorContainer();
-        //    windsorContainer.AddFeignClients(options =>
-        //    {
-        //        options.Assemblies.Add(typeof(ITestService).Assembly);
-        //        options.FeignClientPipeline.ReceivingQueryResult();
-        //    })
-        //        .AddLoggerFactory<DefaultLoggerFactory>()
-        //    ;
-        //    ITestService testService = windsorContainer.Resolve<ITestService>();
-        //    Assert.IsNotNull(testService);
-        //    var result = testService.GetQueryResultValue("", null);
-        //}
+        [TestMethod]
+        public void TestMethod_CastleWindsor()
+        {
+            IWindsorContainer windsorContainer = new WindsorContainer();
+            windsorContainer.AddFeignClients(options =>
+            {
+                options.Assemblies.Add(typeof(ITestService).Assembly);
+                options.FeignClientPipeline.ReceivingQueryResult();
+            })
+                .AddLoggerFactory<DefaultLoggerFactory>()
+            ;
+            ITestService testService = windsorContainer.Resolve<ITestService>();
+            Assert.IsNotNull(testService);
+            var result = testService.GetQueryResultValue("", null);
+        }
 
-        //[TestMethod]
-        //public void TestMethod_Standalone()
-        //{
-        //    bool b = IsPrime(10111);
-        //    Assert.IsTrue(b);
-        //    FeignClients.AddFeignClients(options =>
-        //    {
-        //        options.Assemblies.Add(typeof(ITestService).Assembly);
-        //        options.FeignClientPipeline.ReceivingQueryResult();
-        //    });
-        //    ITestService testService = FeignClients.Get<ITestService>();
-        //    Assert.IsNotNull(testService);
+        [TestMethod]
+        public void TestMethod_Standalone()
+        {
+            bool b = IsPrime(10111);
+            Assert.IsTrue(b);
+            FeignClients.AddFeignClients(options =>
+            {
+                options.Assemblies.Add(typeof(ITestService).Assembly);
+                options.FeignClientPipeline.ReceivingQueryResult();
+            });
+            ITestService testService = FeignClients.Get<ITestService>();
+            Assert.IsNotNull(testService);
 
-        //    FilePathRequestFile filePathRequestFile = new FilePathRequestFile(@"E:\asdasdasd.txt");
-        //    filePathRequestFile = null;
+            FilePathHttpRequestFile filePathRequestFile = new FilePathHttpRequestFile(@"E:\asdasdasd.txt");
+            filePathRequestFile = null;
 
-        //    //string value1 = testService.UploadFileAsync(filePathRequestFile, "asdasd").Result;
-        //    //Assert.IsNotNull(value1);
+            //string value1 = testService.UploadFileAsync(filePathRequestFile, "asdasd").Result;
+            //Assert.IsNotNull(value1);
 
-        //    string value2 = testService.UploadFileAsync(new TestServiceUploadFileParam
-        //    {
-        //        Age = 1,
-        //        Name = "asd111",
-        //        File = new FilePathRequestFile(@"E:\asdasdasd.txt")
-        //        {
-        //            Name = "file"
-        //        }
-        //    }).Result;
-        //    Assert.IsNotNull(value2);
+            string value2 = testService.UploadFileAsync(new TestServiceUploadFileParam
+            {
+                Age = 1,
+                Name = "asd111",
+                File = new FilePathHttpRequestFile(@"E:\asdasdasd.txt")
+                {
+                    Name = "file"
+                }
+            }).Result;
+            Assert.IsNotNull(value2);
 
-        //    string value = testService.UploadFileAsync(filePathRequestFile, new TestServiceParam
-        //    {
-        //        Age = 1,
-        //        Name = "asdasd"
-        //    }).Result;
-        //    Assert.IsNotNull(value);
+            string value = testService.UploadFileAsync(filePathRequestFile, new TestServiceParam
+            {
+                Age = 1,
+                Name = "asdasd"
+            }).Result;
+            Assert.IsNotNull(value);
 
-        //    value = testService.FormTestAsync(new TestServiceParam
-        //    {
-        //        Age = 1,
-        //        Name = "32424"
-        //    }).Result;
-        //    Assert.IsNotNull(value);
+            value = testService.FormTestAsync(new TestServiceParam
+            {
+                Age = 1,
+                Name = "32424"
+            }).Result;
+            Assert.IsNotNull(value);
 
-        //    value = testService.UploadFilesAsync(
-        //        new FilePathRequestFile(@"E:\asdasdasd.txt"),
-        //        new FilePathRequestFile(@"E:\asdasdasd.txt"),
-        //        new FilePathRequestFile(@"E:\asdasdasd.txt")
-        //        ).Result;
-        //    Assert.IsNotNull(value);
+            value = testService.UploadFilesAsync(
+                new FilePathHttpRequestFile(@"E:\asdasdasd.txt"),
+                new FilePathHttpRequestFile(@"E:\asdasdasd.txt"),
+                new FilePathHttpRequestFile(@"E:\asdasdasd.txt")
+                ).Result;
+            Assert.IsNotNull(value);
 
-        //    Assert.AreNotEqual(value, "");
-        //    var result = testService.GetQueryResultValue("", null);
-        //}
+            Assert.AreNotEqual(value, "");
+            var result = testService.GetQueryResultValue("", null);
+        }
 
-        //[TestMethod]
-        //public void TestMethod_UploadFile()
-        //{
-        //    MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent();
-        //    string path = @"E:\asdasdasd.txt";
-        //    Stream fileStream = File.OpenRead(path);
-        //    var streamContent = new StreamContent(fileStream);
-        //    streamContent.Headers.Add("Content-Type", "application/octet-stream");
-        //    //Content-Disposition: form-data; name="file"; filename="C:\B2BAssetRoot\files\596090\596090.1.mp4";
-        //    streamContent.Headers.Add("Content-Disposition", "form-data; name=\"file\"; filename=\"" + Path.GetFileName(path) + "\"");
-        //    multipartFormDataContent.Add(streamContent, "file", Path.GetFileName(path));
+        [TestMethod]
+        public void TestMethod_UploadFile()
+        {
+            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent();
+            string path = @"E:\asdasdasd.txt";
+            Stream fileStream = File.OpenRead(path);
+            var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.Add("Content-Type", "application/octet-stream");
+            //Content-Disposition: form-data; name="file"; filename="C:\B2BAssetRoot\files\596090\596090.1.mp4";
+            streamContent.Headers.Add("Content-Disposition", "form-data; name=\"file\"; filename=\"" + Path.GetFileName(path) + "\"");
+            multipartFormDataContent.Add(streamContent, "file", Path.GetFileName(path));
 
-        //    HttpClient httpClient = new HttpClient();
-        //    httpClient.BaseAddress = new Uri("http://localhost:62088/");
-        //    httpClient.BaseAddress = new Uri("http://10.1.5.90:8802/");
+            HttpClient httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://localhost:62088/");
+            httpClient.BaseAddress = new Uri("http://10.1.5.90:8802/");
 
-        //    var response = httpClient.PostAsync("/api/values/uploadFile", multipartFormDataContent).Result;
+            var response = httpClient.PostAsync("/api/values/uploadFile", multipartFormDataContent).Result;
 
-        //    response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
-        //    string value = response.Content.ReadAsStringAsync().Result;
+            string value = response.Content.ReadAsStringAsync().Result;
 
-        //}
+        }
 
 
         [TestMethod]

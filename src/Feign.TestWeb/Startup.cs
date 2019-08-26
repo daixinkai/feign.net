@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Discovery.Client;
 
 namespace Feign.TestWeb
 {
@@ -34,9 +35,11 @@ namespace Feign.TestWeb
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            //   services.AddDiscoveryClient(Configuration);
+
             services.AddFeignClients()
             .AddTestFeignClients()
-            // .AddSteeltoeServiceDiscovery()
+            //.AddSteeltoeServiceDiscovery()
             ;
 
         }
@@ -57,6 +60,7 @@ namespace Feign.TestWeb
             app.UseCookiePolicy();
 
             app.UseMvcWithDefaultRoute();
+            //   app.UseDiscoveryClient();
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Feign.Tests
 
         public static IFeignBuilder AddTestFeignClients(this IFeignBuilder feignBuilder)
         {
+            feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
             feignBuilder.AddFeignClients(Assembly.GetExecutingAssembly(), FeignClientLifetime.Transient);
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
@@ -44,15 +45,15 @@ namespace Feign.Tests
             {
 
             };
-            //            feignBuilder.Options.FeignClientPipeline.Authorization(proxy =>
-            //            {
-            //#if NETSTANDARD
-            //                return ("global", "asdasd");
-            //#else
-            //                return new AuthenticationHeaderValue("global", "asdasd");
-            //#endif
-            //            });
-            //feignBuilder.Options.FeignClientPipeline.BuildingRequest += FeignClientPipeline_BuildingRequest;
+            feignBuilder.Options.FeignClientPipeline.Authorization(proxy =>
+            {
+#if NETSTANDARD
+                return ("global", "asdasd");
+#else
+                            return new AuthenticationHeaderValue("global", "asdasd");
+#endif
+            });
+            feignBuilder.Options.FeignClientPipeline.BuildingRequest += FeignClientPipeline_BuildingRequest;
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().BuildingRequest += (sender, e) =>
             {
                 IFeignClient<ITestService> feignClient = e.FeignClient as IFeignClient<ITestService>;
@@ -62,7 +63,7 @@ namespace Feign.Tests
             {
                 var fallbackFeignClient = e.FeignClient.AsFallback();
                 fallbackFeignClient = e.FeignClient.AsFallback<object>();
-                //        fallbackFeignClient = e.FeignClient.AsFallback<ITestService>();
+                fallbackFeignClient = e.FeignClient.AsFallback<ITestService>();
 
                 var fallback = fallbackFeignClient?.Fallback;
 
@@ -80,14 +81,14 @@ namespace Feign.Tests
                 e.Headers.Add("cookie", "csrftoken=EGxYkyZeT3DxEsvYsdR5ncmzpi9pmnQx; _bl_uid=nLjRstOyqOejLv2s0xtzqs74Xsmg; courseId=1; versionId=522; textbookId=2598; Hm_lvt_f0984c42ef98965e03c60661581cd219=1559783251,1559818390,1560213044,1560396804; uuid=6a30ff68-2b7c-4cde-a355-2e332b74e31d##1; Hm_lpvt_f0984c42ef98965e03c60661581cd219=1560413345; SESSION=5ee4854d-34b7-423a-9cca-76ddc8a0f111; sid=5ee4854d-34b7-423a-9cca-76ddc8a0f111");
 
             };
-            //            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").Authorization(proxy =>
-            //            {
-            //#if NETSTANDARD
-            //                return ("service", "asdasd");
-            //#else
-            //                return new AuthenticationHeaderValue("service", "asdasd");
-            //#endif
-            //            });
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().Authorization(proxy =>
+            {
+#if NETSTANDARD
+                return ("service", "asdasd");
+#else
+                return new AuthenticationHeaderValue("service", "asdasd");
+#endif
+            });
             feignBuilder.Options.FeignClientPipeline.SendingRequest += FeignClientPipeline_SendingRequest;
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").ReceivingResponse += (sender, e) =>
             {
@@ -109,9 +110,13 @@ namespace Feign.Tests
             return feignBuilder;
         }
 
+        private static void FeignClientPipeline_BuildingRequest(object sender, IBuildingRequestEventArgs<object> e)
+        {
+        }
+
         private static void FeignClientPipeline_SendingRequest(object sender, ISendingRequestEventArgs<object> e)
         {
-            //e.SuspendRequest();
+            e.Terminate();
         }
 
 

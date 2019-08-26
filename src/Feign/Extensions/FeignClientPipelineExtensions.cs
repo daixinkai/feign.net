@@ -42,7 +42,9 @@ namespace Feign
         }
 
         #region Authorization
-        public static T Authorization<T, TService>(this T feignClientPipeline, AuthenticationHeaderValue authenticationHeaderValue) where T : IFeignClientPipeline<TService>
+
+
+        public static IFeignClientPipeline<TService> Authorization<TService>(this IFeignClientPipeline<TService> feignClientPipeline, AuthenticationHeaderValue authenticationHeaderValue)
         {
             if (authenticationHeaderValue == null)
             {
@@ -57,7 +59,7 @@ namespace Feign
             };
             return feignClientPipeline;
         }
-        public static T Authorization<T, TService>(this T feignClientPipeline, Func<IFeignClient, AuthenticationHeaderValue> authenticationHeaderValueAction) where T : IFeignClientPipeline<TService>
+        public static IFeignClientPipeline<TService> Authorization<TService>(this IFeignClientPipeline<TService> feignClientPipeline, Func<IFeignClient<TService>, AuthenticationHeaderValue> authenticationHeaderValueAction)
         {
             if (authenticationHeaderValueAction == null)
             {
@@ -73,7 +75,7 @@ namespace Feign
             };
             return feignClientPipeline;
         }
-        public static T Authorization<T, TService>(this T feignClientPipeline, string scheme, string parameter) where T : IFeignClientPipeline<TService>
+        public static IFeignClientPipeline<TService> Authorization<TService>(this IFeignClientPipeline<TService> feignClientPipeline, string scheme, string parameter)
         {
             if (scheme == null)
             {
@@ -94,7 +96,7 @@ namespace Feign
         }
 
 #if NETSTANDARD
-        public static T Authorization<T, TService>(this T feignClientPipeline, Func<IFeignClient, (string, string)> schemeAndParameterFactory) where T : IFeignClientPipeline<TService>
+        public static IFeignClientPipeline<TService> Authorization<TService>(this IFeignClientPipeline<TService> feignClientPipeline, Func<IFeignClient<TService>, (string, string)> schemeAndParameterFactory)
         {
             if (schemeAndParameterFactory == null)
             {
@@ -111,6 +113,106 @@ namespace Feign
             return feignClientPipeline;
         }
 #endif
+
+
+        #region Global
+
+        public static IGlobalFeignClientPipeline Authorization(this IGlobalFeignClientPipeline feignClientPipeline, AuthenticationHeaderValue authenticationHeaderValue)
+        {
+            ((IFeignClientPipeline<object>)feignClientPipeline).Authorization(authenticationHeaderValue);
+            return feignClientPipeline;
+        }
+        public static IGlobalFeignClientPipeline Authorization(this IGlobalFeignClientPipeline feignClientPipeline, Func<IFeignClient<object>, AuthenticationHeaderValue> authenticationHeaderValueAction)
+        {
+            ((IFeignClientPipeline<object>)feignClientPipeline).Authorization(authenticationHeaderValueAction);
+            return feignClientPipeline;
+        }
+        public static IGlobalFeignClientPipeline Authorization(this IGlobalFeignClientPipeline feignClientPipeline, string scheme, string parameter)
+        {
+            ((IFeignClientPipeline<object>)feignClientPipeline).Authorization(scheme, parameter);
+            return feignClientPipeline;
+        }
+
+#if NETSTANDARD
+        public static IGlobalFeignClientPipeline Authorization(this IGlobalFeignClientPipeline feignClientPipeline, Func<IFeignClient<object>, (string, string)> schemeAndParameterFactory)
+        {
+            ((IFeignClientPipeline<object>)feignClientPipeline).Authorization(schemeAndParameterFactory);
+            return feignClientPipeline;
+        }
+#endif
+
+        #endregion
+
+
+        //        public static T Authorization<T, TService>(this T feignClientPipeline, AuthenticationHeaderValue authenticationHeaderValue) where T : IFeignClientPipeline<TService>
+        //        {
+        //            if (authenticationHeaderValue == null)
+        //            {
+        //                throw new ArgumentNullException(nameof(authenticationHeaderValue));
+        //            }
+        //            feignClientPipeline.BuildingRequest += (sender, e) =>
+        //            {
+        //                if (!e.Headers.ContainsKey("Authorization"))
+        //                {
+        //                    e.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
+        //                }
+        //            };
+        //            return feignClientPipeline;
+        //        }
+        //        public static T Authorization<T, TService>(this T feignClientPipeline, Func<IFeignClient<TService>, AuthenticationHeaderValue> authenticationHeaderValueAction) where T : IFeignClientPipeline<TService>
+        //        {
+        //            if (authenticationHeaderValueAction == null)
+        //            {
+        //                throw new ArgumentNullException(nameof(authenticationHeaderValueAction));
+        //            }
+        //            feignClientPipeline.BuildingRequest += (sender, e) =>
+        //            {
+        //                if (!e.Headers.ContainsKey("Authorization"))
+        //                {
+        //                    var authenticationHeaderValue = authenticationHeaderValueAction.Invoke(e.FeignClient);
+        //                    e.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
+        //                }
+        //            };
+        //            return feignClientPipeline;
+        //        }
+        //        public static T Authorization<T, TService>(this T feignClientPipeline, string scheme, string parameter) where T : IFeignClientPipeline<TService>
+        //        {
+        //            if (scheme == null)
+        //            {
+        //                throw new ArgumentNullException(nameof(scheme));
+        //            }
+        //            if (parameter == null)
+        //            {
+        //                throw new ArgumentNullException(nameof(parameter));
+        //            }
+        //            feignClientPipeline.BuildingRequest += (sender, e) =>
+        //            {
+        //                if (!e.Headers.ContainsKey("Authorization"))
+        //                {
+        //                    e.Headers["Authorization"] = scheme + " " + parameter;
+        //                }
+        //            };
+        //            return feignClientPipeline;
+        //        }
+
+        //#if NETSTANDARD
+        //        public static T Authorization<T, TService>(this T feignClientPipeline, Func<IFeignClient<TService>, (string, string)> schemeAndParameterFactory) where T : IFeignClientPipeline<TService>
+        //        {
+        //            if (schemeAndParameterFactory == null)
+        //            {
+        //                throw new ArgumentNullException(nameof(schemeAndParameterFactory));
+        //            }
+        //            feignClientPipeline.BuildingRequest += (sender, e) =>
+        //            {
+        //                if (!e.Headers.ContainsKey("Authorization"))
+        //                {
+        //                    var schemeAndParameter = schemeAndParameterFactory.Invoke(e.FeignClient);
+        //                    e.Headers["Authorization"] = schemeAndParameter.Item1 + " " + schemeAndParameter.Item2;
+        //                }
+        //            };
+        //            return feignClientPipeline;
+        //        }
+        //#endif
 
 
 

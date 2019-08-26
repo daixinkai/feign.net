@@ -2,6 +2,7 @@
 using Feign.Discovery;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,10 +16,10 @@ namespace Feign
             if (cacheProvider != null)
             {
                 // check the cache for existing service instances
-                var services = await cacheProvider.GetAsync<IList<IServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
+                var services = await cacheProvider.GetAsync<List<SerializableIServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
                 if (services != null && services.Count > 0)
                 {
-                    return services;
+                    return services.ToList<IServiceInstance>();
                 }
             }
 
@@ -26,7 +27,8 @@ namespace Feign
             var instances = serviceDiscovery.GetServiceInstances(serviceId) ?? new List<IServiceInstance>();
             if (cacheProvider != null)
             {
-                await cacheProvider.SetAsync(serviceInstancesKeyPrefix + serviceId, instances, TimeSpan.FromMinutes(10));
+                List<SerializableIServiceInstance> cacheValue = instances.Select(i => new SerializableIServiceInstance(i)).ToList();
+                await cacheProvider.SetAsync(serviceInstancesKeyPrefix + serviceId, cacheValue, TimeSpan.FromMinutes(10));
             }
 
             return instances;
@@ -38,10 +40,10 @@ namespace Feign
             if (cacheProvider != null)
             {
                 // check the cache for existing service instances
-                var services = cacheProvider.Get<IList<IServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
+                var services = cacheProvider.Get<List<SerializableIServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
                 if (services != null && services.Count > 0)
                 {
-                    return services;
+                    return services.ToList<IServiceInstance>();
                 }
             }
 
@@ -49,7 +51,8 @@ namespace Feign
             var instances = serviceDiscovery.GetServiceInstances(serviceId) ?? new List<IServiceInstance>();
             if (cacheProvider != null)
             {
-                cacheProvider.Set(serviceInstancesKeyPrefix + serviceId, instances, TimeSpan.FromMinutes(10));
+                List<SerializableIServiceInstance> cacheValue = instances.Select(i => new SerializableIServiceInstance(i)).ToList();
+                cacheProvider.Set(serviceInstancesKeyPrefix + serviceId, cacheValue, TimeSpan.FromMinutes(10));
             }
 
             return instances;
