@@ -3,12 +3,15 @@ spring cloud feign for .net
 
 
 ```
-            services.AddFeignClients(options =>
+		    services.AddFeignClients(options =>
             {
                 options.Assemblies.Add(typeof(ITestService).Assembly);
                 options.Lifetime = FeignClientLifetime.Singleton;
                 options.Lifetime = FeignClientLifetime.Scoped;
                 options.Lifetime = FeignClientLifetime.Transient;
+                options.Converters.AddConverter(new ObjectStringConverter()); // 自定义转换
+                options.IncludeMethodMetadata = true;  // 是否包含方法元数据
+                options.MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter()); // 自定义媒体类型处理
                 options.FeignClientPipeline.Authorization(proxy =>
                 {
                     return ("global", "asdasd");
@@ -19,6 +22,30 @@ spring cloud feign for .net
                     object fallback = fallbackFeignClient?.Fallback;
                 };
 
+                options.FeignClientPipeline.SendingRequest += (sender, e) =>
+                {
+                    e.Terminate();  // 终止请求
+                };
+
+                options.FeignClientPipeline.FallbackRequest += (sender, e) =>
+                {
+                    //服务发生降级时触发
+                    object fallbackService = e.Fallback;
+
+                    e.Terminate();//终止降级操作
+                };
+
+                options.FeignClientPipeline.Initializing += (sender, e) =>
+                {
+                    //服务初始化时触发 
+                };
+
+                options.FeignClientPipeline.Disposing += (sender, e) =>
+                {
+                    //服务释放时触发
+                };
+
+                //添加授权
                 options.FeignClientPipeline.Service("yun-platform-service-provider").Authorization(proxy =>
                 {
                     return ("service", "asdasd");
@@ -29,7 +56,8 @@ spring cloud feign for .net
 
                 };
 
-                options.FeignClientPipeline.ReceivingResponse += (sender, e) =>  
+                //成功获取响应时触发,可以自己设置返回的Result
+                options.FeignClientPipeline.ReceivingResponse += (sender, e) =>
                 {
                     if (!typeof(QueryResult).IsAssignableFrom(e.ResultType))
                     {
