@@ -16,9 +16,12 @@ namespace Feign.Reflection
         public FallbackFeignClientHttpProxyEmitMethodBuilder(DynamicAssembly dynamicAssembly)
         {
             _dynamicAssembly = dynamicAssembly;
+            _fallbackProxyAnonymousMethodClassBuilder = new FallbackProxyAnonymousMethodClassBuilder();
         }
 
         DynamicAssembly _dynamicAssembly;
+
+        FallbackProxyAnonymousMethodClassBuilder _fallbackProxyAnonymousMethodClassBuilder;
 
 
         protected override MethodInfo GetInvokeMethod(Type serviceType, RequestMappingBaseAttribute requestMapping, Type returnType, bool async)
@@ -81,7 +84,7 @@ namespace Feign.Reflection
             // if has parameters
             if (method.GetParameters().Length > 0)
             {
-                var anonymousMethodClassTypeBuild = FallbackProxyAnonymousMethodClassBuilder.BuildType(_dynamicAssembly.ModuleBuilder, serviceType, method);
+                var anonymousMethodClassTypeBuild = _fallbackProxyAnonymousMethodClassBuilder.BuildType(_dynamicAssembly.ModuleBuilder, serviceType, method);
                 // new anonymousMethodClass
                 LocalBuilder anonymousMethodClass = iLGenerator.DeclareLocal(anonymousMethodClassTypeBuild.Item1);
                 //field

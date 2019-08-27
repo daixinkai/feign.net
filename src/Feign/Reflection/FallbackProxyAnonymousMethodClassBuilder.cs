@@ -13,14 +13,14 @@ namespace Feign.Reflection
     class FallbackProxyAnonymousMethodClassBuilder : AnonymousMethodClassBuilderBase
     {
 
-        static readonly System.Collections.Concurrent.ConcurrentDictionary<Comparer, Tuple<Type, ConstructorInfo, MethodInfo>> _map = new System.Collections.Concurrent.ConcurrentDictionary<Comparer, Tuple<Type, ConstructorInfo, MethodInfo>>();
+        readonly System.Collections.Concurrent.ConcurrentDictionary<Comparer, Tuple<Type, ConstructorInfo, MethodInfo>> _map = new System.Collections.Concurrent.ConcurrentDictionary<Comparer, Tuple<Type, ConstructorInfo, MethodInfo>>();
 
-        public static Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method)
+        public Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method)
         {
             return BuildType(moduleBuilder, targetType, method, null);
         }
 
-        public static Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method, ParameterInfo[] parameters)
+        public Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method, ParameterInfo[] parameters)
         {
             Comparer comparer = new Comparer
             {

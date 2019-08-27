@@ -116,7 +116,7 @@ namespace Feign.Tests
 
         private static void FeignClientPipeline_SendingRequest(object sender, ISendingRequestEventArgs<object> e)
         {
-            e.Terminate();
+            //e.Terminate();
         }
 
 
