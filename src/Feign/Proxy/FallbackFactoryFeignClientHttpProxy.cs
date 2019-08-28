@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
+    /// <summary>
+    /// 支持服务降级的HttpProxy
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
+    /// <typeparam name="TFallback"></typeparam>
     public abstract class FallbackFactoryFeignClientHttpProxy<TService, TFallbackFactory> : FallbackFeignClientHttpProxy<TService, TService>, IFallbackFactoryFeignClient<TService>, IFeignClient<TService> where TService : class
         where TFallbackFactory : IFallbackFactory<TService>
     {

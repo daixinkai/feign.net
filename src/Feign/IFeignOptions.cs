@@ -10,11 +10,29 @@ namespace Feign
 {
     public interface IFeignOptions
     {
+        /// <summary>
+        /// 获取程序集集合
+        /// </summary>
         IList<Assembly> Assemblies { get; }
+        /// <summary>
+        /// 获取获取转换器集合
+        /// </summary>
         ConverterCollection Converters { get; }
+        /// <summary>
+        /// 获取媒体处理器集合
+        /// </summary>
         MediaTypeFormatterCollection MediaTypeFormatters { get; }
+        /// <summary>
+        /// 获取全局工作管道
+        /// </summary>
         IGlobalFeignClientPipeline FeignClientPipeline { get; }
+        /// <summary>
+        /// 获取或设置服务的生命周期
+        /// </summary>
         FeignClientLifetime Lifetime { get; set; }
+        /// <summary>
+        /// 获取或设置一个值,指示是否需要包含声明服务的方法元数据 默认 : false
+        /// </summary>
         bool IncludeMethodMetadata { get; set; }
     }
 }

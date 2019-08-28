@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Reflection
 {
+    /// <summary>
+    /// 生成lambda表达式的匿名调用类型
+    /// </summary>
     abstract class AnonymousMethodClassBuilderBase
     {
         public class Comparer

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+    /// <summary>
+    /// 文件流请求文件
+    /// </summary>
     public class StreamHttpRequestFile : IHttpRequestFile
     {
         public StreamHttpRequestFile(Stream stream, string fileName)

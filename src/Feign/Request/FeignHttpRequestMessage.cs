@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+    /// <summary>
+    /// FeignHttpRequestMessage
+    /// </summary>
     public class FeignHttpRequestMessage : HttpRequestMessage
     {
         public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest)
@@ -23,7 +26,9 @@ namespace Feign.Request
         {
             FeignClientRequest = feignClientRequest;
         }
-
+        /// <summary>
+        /// 获取FeignClientHttp请求信息
+        /// </summary>
         public FeignClientHttpRequest FeignClientRequest { get; }
 
     }

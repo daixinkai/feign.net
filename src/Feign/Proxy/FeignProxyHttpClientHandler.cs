@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
+    /// <summary>
+    /// FeignHttpClient使用的消息处理程序
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
     public class FeignProxyHttpClientHandler<TService> : HttpClientHandler where TService : class
     {
         private readonly ILogger _logger;
@@ -20,14 +24,20 @@ namespace Feign.Proxy
         //IFeignClient IFeignHttpClientHandler.FeignClient => _feignClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeignHttpClientHandler"/> class.
+        /// Initializes a new instance of the <see cref="FeignProxyHttpClientHandler{T}"/> class.
         /// </summary>
+        /// <param name="feignClient"></param>
+        /// <param name="logger"></param>
         public FeignProxyHttpClientHandler(FeignClientHttpProxy<TService> feignClient, ILogger logger)
         {
             _feignClient = feignClient;
             _logger = logger;
         }
-
+        /// <summary>
+        /// 查找服务路径
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         protected virtual Uri LookupRequestUri(Uri uri)
         {
             return uri;

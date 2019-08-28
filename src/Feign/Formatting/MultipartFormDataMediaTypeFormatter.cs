@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Formatting
 {
+    /// <summary>
+    /// 处理 multipart/form-data
+    /// </summary>
     public class MultipartFormDataMediaTypeFormatter : IMediaTypeFormatter
     {
         public MultipartFormDataMediaTypeFormatter()

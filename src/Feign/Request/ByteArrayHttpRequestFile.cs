@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+    /// <summary>
+    /// byte[]类型的请求文件
+    /// </summary>
     public class ByteArrayHttpRequestFile : IHttpRequestFile
     {
         public ByteArrayHttpRequestFile(byte[] buffer, string fileName)

@@ -13,6 +13,11 @@ using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
+    /// <summary>
+    /// 支持服务降级的HttpProxy
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
+    /// <typeparam name="TFallback"></typeparam>
     public abstract class FallbackFeignClientHttpProxy<TService, TFallback> : FeignClientHttpProxy<TService>, IFallbackFeignClient<TService>
         where TService : class
         where TFallback : TService
@@ -22,6 +27,9 @@ namespace Feign.Proxy
         {
             Fallback = fallback;
         }
+        /// <summary>
+        /// 获取降级服务对象
+        /// </summary>
         public virtual TService Fallback { get; }
 
         protected override bool IsResponseTerminatedRequest => false;
@@ -157,7 +165,12 @@ namespace Feign.Proxy
             _serviceIdFeignClientPipeline?.OnFallbackRequest(this, e);
             _globalFeignClientPipeline?.OnFallbackRequest(this, e);
         }
-
+        /// <summary>
+        /// 触发服务降级事件
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="delegate"></param>
+        /// <returns></returns>
         bool InvokeFallbackRequestPipeline(FeignClientHttpRequest request, Delegate @delegate)
         {
             IFallbackProxy fallbackProxy = @delegate.Target as IFallbackProxy;

@@ -16,11 +16,25 @@ namespace Feign
             }
             Name = name;
         }
+        /// <summary>
+        /// gets the serviceId
+        /// </summary>
         public virtual string Name { get; }
+        /// <summary>
+        /// gets or sets the service url
+        /// </summary>
         public virtual string Url { get; set; }
+        /// <summary>
+        /// gets or sets the service fallback type
+        /// </summary>
         public virtual Type Fallback { get; set; }
+        /// <summary>
+        /// gets or sets the service fallback factory type
+        /// </summary>
         public virtual Type FallbackFactory { get; set; }
-
+        /// <summary>
+        /// gets or sets the lifetime of a service
+        /// </summary>
         public FeignClientLifetime? Lifetime { get; set; }
 
     }

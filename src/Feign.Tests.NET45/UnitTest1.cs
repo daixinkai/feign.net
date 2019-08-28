@@ -22,7 +22,7 @@ namespace Feign.Tests.NET45
     {
         [TestMethod]
         public void TestMethod1()
-        {
+        {            
             DynamicAssembly dynamicAssembly = new DynamicAssembly();
             dynamicAssembly.DEBUG_MODE = true;
             FeignClientHttpProxyTypeBuilder feignClientTypeBuilder = new FeignClientHttpProxyTypeBuilder(dynamicAssembly);

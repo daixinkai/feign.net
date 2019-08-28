@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Formatting
 {
+    /// <summary>
+    /// 处理 application/x-www-form-urlencoded 
+    /// </summary>
     public class FormUrlEncodedMediaTypeFormatter : IMediaTypeFormatter
     {
         public FormUrlEncodedMediaTypeFormatter()

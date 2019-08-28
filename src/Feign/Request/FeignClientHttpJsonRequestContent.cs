@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+    /// <summary>
+    /// 处理JSON
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class FeignClientHttpJsonRequestContent<T> : FeignClientHttpRequestContent
     {

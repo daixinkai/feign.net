@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Feign.Discovery
 {
+    /// <summary>
+    /// 随机服务决定
+    /// </summary>
     public class RandomServiceResolve : IServiceResolve
     {
         public RandomServiceResolve(ILogger logger)

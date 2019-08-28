@@ -5,6 +5,10 @@ using System.Text;
 
 namespace Feign
 {
+    /// <summary>
+    /// 表示响应请求时提供的参数
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
     public class ReceivingResponseEventArgs<TService> : FeignClientEventArgs<TService>, IReceivingResponseEventArgs<TService>
     {
         internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, HttpResponseMessage responseMessage, Type resultType) : base(feignClient)
@@ -12,14 +16,21 @@ namespace Feign
             ResponseMessage = responseMessage;
             ResultType = resultType;
         }
+        /// <summary>
+        /// 获取响应信息
+        /// </summary>
         public HttpResponseMessage ResponseMessage { get; }
-
+        /// <summary>
+        /// 获取返回的类型
+        /// </summary>
         public Type ResultType { get; }
 
         internal bool _isSetResult;
 
         object _result;
-
+        /// <summary>
+        /// 获取或设置返回对象
+        /// </summary>
         public object Result
         {
             get
@@ -39,7 +50,10 @@ namespace Feign
         }
 
     }
-
+    /// <summary>
+    /// 表示响应请求时提供的参数
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
     public sealed class ReceivingResponseEventArgs<TService, TResult> : ReceivingResponseEventArgs<TService>
     {
         internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, HttpResponseMessage responseMessage) : base(feignClient, responseMessage, typeof(TResult))

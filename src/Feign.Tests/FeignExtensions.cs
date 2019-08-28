@@ -2,7 +2,9 @@
 using Feign.Tests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
@@ -20,6 +22,20 @@ namespace Feign.Tests
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
             {
                 //e.Terminate();
+            };
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
+            {
+                if (e.RequestMessage.Content != null)
+                {
+                    MultipartFormDataContent multipartFormDataContent = e.RequestMessage.Content as MultipartFormDataContent;
+                    if (multipartFormDataContent != null)
+                    {
+                        string boundary = multipartFormDataContent.Headers.ContentType.Parameters.FirstOrDefault(s => s.Name == "boundary").Value;
+                        boundary = boundary.Replace("\"", "");
+                        multipartFormDataContent.Headers.Remove("Content-Type");
+                        multipartFormDataContent.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
+                    }
+                }
             };
             feignBuilder.Options.FeignClientPipeline.FallbackRequest += (sender, e) =>
             {

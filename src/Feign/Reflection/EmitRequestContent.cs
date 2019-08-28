@@ -16,9 +16,17 @@ namespace Feign.Reflection
         }
 
         public string MediaType { get; set; }
+        /// <summary>
+        /// 参数描述
+        /// </summary>
         public ParameterInfo Parameter { get; set; }
+        /// <summary>
+        /// 此参数所在的索引
+        /// </summary>
         public int ParameterIndex { get; set; }
-
+        /// <summary>
+        /// 是否支持多参数
+        /// </summary>
         public bool SupportMultipart { get; set; }
 
     }

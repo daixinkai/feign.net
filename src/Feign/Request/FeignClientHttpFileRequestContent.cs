@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+    /// <summary>
+    /// 处理IHttpRequestFile
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class FeignClientHttpFileRequestContent : FeignClientHttpRequestContent
     {

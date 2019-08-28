@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
+    /// <summary>
+    /// 默认的HttpProxy代理
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
     {
         public FeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory)
@@ -62,11 +66,17 @@ namespace Feign.Proxy
         }
 
 
-
+        /// <summary>
+        /// 全局pipeline
+        /// </summary>
         internal GlobalFeignClientPipeline _globalFeignClientPipeline;
-
+        /// <summary>
+        /// serviceId pipeline
+        /// </summary>
         internal ServiceIdFeignClientPipeline _serviceIdFeignClientPipeline;
-
+        /// <summary>
+        /// TService pipeline
+        /// </summary>
         internal ServiceFeignClientPipeline<TService> _serviceFeignClientPipeline;
 
         ILogger _logger;
@@ -76,13 +86,21 @@ namespace Feign.Proxy
         protected IFeignOptions FeignOptions => _feignOptions;
 
         TService IFeignClient<TService>.Service { get { return this as TService; } }
-
+        /// <summary>
+        /// 获取服务的 serviceId
+        /// </summary>
         public abstract string ServiceId { get; }
-
+        /// <summary>
+        /// 是否响应终止的请求? 此值如果是false的话将继续往上层抛异常
+        /// </summary>
         protected virtual bool IsResponseTerminatedRequest => true;
-
+        /// <summary>
+        /// 获取服务的base uri
+        /// </summary>
         public virtual string BaseUri { get { return null; } }
-
+        /// <summary>
+        /// 获取服务的url
+        /// </summary>
         public virtual string Url { get { return null; } }
 
         protected string BaseUrl { get; }
@@ -142,6 +160,7 @@ namespace Feign.Proxy
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
+            
             return FeignClientUtils.ReplaceRequestQuery<T>(_feignOptions.Converters, uri, name, value);
         }
         #endregion

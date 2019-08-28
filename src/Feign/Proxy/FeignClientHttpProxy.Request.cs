@@ -121,7 +121,11 @@ namespace Feign.Proxy
                 throw;
             }
         }
-
+        /// <summary>
+        /// 确保响应状态正确
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="responseMessage"></param>
         private void EnsureSuccess(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
         {
             if (!responseMessage.IsSuccessStatusCode)
@@ -133,7 +137,11 @@ namespace Feign.Proxy
                     new HttpRequestException($"Response status code does not indicate success: {responseMessage.StatusCode.GetHashCode()} ({responseMessage.ReasonPhrase}).\r\nContent : {content}"));
             }
         }
-
+        /// <summary>
+        /// 确保响应状态正确
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="responseMessage"></param>
         private async Task EnsureSuccessAsync(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
         {
             if (!responseMessage.IsSuccessStatusCode)
@@ -145,7 +153,13 @@ namespace Feign.Proxy
                     new HttpRequestException($"Response status code does not indicate success: {responseMessage.StatusCode.GetHashCode()} ({responseMessage.ReasonPhrase}).\r\nContent : {content}"));
             }
         }
-
+        /// <summary>
+        /// 获取响应结果
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="request"></param>
+        /// <param name="responseMessage"></param>
+        /// <returns></returns>
         private TResult GetResult<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
         {
             if (responseMessage == null)
@@ -154,8 +168,7 @@ namespace Feign.Proxy
             }
             #region ReceivingResponse
             ReceivingResponseEventArgs<TService, TResult> receivingResponseEventArgs = new ReceivingResponseEventArgs<TService, TResult>(this, responseMessage);
-            _globalFeignClientPipeline?.GetServicePipeline(this.ServiceId)?.OnReceivingResponse(this, receivingResponseEventArgs);
-            _globalFeignClientPipeline?.OnReceivingResponse(this, receivingResponseEventArgs);
+            OnReceivingResponse(receivingResponseEventArgs);
             //if (receivingResponseEventArgs.Result != null)
             if (receivingResponseEventArgs._isSetResult)
             {
@@ -165,12 +178,7 @@ namespace Feign.Proxy
             EnsureSuccess(request, responseMessage);
             if (typeof(TResult) == typeof(Task))
             {
-#if NET45
-                return (TResult)(object)Task.FromResult<object>(null);
-#endif
-#if NETSTANDARD
-                return (TResult)(object)Task.CompletedTask;
-#endif
+                return (TResult)(object)TaskEx.CompletedTask;
             }
             if (typeof(TResult) == typeof(string))
             {
@@ -185,7 +193,13 @@ namespace Feign.Proxy
             }
             return mediaTypeFormatter.GetResult<TResult>(responseMessage.Content.ReadAsByteArrayAsync().GetResult(), FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType));
         }
-
+        /// <summary>
+        /// 获取响应结果
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="request"></param>
+        /// <param name="responseMessage"></param>
+        /// <returns></returns>
         private async Task<TResult> GetResultAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
         {
             if (responseMessage == null)
@@ -194,8 +208,7 @@ namespace Feign.Proxy
             }
             #region ReceivingResponse
             ReceivingResponseEventArgs<TService, TResult> receivingResponseEventArgs = new ReceivingResponseEventArgs<TService, TResult>(this, responseMessage);
-            _globalFeignClientPipeline?.GetServicePipeline(this.ServiceId)?.OnReceivingResponse(this, receivingResponseEventArgs);
-            _globalFeignClientPipeline?.OnReceivingResponse(this, receivingResponseEventArgs);
+            OnReceivingResponse(receivingResponseEventArgs);
             //if (receivingResponseEventArgs.Result != null)
             if (receivingResponseEventArgs._isSetResult)
             {
@@ -205,12 +218,7 @@ namespace Feign.Proxy
             await EnsureSuccessAsync(request, responseMessage);
             if (typeof(TResult) == typeof(Task))
             {
-#if NET45
-                return (TResult)(object)Task.FromResult<object>(null);
-#endif
-#if NETSTANDARD
-                return (TResult)(object)Task.CompletedTask;
-#endif
+                return (TResult)(object)TaskEx.CompletedTask;
             }
             if (typeof(TResult) == typeof(string))
             {
@@ -227,7 +235,11 @@ namespace Feign.Proxy
         }
 
 
-
+        /// <summary>
+        /// 发送请求
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         private Task<HttpResponseMessage> SendAsyncInternal(FeignClientHttpRequest request)
         {
             HttpMethod httpMethod = GetHttpMethod(request.HttpMethod);
@@ -276,6 +288,7 @@ namespace Feign.Proxy
             }
             return httpMethod;
         }
+
         private HttpRequestMessage CreateRequestMessage(FeignClientHttpRequest request, HttpMethod method, Uri uri)
         {
             FeignHttpRequestMessage requestMessage = new FeignHttpRequestMessage(request, method, uri);

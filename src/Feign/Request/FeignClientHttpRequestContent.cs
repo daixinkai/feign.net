@@ -8,8 +8,16 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+    /// <summary>
+    /// 支持媒体类型转换HttpContent
+    /// </summary>
     public abstract class FeignClientHttpRequestContent
     {
+        /// <summary>
+        /// 根据指定的媒体类型获取对应的HttpContent
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
         public abstract HttpContent GetHttpContent(MediaTypeHeaderValue contentType);
     }
 }

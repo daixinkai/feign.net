@@ -10,6 +10,9 @@ using System.Xml.Serialization;
 
 namespace Feign.Formatting
 {
+    /// <summary>
+    /// 支持 xml
+    /// </summary>
     public class XmlMediaTypeFormatter : IMediaTypeFormatter
     {
         public XmlMediaTypeFormatter()

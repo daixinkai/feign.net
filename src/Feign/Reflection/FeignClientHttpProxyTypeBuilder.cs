@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Reflection
 {
+    /// <summary>
+    /// 默认的代理类型生成器
+    /// </summary>
     public class FeignClientHttpProxyTypeBuilder : IFeignClientTypeBuilder
     {
         public FeignClientHttpProxyTypeBuilder() : this(new DynamicAssembly())
@@ -37,10 +40,12 @@ namespace Feign.Reflection
 
         public FeignClientTypeInfo Build(Type serviceType)
         {
+            //校验一下是否可以生成代理类型
             if (!NeedBuildType(serviceType))
             {
                 return null;
             }
+            //获取一下描述特性
             FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttribute<FeignClientAttribute>();
 
             IMethodBuilder methodBuilder;
@@ -48,18 +53,21 @@ namespace Feign.Reflection
             Type parentType;
             if (feignClientAttribute.Fallback != null)
             {
+                //此服务支持服务降级
                 methodBuilder = _fallbackMethodBuilder;
                 parentType = typeof(FallbackFeignClientHttpProxy<,>);
                 parentType = parentType.MakeGenericType(serviceType, feignClientAttribute.Fallback);
             }
             else if (feignClientAttribute.FallbackFactory != null)
             {
+                //此服务支持服务降级(降级服务由factory提供)
                 methodBuilder = _fallbackMethodBuilder;
                 parentType = typeof(FallbackFactoryFeignClientHttpProxy<,>);
                 parentType = parentType.MakeGenericType(serviceType, feignClientAttribute.FallbackFactory);
             }
             else
             {
+                //默认的服务
                 methodBuilder = _methodBuilder;
                 parentType = typeof(FeignClientHttpProxy<>);
                 parentType = parentType.MakeGenericType(serviceType);
@@ -70,25 +78,27 @@ namespace Feign.Reflection
             {
                 ParentType = parentType
             };
-
+            //创建类型
             TypeBuilder typeBuilder = CreateTypeBuilder(GetTypeFullName(serviceType), parentType);
-
+            //写入构造函数
             BuildConstructor(typeBuilder, parentType);
-            //serviceId
+
+            //写入serviceId
             BuildReadOnlyProperty(typeBuilder, serviceType, "ServiceId", serviceType.GetCustomAttribute<FeignClientAttribute>().Name);
 
-            //baseUri
+            //写入baseUri
             BuildReadOnlyProperty(typeBuilder, serviceType, "BaseUri", serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value);
 
-            // url
+            // 写入url
             if (serviceType.GetCustomAttribute<FeignClientAttribute>().Url != null)
             {
                 BuildReadOnlyProperty(typeBuilder, serviceType, "Url", serviceType.GetCustomAttribute<FeignClientAttribute>().Url);
             }
-
+            //生成的类型必须实现服务
             typeBuilder.AddInterfaceImplementation(serviceType);
             foreach (var method in serviceType.GetMethods())
             {
+                //生成方法
                 methodBuilder.BuildMethod(typeBuilder, serviceType, method, feignClientAttribute);
             }
             var typeInfo = typeBuilder.CreateTypeInfo();
@@ -98,7 +108,11 @@ namespace Feign.Reflection
 
             return feignClientTypeInfo;
         }
-
+        /// <summary>
+        /// 获取服务的父类型
+        /// </summary>
+        /// <param name="parentType"></param>
+        /// <returns></returns>
         protected virtual Type GetParentType(Type parentType)
         {
             return parentType;

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Feign.Formatting
 {
+    /// <summary>
+    /// 转换器集合
+    /// </summary>
     public sealed class ConverterCollection : IEnumerable<IConverter>
     {
 
@@ -27,7 +30,12 @@ namespace Feign.Formatting
             return GetEnumerator();
         }
 
-
+        /// <summary>
+        /// 添加一个转换器
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="converter"></param>
         public void AddConverter<TSource, TResult>(IConverter<TSource, TResult> converter)
         {
 #if NETSTANDARD
@@ -45,13 +53,23 @@ namespace Feign.Formatting
                 _map.TryAdd(key, converter);
             }
         }
-
+        /// <summary>
+        /// 查找指定类型的转换器
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <returns></returns>
         public IConverter<TSource, TResult> FindConverter<TSource, TResult>()
         {
             IConverter converter = FindConverter(typeof(TSource), typeof(TResult));
             return converter == null ? null : (IConverter<TSource, TResult>)converter;
         }
-
+        /// <summary>
+        /// 查找指定类型的转换器
+        /// </summary>
+        /// <param name="sourceType"></param>
+        /// <param name="resultType"></param>
+        /// <returns></returns>
         public IConverter FindConverter(Type sourceType, Type resultType)
         {
 #if NETSTANDARD

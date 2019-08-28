@@ -9,8 +9,15 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
+    /// <summary>
+    /// 一个接口,表示初始化时提供的参数
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
     public interface IInitializingEventArgs<out TService> : IFeignClientEventArgs<TService>
     {
+        /// <summary>
+        /// 获取HttpClient
+        /// </summary>
         HttpClient HttpClient { get; set; }
     }
 }

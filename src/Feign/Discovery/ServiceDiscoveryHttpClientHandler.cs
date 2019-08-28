@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 
 namespace Feign.Discovery
 {
+    /// <summary>
+    /// 可发现服务的HttpClient消息处理程序
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
     public class ServiceDiscoveryHttpClientHandler<TService> : FeignProxyHttpClientHandler<TService> where TService : class
     {
 

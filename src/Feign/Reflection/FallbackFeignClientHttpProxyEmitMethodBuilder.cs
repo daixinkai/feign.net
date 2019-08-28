@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Reflection
 {
+    /// <summary>
+    /// 支持降级服务的方法生成器
+    /// </summary>
     class FallbackFeignClientHttpProxyEmitMethodBuilder : FeignClientHttpProxyEmitMethodBuilder
     {
         public FallbackFeignClientHttpProxyEmitMethodBuilder(DynamicAssembly dynamicAssembly)
@@ -61,7 +64,15 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Call, invokeMethod);
             iLGenerator.Emit(OpCodes.Ret);
         }
-
+        /// <summary>
+        /// 这里需要生成降级方法委托
+        /// </summary>
+        /// <param name="typeBuilder"></param>
+        /// <param name="methodBuilder"></param>
+        /// <param name="iLGenerator"></param>
+        /// <param name="serviceType"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
         LocalBuilder DefineFallbackDelegate(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, MethodInfo method)
         {
             Type delegateType;
@@ -84,6 +95,7 @@ namespace Feign.Reflection
             // if has parameters
             if (method.GetParameters().Length > 0)
             {
+                //方法含有参数的情况下,需要生成一个匿名代理类型
                 var anonymousMethodClassTypeBuild = _fallbackProxyAnonymousMethodClassBuilder.BuildType(_dynamicAssembly.ModuleBuilder, serviceType, method);
                 // new anonymousMethodClass
                 LocalBuilder anonymousMethodClass = iLGenerator.DeclareLocal(anonymousMethodClassTypeBuild.Item1);

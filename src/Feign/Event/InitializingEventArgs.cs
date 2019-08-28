@@ -9,12 +9,18 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
-    public class InitializingEventArgs<TService> : FeignClientEventArgs<TService>, IInitializingEventArgs<TService>
+    /// <summary>
+    /// 表示初始化时提供的参数
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
+    public sealed class InitializingEventArgs<TService> : FeignClientEventArgs<TService>, IInitializingEventArgs<TService>
     {
-        public InitializingEventArgs(IFeignClient<TService> feignClient) : base(feignClient)
+        internal InitializingEventArgs(IFeignClient<TService> feignClient) : base(feignClient)
         {
         }
-
+        /// <summary>
+        /// 获取HttpClient
+        /// </summary>
         public HttpClient HttpClient { get; set; }
 
     }

@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Reflection
 {
+    /// <summary>
+    /// 默认的方法生成器
+    /// </summary>
     class FeignClientHttpProxyEmitMethodBuilder : IMethodBuilder
     {
         #region define
@@ -45,23 +48,35 @@ namespace Feign.Reflection
 
         void BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute, RequestMappingBaseAttribute requestMapping)
         {
+            //创建方法
             MethodBuilder methodBuilder = CreateMethodBuilder(typeBuilder, method);
             ILGenerator iLGenerator = methodBuilder.GetILGenerator();
             if (requestMapping == null)
             {
+                //如果找不到mapping,抛出 NotSupportedException 异常
                 iLGenerator.Emit(OpCodes.Newobj, typeof(NotSupportedException).GetConstructor(Type.EmptyTypes));
                 iLGenerator.Emit(OpCodes.Throw);
                 return;
             }
             string uri = requestMapping.Value ?? "";
-            LocalBuilder local_Uri = iLGenerator.DeclareLocal(typeof(string)); // uri
-            LocalBuilder local_OldValue = iLGenerator.DeclareLocal(typeof(string)); // temp
+            LocalBuilder local_Uri = iLGenerator.DeclareLocal(typeof(string)); // 定义uri 
+            LocalBuilder local_OldValue = iLGenerator.DeclareLocal(typeof(string)); // 定义temp,用来拼接请求的真实uri
             iLGenerator.Emit(OpCodes.Ldstr, uri);
             iLGenerator.Emit(OpCodes.Stloc, local_Uri);
             List<EmitRequestContent> emitRequestContents = EmitParameter(typeBuilder, iLGenerator, method, local_Uri, local_OldValue);
             EmitCallMethod(typeBuilder, methodBuilder, iLGenerator, serviceType, method, requestMapping, local_Uri, emitRequestContents);
         }
-
+        /// <summary>
+        /// 获取调用的Send方法 
+        /// <see cref="Proxy.FeignClientHttpProxy{TService}.SendAsync(FeignClientHttpRequest)"/>
+        /// <see cref="Proxy.FeignClientHttpProxy{TService}.SendAsync{TResult}(FeignClientHttpRequest)"/>
+        /// <see cref="Proxy.FeignClientHttpProxy{TService}.Send(FeignClientHttpRequest)"/>
+        /// <see cref="Proxy.FeignClientHttpProxy{TService}.Send{TResult}(FeignClientHttpRequest)"/>
+        /// </summary>
+        /// <param name="serviceType"></param>
+        /// <param name="method"></param>
+        /// <param name="requestMapping"></param>
+        /// <returns></returns>
         protected MethodInfo GetInvokeMethod(Type serviceType, MethodInfo method, RequestMappingBaseAttribute requestMapping)
         {
             if (method.IsTaskMethod())
@@ -95,7 +110,12 @@ namespace Feign.Reflection
             }
             return httpClientMethod;
         }
-
+        /// <summary>
+        /// 是否支持RequestContent
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="requestMappingBaseAttribute"></param>
+        /// <returns></returns>
         protected bool SupportRequestContent(MethodInfo method, RequestMappingBaseAttribute requestMappingBaseAttribute)
         {
             return "POST".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase) || "PUT".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase);
@@ -160,21 +180,43 @@ namespace Feign.Reflection
             typeBuilder.DefineMethodOverride(methodBuilder, method);
             return methodBuilder;
         }
-
+        /// <summary>
+        /// 调用方法
+        /// </summary>
+        /// <param name="typeBuilder"></param>
+        /// <param name="methodBuilder"></param>
+        /// <param name="iLGenerator"></param>
+        /// <param name="serviceType"></param>
+        /// <param name="method"></param>
+        /// <param name="requestMapping"></param>
+        /// <param name="uri"></param>
+        /// <param name="emitRequestContents"></param>
         protected virtual void EmitCallMethod(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, MethodInfo method, RequestMappingBaseAttribute requestMapping, LocalBuilder uri, List<EmitRequestContent> emitRequestContents)
         {
+            //得到Send方法
             var invokeMethod = GetInvokeMethod(serviceType, method, requestMapping);
             if (emitRequestContents != null && emitRequestContents.Count > 0 && !SupportRequestContent(invokeMethod, requestMapping))
             {
                 throw new NotSupportedException("不支持RequestBody或者RequestForm");
             }
+            //定义请求的详情 FeignClientHttpRequest
             LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, method);
             iLGenerator.Emit(OpCodes.Ldarg_0);  //this
             iLGenerator.Emit(OpCodes.Ldloc, feignClientRequest);
             iLGenerator.Emit(OpCodes.Call, invokeMethod);
             iLGenerator.Emit(OpCodes.Ret);
         }
-
+        /// <summary>
+        /// 定义用于Send方法的FeignClientHttpRequest
+        /// </summary>
+        /// <param name="typeBuilder"></param>
+        /// <param name="serviceType"></param>
+        /// <param name="iLGenerator"></param>
+        /// <param name="uri"></param>
+        /// <param name="requestMapping"></param>
+        /// <param name="emitRequestContents"></param>
+        /// <param name="methodInfo"></param>
+        /// <returns></returns>
         protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent> emitRequestContents, MethodInfo methodInfo)
         {
             LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(FeignClientHttpRequest));
@@ -244,7 +286,7 @@ namespace Feign.Reflection
             Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
 
             #region if (base.FeignOptions.IncludeMethodMetadata) set the call method
-
+            //这里获取方法元数据
             PropertyInfo feignOptionsProperty = typeBuilder.BaseType.GetProperty("FeignOptions", BindingFlags.Instance | BindingFlags.NonPublic);
             PropertyInfo includeMethodMetadataProperty = feignOptionsProperty.PropertyType.GetProperty("IncludeMethodMetadata");
             iLGenerator.Emit(OpCodes.Ldarg_0);
@@ -257,7 +299,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Stloc, methodInfoLocalBuilder);
 
             #endregion
-
+            //处理下 if GOTO
             iLGenerator.MarkLabel(newFeingClientRequestLabel);
             iLGenerator.Emit(OpCodes.Ldloc, methodInfoLocalBuilder);
             iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetConstructors()[0]);
@@ -337,6 +379,15 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Callvirt, propertyInfo.GetMethod);
         }
 
+        /// <summary>
+        /// 处理参数
+        /// </summary>
+        /// <param name="typeBuilder"></param>
+        /// <param name="iLGenerator"></param>
+        /// <param name="method"></param>
+        /// <param name="uri"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         protected List<EmitRequestContent> EmitParameter(TypeBuilder typeBuilder, ILGenerator iLGenerator, MethodInfo method, LocalBuilder uri, LocalBuilder value)
         {
             int index = 0;

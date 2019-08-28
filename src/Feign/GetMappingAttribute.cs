@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Feign
 {
+    /// <summary>
+    /// 映射一个GET请求
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public sealed class GetMappingAttribute : RequestMappingBaseAttribute
     {
