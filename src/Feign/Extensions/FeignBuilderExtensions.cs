@@ -16,7 +16,13 @@ namespace Feign
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class FeignBuilderExtensions
     {
-
+        /// <summary>
+        /// 添加FeignClients
+        /// </summary>
+        /// <typeparam name="TFeignBuilder"></typeparam>
+        /// <param name="feignBuilder"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static TFeignBuilder AddFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, IFeignOptions options) where TFeignBuilder : IFeignBuilder
         {
             if (options.Assemblies.Count == 0)
@@ -36,7 +42,14 @@ namespace Feign
             feignBuilder.AddService<IFeignOptions>(options);
             return feignBuilder;
         }
-
+        /// <summary>
+        /// 添加FeignClients
+        /// </summary>
+        /// <typeparam name="TFeignBuilder"></typeparam>
+        /// <param name="feignBuilder"></param>
+        /// <param name="assembly">要扫描的程序集</param>
+        /// <param name="lifetime">服务的生命周期</param>
+        /// <returns></returns>
         public static TFeignBuilder AddFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, Assembly assembly, FeignClientLifetime lifetime)
     where TFeignBuilder : IFeignBuilder
         {
@@ -66,26 +79,48 @@ namespace Feign
             return feignBuilder;
         }
 
-
+        /// <summary>
+        /// 添加一个转换器
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="feignBuilder"></param>
+        /// <param name="converter"></param>
+        /// <returns></returns>
         public static IFeignBuilder AddConverter<TSource, TResult>(this IFeignBuilder feignBuilder, IConverter<TSource, TResult> converter)
         {
             feignBuilder.Options.Converters.AddConverter(converter);
             return feignBuilder;
         }
-
+        /// <summary>
+        /// 添加<see cref="ILoggerFactory"/>
+        /// </summary>
+        /// <typeparam name="TLoggerFactory"></typeparam>
+        /// <param name="feignBuilder"></param>
+        /// <returns></returns>
         public static IFeignBuilder AddLoggerFactory<TLoggerFactory>(this IFeignBuilder feignBuilder) where TLoggerFactory : ILoggerFactory
         {
             feignBuilder.AddOrUpdateService(typeof(ILoggerFactory), typeof(TLoggerFactory), FeignClientLifetime.Singleton);
             return feignBuilder;
         }
 
-
+        /// <summary>
+        /// 添加<see cref="IServiceDiscovery"/>
+        /// </summary>
+        /// <typeparam name="TServiceDiscovery"></typeparam>
+        /// <param name="feignBuilder"></param>
+        /// <returns></returns>
         public static IFeignBuilder AddServiceDiscovery<TServiceDiscovery>(this IFeignBuilder feignBuilder) where TServiceDiscovery : IServiceDiscovery
         {
             feignBuilder.AddOrUpdateService(typeof(IServiceDiscovery), typeof(TServiceDiscovery), FeignClientLifetime.Singleton);
             return feignBuilder;
         }
-
+        /// <summary>
+        /// 添加<see cref="ICacheProvider"/>
+        /// </summary>
+        /// <typeparam name="TCacheProvider"></typeparam>
+        /// <param name="feignBuilder"></param>
+        /// <returns></returns>
         public static IFeignBuilder AddCacheProvider<TCacheProvider>(this IFeignBuilder feignBuilder) where TCacheProvider : ICacheProvider
         {
             feignBuilder.AddOrUpdateService(typeof(ICacheProvider), typeof(TCacheProvider), FeignClientLifetime.Singleton);
