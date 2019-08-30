@@ -47,7 +47,7 @@ namespace Feign.Internal
                 var converter = converters.FindConverter<T, string>();
                 if (converter != null)
                 {
-                    return converter.Convert(value);
+                    return ReplaceRequestParam(uri, name, converter.Convert(value));
                 }
 
                 // get properties
