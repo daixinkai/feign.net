@@ -45,22 +45,22 @@ namespace Feign.Proxy
 
 
 
-        protected async Task SendAsync(FeignClientHttpRequest request)
+        protected virtual async Task SendAsync(FeignClientHttpRequest request)
         {
             HttpResponseMessage response = await GetResponseMessageAsync(request);
             await GetResultAsync<string>(request, response);
         }
-        protected async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request)
+        protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request)
         {
             HttpResponseMessage response = await GetResponseMessageAsync(request);
             return await GetResultAsync<TResult>(request, response);
         }
-        protected void Send(FeignClientHttpRequest request)
+        protected virtual void Send(FeignClientHttpRequest request)
         {
             HttpResponseMessage response = GetResponseMessage(request);
             GetResult<string>(request, response);
         }
-        protected TResult Send<TResult>(FeignClientHttpRequest request)
+        protected virtual TResult Send<TResult>(FeignClientHttpRequest request)
         {
             HttpResponseMessage response = GetResponseMessage(request);
             return GetResult<TResult>(request, response);

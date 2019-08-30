@@ -8,9 +8,9 @@ namespace Feign.Discovery
     /// 可序列化的服务
     /// </summary>
     [Serializable]
-    public class SerializableIServiceInstance : IServiceInstance
+    public class SerializableServiceInstance : IServiceInstance
     {
-        public SerializableIServiceInstance(IServiceInstance instance)
+        public SerializableServiceInstance(IServiceInstance instance)
         {
             ServiceId = instance.ServiceId;
             Host = instance.Host;

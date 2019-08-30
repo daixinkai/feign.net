@@ -16,7 +16,7 @@ namespace Feign
             if (cacheProvider != null)
             {
                 // check the cache for existing service instances
-                var services = await cacheProvider.GetAsync<List<SerializableIServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
+                var services = await cacheProvider.GetAsync<List<SerializableServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
                 if (services != null && services.Count > 0)
                 {
                     return services.ToList<IServiceInstance>();
@@ -27,7 +27,7 @@ namespace Feign
             var instances = serviceDiscovery.GetServiceInstances(serviceId) ?? new List<IServiceInstance>();
             if (cacheProvider != null)
             {
-                List<SerializableIServiceInstance> cacheValue = instances.Select(i => new SerializableIServiceInstance(i)).ToList();
+                List<SerializableServiceInstance> cacheValue = instances.Select(i => new SerializableServiceInstance(i)).ToList();
                 await cacheProvider.SetAsync(serviceInstancesKeyPrefix + serviceId, cacheValue, TimeSpan.FromMinutes(10));
             }
 
@@ -40,7 +40,7 @@ namespace Feign
             if (cacheProvider != null)
             {
                 // check the cache for existing service instances
-                var services = cacheProvider.Get<List<SerializableIServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
+                var services = cacheProvider.Get<List<SerializableServiceInstance>>(serviceInstancesKeyPrefix + serviceId);
                 if (services != null && services.Count > 0)
                 {
                     return services.ToList<IServiceInstance>();
@@ -51,7 +51,7 @@ namespace Feign
             var instances = serviceDiscovery.GetServiceInstances(serviceId) ?? new List<IServiceInstance>();
             if (cacheProvider != null)
             {
-                List<SerializableIServiceInstance> cacheValue = instances.Select(i => new SerializableIServiceInstance(i)).ToList();
+                List<SerializableServiceInstance> cacheValue = instances.Select(i => new SerializableServiceInstance(i)).ToList();
                 cacheProvider.Set(serviceInstancesKeyPrefix + serviceId, cacheValue, TimeSpan.FromMinutes(10));
             }
 

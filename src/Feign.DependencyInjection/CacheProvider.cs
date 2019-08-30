@@ -57,9 +57,9 @@ namespace Feign.Cache
 
 
 
-        private static List<SerializableIServiceInstance> MapToSerializable(IList<IServiceInstance> instances)
+        private static List<SerializableServiceInstance> MapToSerializable(IList<IServiceInstance> instances)
         {
-            var inst = instances.Select(i => new SerializableIServiceInstance(i));
+            var inst = instances.Select(i => new SerializableServiceInstance(i));
             return inst.ToList();
         }
 

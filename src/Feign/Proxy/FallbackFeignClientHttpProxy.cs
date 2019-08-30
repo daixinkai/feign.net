@@ -65,7 +65,7 @@ namespace Feign.Proxy
 
         #endregion
 
-        protected async Task SendAsync(FeignClientHttpRequest request, Func<Task> fallback)
+        protected virtual async Task SendAsync(FeignClientHttpRequest request, Func<Task> fallback)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Feign.Proxy
                 await fallback.Invoke();
             }
         }
-        protected async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request, Func<Task<TResult>> fallback)
+        protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request, Func<Task<TResult>> fallback)
         {
             try
             {
@@ -111,7 +111,7 @@ namespace Feign.Proxy
                 return await fallback.Invoke();
             }
         }
-        protected void Send(FeignClientHttpRequest request, Action fallback)
+        protected virtual void Send(FeignClientHttpRequest request, Action fallback)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace Feign.Proxy
                 fallback.Invoke();
             }
         }
-        protected TResult Send<TResult>(FeignClientHttpRequest request, Func<TResult> fallback)
+        protected virtual TResult Send<TResult>(FeignClientHttpRequest request, Func<TResult> fallback)
         {
             try
             {

@@ -1,6 +1,8 @@
 # feign.net
 spring cloud feign for .net
 
+## feign.netæ˜¯ä¸€ä¸ªspring cloud feignç»„ä»¶çš„c#ç§»æ¤ç‰ˆ
+
 
 ```
 		    services.AddFeignClients(options =>
@@ -9,9 +11,9 @@ spring cloud feign for .net
                 options.Lifetime = FeignClientLifetime.Singleton;
                 options.Lifetime = FeignClientLifetime.Scoped;
                 options.Lifetime = FeignClientLifetime.Transient;
-                options.Converters.AddConverter(new ObjectStringConverter()); // ×Ô¶¨Òå×ª»»
-                options.IncludeMethodMetadata = true;  // ÊÇ·ñ°üº¬·½·¨ÔªÊý¾Ý
-                options.MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter()); // ×Ô¶¨ÒåÃ½ÌåÀàÐÍ´¦Àí
+                options.Converters.AddConverter(new ObjectStringConverter()); // è‡ªå®šä¹‰è½¬æ¢
+                options.IncludeMethodMetadata = true;  // æ˜¯å¦åŒ…å«æ–¹æ³•å…ƒæ•°æ®
+                options.MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter()); // è‡ªå®šä¹‰åª’ä½“ç±»åž‹å¤„ç†
                 options.FeignClientPipeline.Authorization(proxy =>
                 {
                     return ("global", "asdasd");
@@ -24,28 +26,28 @@ spring cloud feign for .net
 
                 options.FeignClientPipeline.SendingRequest += (sender, e) =>
                 {
-                    e.Terminate();  // ÖÕÖ¹ÇëÇó
+                    e.Terminate();  // ç»ˆæ­¢è¯·æ±‚
                 };
 
                 options.FeignClientPipeline.FallbackRequest += (sender, e) =>
                 {
-                    //·þÎñ·¢Éú½µ¼¶Ê±´¥·¢
+                    //æœåŠ¡å‘ç”Ÿé™çº§æ—¶è§¦å‘
                     object fallbackService = e.Fallback;
 
-                    e.Terminate();//ÖÕÖ¹½µ¼¶²Ù×÷
+                    e.Terminate();//ç»ˆæ­¢é™çº§æ“ä½œ
                 };
 
                 options.FeignClientPipeline.Initializing += (sender, e) =>
                 {
-                    //·þÎñ³õÊ¼»¯Ê±´¥·¢ 
+                    //æœåŠ¡åˆå§‹åŒ–æ—¶è§¦å‘
                 };
 
                 options.FeignClientPipeline.Disposing += (sender, e) =>
                 {
-                    //·þÎñÊÍ·ÅÊ±´¥·¢
+                    //æœåŠ¡é‡Šæ”¾æ—¶è§¦å‘
                 };
 
-                //Ìí¼ÓÊÚÈ¨
+                //æ·»åŠ æŽˆæƒ
                 options.FeignClientPipeline.Service("yun-platform-service-provider").Authorization(proxy =>
                 {
                     return ("service", "asdasd");
@@ -56,7 +58,7 @@ spring cloud feign for .net
 
                 };
 
-                //³É¹¦»ñÈ¡ÏìÓ¦Ê±´¥·¢,¿ÉÒÔ×Ô¼ºÉèÖÃ·µ»ØµÄResult
+                //æˆåŠŸèŽ·å–å“åº”æ—¶è§¦å‘,å¯ä»¥è‡ªå·±è®¾ç½®è¿”å›žçš„Result
                 options.FeignClientPipeline.ReceivingResponse += (sender, e) =>
                 {
                     if (!typeof(QueryResult).IsAssignableFrom(e.ResultType))
