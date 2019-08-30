@@ -3,7 +3,7 @@ spring cloud feign for .net
 
 ## feign.net是一个spring cloud feign组件的c#移植版
 
-
+samples
 ```
 		    services.AddFeignClients(options =>
             {

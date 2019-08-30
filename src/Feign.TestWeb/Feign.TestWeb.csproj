@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Feign.DependencyInjection\Feign.DependencyInjection.csproj" />
+    <ProjectReference Include="..\Feign.Polly\Feign.Polly.csproj" />
     <ProjectReference Include="..\Feign.Standalone\Feign.Standalone.csproj" />
     <ProjectReference Include="..\Feign.Steeltoe\Feign.Steeltoe.csproj" />
     <ProjectReference Include="..\Feign.Tests\Feign.Tests.csproj" />

@@ -37,10 +37,11 @@ namespace Feign.TestWeb
 
             //   services.AddDiscoveryClient(Configuration);
 
-            services.AddFeignClients()
-            .AddTestFeignClients()
-            //.AddSteeltoeServiceDiscovery()
-            ;
+            var builder = services.AddFeignClients()
+                .AddTestFeignClients()
+                //.AddSteeltoeServiceDiscovery()
+                ;
+            builder.AddPolly(null);
 
         }
 
