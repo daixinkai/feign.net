@@ -15,11 +15,15 @@ namespace Feign.Tests
         //, Url = "http://10.1.5.90:8802/"
         //, Url = "http://localhost:62088/"
         )]
-    [RequestMapping("/organizations")]
+    //[RequestMapping("/organizations")]
     public interface ITestService
     {
 
+
+
         //string Name { get; }
+
+        //string Get();
 
         [RequestMapping("/{id}/asdasdsad", Method = "POST")]
         Task PostValueAsync();

@@ -9,7 +9,7 @@ namespace Feign.Tests
     {
         public string Convert(TestServiceParam value)
         {
-            return value.ToString();
+            return value?.ToString();
         }
     }
 }

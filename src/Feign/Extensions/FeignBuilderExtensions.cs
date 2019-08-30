@@ -23,23 +23,23 @@ namespace Feign
         /// <param name="feignBuilder"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static TFeignBuilder AddFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, IFeignOptions options) where TFeignBuilder : IFeignBuilder
+        public static TFeignBuilder AddDefaultFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder) where TFeignBuilder : IFeignBuilder
         {
-            if (options.Assemblies.Count == 0)
+            if (feignBuilder.Options.Assemblies.Count == 0)
             {
-                feignBuilder.AddFeignClients(Assembly.GetEntryAssembly(), options.Lifetime);
+                feignBuilder.AddFeignClients(Assembly.GetEntryAssembly(), feignBuilder.Options.Lifetime);
             }
             else
             {
-                foreach (var assembly in options.Assemblies)
+                foreach (var assembly in feignBuilder.Options.Assemblies)
                 {
-                    feignBuilder.AddFeignClients(assembly, options.Lifetime);
+                    feignBuilder.AddFeignClients(assembly, feignBuilder.Options.Lifetime);
                 }
             }
             feignBuilder.AddLoggerFactory<DefaultLoggerFactory>();
             feignBuilder.AddCacheProvider<DefaultCacheProvider>();
             feignBuilder.AddServiceDiscovery<DefaultServiceDiscovery>();
-            feignBuilder.AddService<IFeignOptions>(options);
+            feignBuilder.AddService<IFeignOptions>(feignBuilder.Options);
             return feignBuilder;
         }
         /// <summary>

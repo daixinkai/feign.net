@@ -161,5 +161,10 @@ namespace Feign.Tests
         {
             throw new NotImplementedException();
         }
+
+        public string Get()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

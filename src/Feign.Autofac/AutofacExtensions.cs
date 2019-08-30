@@ -36,7 +36,8 @@ namespace Autofac
             }
             AutofacFeignBuilder feignBuilder = new AutofacFeignBuilder();
             feignBuilder.ContainerBuilder = containerBuilder;
-            feignBuilder.AddFeignClients(options);
+            feignBuilder.Options = options;
+            feignBuilder.AddDefaultFeignClients();
             return feignBuilder;
         }
 
