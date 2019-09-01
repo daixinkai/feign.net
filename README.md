@@ -9,6 +9,7 @@
 
 ```csharp
     [FeignClient("test-service", Url = "http://testservice.xx.com")]
+    [RequestMapping("/api/test")]
     public interface ITestService
     {
         /// <summary>
@@ -16,7 +17,7 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [RequestMapping("/{id}", Method = "GET");
+        [RequestMapping("/{id}", Method = "GET")]
         //[GetMapping("/{id}")]
         Task<string> GetAsync([PathVariable("id")]int id);
 
