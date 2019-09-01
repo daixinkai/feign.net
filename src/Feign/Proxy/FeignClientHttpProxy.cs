@@ -25,11 +25,12 @@ namespace Feign.Proxy
             _serviceFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline<TService>();
             _logger = loggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
             ServiceDiscoveryHttpClientHandler<TService> serviceDiscoveryHttpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, serviceDiscovery, cacheProvider, _logger);
-            serviceDiscoveryHttpClientHandler.ShouldResolveService = string.IsNullOrWhiteSpace(Url);
+            //serviceDiscoveryHttpClientHandler.ShouldResolveService = string.IsNullOrWhiteSpace(Url);
+            serviceDiscoveryHttpClientHandler.ShouldResolveService = Url == null;
             serviceDiscoveryHttpClientHandler.AllowAutoRedirect = false;
             HttpClient = new FeignHttpClient(new FeignDelegatingHandler(serviceDiscoveryHttpClientHandler));
             string baseUrl = serviceDiscoveryHttpClientHandler.ShouldResolveService ? ServiceId ?? "" : Url;
-            if (!baseUrl.StartsWith("http"))
+            if (!baseUrl.StartsWith("http") && baseUrl != "")
             {
                 baseUrl = $"http://{baseUrl}";
             }

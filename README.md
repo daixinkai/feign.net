@@ -1,118 +1,71 @@
 # feign.net
-spring cloud feign for .net
+
+*spring cloud feign for .net*
 
 ## feign.net是一个spring cloud feign组件的c#移植版
 
-samples
-```
-		    services.AddFeignClients(options =>
-            {
-                options.Assemblies.Add(typeof(ITestService).Assembly);
-                options.Lifetime = FeignClientLifetime.Singleton;
-                options.Lifetime = FeignClientLifetime.Scoped;
-                options.Lifetime = FeignClientLifetime.Transient;
-                options.Converters.AddConverter(new ObjectStringConverter()); // 自定义转换
-                options.IncludeMethodMetadata = true;  // 是否包含方法元数据
-                options.MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter()); // 自定义媒体类型处理
-                options.FeignClientPipeline.Authorization(proxy =>
-                {
-                    return ("global", "asdasd");
-                });
-                options.FeignClientPipeline.Service("serviceId").BuildingRequest += (sender, e) =>
-                {
-                    IFallbackFeignClient<object> fallbackFeignClient = e.FeignClient as IFallbackFeignClient<object>;
-                    object fallback = fallbackFeignClient?.Fallback;
-                };
 
-                options.FeignClientPipeline.SendingRequest += (sender, e) =>
-                {
-                    e.Terminate();  // 终止请求
-                };
+### 定义服务 : 
 
-                options.FeignClientPipeline.FallbackRequest += (sender, e) =>
-                {
-                    //服务发生降级时触发
-                    object fallbackService = e.Fallback;
+```csharp
+    [FeignClient("test-service", Url = "http://testservice.xx.com")]
+    public interface ITestService
+    {
+        /// <summary>
+        /// async get一个请求
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [RequestMapping("/{id}", Method = "GET");
+        //[GetMapping("/{id}")]
+        Task<string> GetAsync([PathVariable("id")]int id);
 
-                    e.Terminate();//终止降级操作
-                };
+        /// <summary>
+        /// 以json的方式post一个请求
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [RequestMapping("/{id}", Method = "POST")]
+        //[PostMapping("/{id}")]
+        string PostJson([PathVariable]int id, [RequestBody] TestServiceParam param);
 
-                options.FeignClientPipeline.Initializing += (sender, e) =>
-                {
-                    //服务初始化时触发
-                };
+        /// <summary>
+        /// 以form表单的方式post一个请求
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [RequestMapping("/{id}", Method = "POST")]
+        //[PostMapping("/{id}")]
+        string PostForm(int id, [RequestForm] TestServiceParam param);
 
-                options.FeignClientPipeline.Disposing += (sender, e) =>
-                {
-                    //服务释放时触发
-                };
+        /// <summary>
+        /// 上传2个文件
+        /// </summary>
+        /// <param name="file1"></param>
+        /// <param name="file2"></param>
+        /// <returns></returns>
+        [PostMapping("/upload")]
+        string UploadFile(IHttpRequestFile file1, IHttpRequestFile file2);
 
-                //添加授权
-                options.FeignClientPipeline.Service("yun-platform-service-provider").Authorization(proxy =>
-                {
-                    return ("service", "asdasd");
-                });
+        /// <summary>
+        /// 上传多个文件
+        /// </summary>
+        /// <param name="file1"></param>
+        /// <param name="file2"></param>
+        /// <returns></returns>
+        [PostMapping("/upload")]
+        string UploadFile(IHttpRequestFileForm files);
 
-                options.FeignClientPipeline.Service("yun-platform-service-provider").ReceivingResponse += (sender, e) =>
-                {
-
-                };
-
-                //成功获取响应时触发,可以自己设置返回的Result
-                options.FeignClientPipeline.ReceivingResponse += (sender, e) =>
-                {
-                    if (!typeof(QueryResult).IsAssignableFrom(e.ResultType))
-                    {
-                        return;
-                    }
-                    if (e.ResultType == typeof(QueryResult))
-                    {
-                        e.Result = new QueryResult()
-                        {
-                            StatusCode = e.ResponseMessage.StatusCode
-                        };
-                        return;
-                    }
-
-                    if (e.ResultType.IsGenericType && e.ResultType.GetGenericTypeDefinition() == typeof(QueryResult<>))
-                    {
-                        QueryResult queryResult;
-                        if (e.ResponseMessage.IsSuccessStatusCode)
-                        {
-                            string json = e.ResponseMessage.Content.ReadAsStringAsync().Result;
-                            object data = Newtonsoft.Json.JsonConvert.DeserializeObject(json, e.ResultType.GetGenericArguments()[0]);
-                            var constructor = e.ResultType.GetConstructor(new Type[] { typeof(object) });
-                            queryResult = (QueryResult)constructor.Invoke(new object[] { data });
-                        }
-                        else
-                        {
-                            queryResult = (QueryResult)e.ResultType.GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
-                        }
-                        queryResult.StatusCode = e.ResponseMessage.StatusCode;
-                        e.Result = queryResult;
-                    }
-
-                };
-
-                options.FeignClientPipeline.CancelRequest += (sender, e) =>
-                {
-                    e.CancellationToken.Register((state) =>
-                    {
-
-                    }, sender);
-                };
-                options.FeignClientPipeline.ErrorRequest += (sender, e) =>
-                {
-                    Exception exception = e.Exception;
-                    //e.ExceptionHandled = true;
-                };
-            });
-``` 
-
-
+    }
 ```
 
-    [Route("api/[controller]")]
+### 使用服务,这里以asp.net core为例
+
+```csharp
+
+[Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
@@ -120,13 +73,136 @@ samples
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> Get(int id, [FromServices] ITestService testService)
         {
-            await testService.PostValueAsync(id, "", new TestServiceParam());
-			testService.GetValueVoidAsync(id, "", null);
-            return testService.GetQueryResultValue(id.ToString(), new TestServiceParam
-            {
-                Name = "asasdsad"
-            });
+            await testService.GetAsync(id);
+			testService.PostJson(id, new TestServiceParam());
+            testService.UploadFile(
+                new FilePathHttpRequestFile(@"E:\asdasdasd.txt"),
+                new FilePathHttpRequestFile(@"E:\asdasdasd.txt")
+            );
+            return "ok";
         }
     }
 
 ```
+
+
+### 为了方便扩展,feign.net配置了一个管道事件,可以方便的自定义请求
+
+
+```csharp
+    /// <summary>
+    /// 工作Pipeline
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
+    public interface IFeignClientPipeline<TService>
+    {
+        bool Enabled { get; set; }
+        event EventHandler<IBuildingRequestEventArgs<TService>> BuildingRequest;
+        event EventHandler<ISendingRequestEventArgs<TService>> SendingRequest;
+        event EventHandler<ICancelRequestEventArgs<TService>> CancelRequest;
+        event EventHandler<IErrorRequestEventArgs<TService>> ErrorRequest;
+        event EventHandler<IReceivingResponseEventArgs<TService>> ReceivingResponse;
+        event EventHandler<IInitializingEventArgs<TService>> Initializing;
+        event EventHandler<IDisposingEventArgs<TService>> Disposing;
+        event EventHandler<IFallbackRequestEventArgs<TService>> FallbackRequest;
+    }
+```
+
+### Options中包含一个全局的管道事件,可以根据参数获取指定服务的管道事件
+
+```csharp
+
+    /// <summary>
+    /// 全局Pipeline
+    /// </summary>
+    public interface IGlobalFeignClientPipeline : IFeignClientPipeline<object>
+    {
+        /// <summary>
+        /// 获取指定的服务Pipeline
+        /// </summary>
+        /// <param name="serviceId"></param>
+        /// <returns></returns>
+        IFeignClientPipeline<object> GetServicePipeline(string serviceId);
+        /// <summary>
+        /// 获取指定的服务Pipeline
+        /// </summary>
+        /// <param name="serviceId"></param>
+        /// <returns></returns>
+        IFeignClientPipeline<object> GetOrAddServicePipeline(string serviceId);
+        /// <summary>
+        /// 获取指定的服务Pipeline
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <returns></returns>
+        IFeignClientPipeline<TService> GetServicePipeline<TService>();
+        /// <summary>
+        /// 获取指定的服务Pipeline
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <returns></returns>
+        IFeignClientPipeline<TService> GetOrAddServicePipeline<TService>();
+    }
+
+```
+
+关于管道的详细说明请参考文档 https://github.com/daixinkai/feign.net/wiki/Pipeline
+
+
+# Usage
+
+## DependencyInjection
+
+```csharp
+
+IDependencyInjectionFeignBuilder feignBuilder = services.AddFeignClients(options=>
+{
+    options.Assemblies.Add(typeof(ITestService).Assembly);
+    options.Lifetime = FeignClientLifetime.Singleton;
+    options.IncludeMethodMetadata = true;
+    //````
+});
+
+```
+
+## Autofac
+
+```csharp
+
+ContainerBuilder containerBuilder = new ContainerBuilder();
+IAutofacFeignBuilder feignBuilder = containerBuilder.AddFeignClients(options=>
+{
+    options.Assemblies.Add(typeof(ITestService).Assembly);
+    options.Lifetime = FeignClientLifetime.Singleton;
+    options.IncludeMethodMetadata = true;
+    //````
+});
+
+```
+
+## CastleWindsor
+
+```csharp
+IWindsorContainer windsorContainer = new WindsorContainer();
+ICastleWindsorFeignBuilder feignBuilder = services.AddFeignClients(options=>
+{
+    options.Assemblies.Add(typeof(ITestService).Assembly);
+    options.Lifetime = FeignClientLifetime.Singleton;
+    options.IncludeMethodMetadata = true;
+    //````
+});
+
+```
+
+
+
+
+
+## 扩展组件
+
+[Steeltoe](https://github.com/daixinkai/feign.net/tree/master/src/Feign.Steeltoe/README.md) -- enable .NET Core and .NET Framework apps to easily leverage Netflix Eureka, Hystrix, Spring Cloud Config Server, and Cloud Foundry services:https://github.com/SteeltoeOSS/Samples
+
+[Polly](https://github.com/daixinkai/feign.net/tree/master/src/Feign.Polly/README.md) -- Polly是一个被.NET基金会认可的弹性和瞬态故障处理库，允许我们以非常顺畅和线程安全的方式来执诸如行重试，断路，超时，故障恢复等策略 https://github.com/App-vNext/Polly
+
+
+# 未完待续
+

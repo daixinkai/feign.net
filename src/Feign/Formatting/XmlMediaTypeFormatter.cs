@@ -61,5 +61,14 @@ namespace Feign.Formatting
                 }
             }
         }
+
+        public TResult GetResult<TResult>(Stream stream, Encoding encoding)
+        {
+            using (StreamReader sr = new StreamReader(stream, encoding))
+            {
+                XmlSerializer xz = new XmlSerializer(typeof(TResult));
+                return (TResult)xz.Deserialize(sr);
+            }
+        }
     }
 }

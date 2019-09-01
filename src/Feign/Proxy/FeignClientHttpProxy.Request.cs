@@ -215,7 +215,7 @@ namespace Feign.Proxy
                  responseMessage.RequestMessage as FeignHttpRequestMessage,
                  new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType.ToString()}' not supported"));
             }
-            return mediaTypeFormatter.GetResult<TResult>(responseMessage.Content.ReadAsByteArrayAsync().GetResult(), FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType));
+            return mediaTypeFormatter.GetResult<TResult>(responseMessage.Content.ReadAsStreamAsync().GetResult(), FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType));
         }
         /// <summary>
         /// 获取响应结果
@@ -264,7 +264,7 @@ namespace Feign.Proxy
                      new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType.ToString()}' not supported"));
             }
             return mediaTypeFormatter.GetResult<TResult>(
-                await responseMessage.Content.ReadAsByteArrayAsync()
+                await responseMessage.Content.ReadAsStreamAsync()
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
@@ -339,6 +339,10 @@ namespace Feign.Proxy
 
         private string BuildUri(string uri)
         {
+            if (BaseUrl == "")
+            {
+                return uri;
+            }
             if (uri.StartsWith("/"))
             {
                 return BaseUrl + uri;

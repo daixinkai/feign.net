@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -22,6 +23,11 @@ namespace Feign.Formatting
         public TResult GetResult<TResult>(byte[] buffer, Encoding encoding)
         {
             throw new NotSupportedException();
+        }
+
+        public TResult GetResult<TResult>(Stream stream, Encoding encoding)
+        {
+            throw new NotImplementedException();
         }
     }
 }

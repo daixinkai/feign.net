@@ -38,6 +38,7 @@ namespace Feign.Tests.NET45
             IFeignBuilder feignBuilder = containerBuilder.AddFeignClients(options =>
             {
                 options.Assemblies.Add(typeof(ITestService).Assembly);
+                options.Lifetime = FeignClientLifetime.Singleton;
                 options.FeignClientPipeline.ReceivingQueryResult();
             });
 

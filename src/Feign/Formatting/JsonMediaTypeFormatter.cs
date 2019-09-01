@@ -27,6 +27,11 @@ namespace Feign.Formatting
             return Newtonsoft.Json.JsonConvert.DeserializeObject<TResult>(json);
         }
 
-
+        public TResult GetResult<TResult>(Stream stream, Encoding encoding)
+        {
+            byte[] buffer = new byte[stream.Length];
+            stream.Read(buffer, 0, buffer.Length);
+            return GetResult<TResult>(buffer, encoding);
+        }
     }
 }

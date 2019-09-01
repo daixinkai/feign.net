@@ -10,10 +10,11 @@ namespace Feign.Tests
 {
     [CustomFeignClient("yun-platform-service-provider"
         , Fallback = typeof(TestServiceFallback)
-        //, FallbackFactory = typeof(TestServiceFallbackFactory)
-        //, Url = "http://localhost:8802/"
-        //, Url = "http://10.1.5.90:8802/"
-        //, Url = "http://localhost:62088/"
+         //, FallbackFactory = typeof(TestServiceFallbackFactory)
+         //, Url = "http://localhost:8802/"
+         //, Url = "http://10.1.5.90:8802/"
+         //, Url = "http://localhost:62088/"
+         //, Url = ""
         )]
     //[RequestMapping("/organizations")]
     public interface ITestService
@@ -56,6 +57,7 @@ namespace Feign.Tests
         //[GetMapping("/{id}")]
         //Task<JObject> GetValueAsync([PathVariable]int id, [RequestQuery] TestServiceParam param);
         [RequestMapping("/{id}")]
+        //[RequestMapping("http://www.baidu.com")]
         void GetValueVoid([PathVariable]int id, [RequestParam] string test, [RequestParam] TestServiceParam param);
 
         [RequestMapping("/{id}")]

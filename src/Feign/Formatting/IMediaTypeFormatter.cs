@@ -15,6 +15,7 @@ namespace Feign.Formatting
     public interface IMediaTypeFormatter
     {
         string MediaType { get; }
-        TResult GetResult<TResult>(byte[] buffer, Encoding encoding);
+        //TResult GetResult<TResult>(byte[] buffer, Encoding encoding);
+        TResult GetResult<TResult>(Stream stream, Encoding encoding);
     }
 }
