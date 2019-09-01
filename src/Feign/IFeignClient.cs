@@ -21,6 +21,13 @@ namespace Feign
     /// <typeparam name="TService"></typeparam>
     public interface IFeignClient<out TService> : IFeignClient
     {
+        /// <summary>
+        /// 获取服务对象
+        /// </summary>
         TService Service { get; }
+        /// <summary>
+        /// 获取服务类型
+        /// </summary>
+        Type ServiceType { get; }
     }
 }

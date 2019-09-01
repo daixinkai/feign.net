@@ -19,9 +19,9 @@ namespace Feign
         {
         }
         /// <summary>
-        /// 获取HttpClient
+        /// 获取或设置HttpClient
         /// </summary>
-        public HttpClient HttpClient { get; set; }
+        public FeignHttpClient HttpClient { get; set; }
 
     }
 }

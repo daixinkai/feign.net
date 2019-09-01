@@ -27,7 +27,7 @@ namespace Feign.Proxy
             ServiceDiscoveryHttpClientHandler<TService> serviceDiscoveryHttpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, serviceDiscovery, cacheProvider, _logger);
             serviceDiscoveryHttpClientHandler.ShouldResolveService = string.IsNullOrWhiteSpace(Url);
             serviceDiscoveryHttpClientHandler.AllowAutoRedirect = false;
-            HttpClient = new HttpClient(serviceDiscoveryHttpClientHandler);
+            HttpClient = new FeignHttpClient(new FeignDelegatingHandler(serviceDiscoveryHttpClientHandler));
             string baseUrl = serviceDiscoveryHttpClientHandler.ShouldResolveService ? ServiceId ?? "" : Url;
             if (!baseUrl.StartsWith("http"))
             {
@@ -48,7 +48,6 @@ namespace Feign.Proxy
                     baseUrl += "/" + BaseUri;
                 }
             }
-
             if (baseUrl.EndsWith("/"))
             {
                 baseUrl = baseUrl.TrimEnd('/');
@@ -86,6 +85,9 @@ namespace Feign.Proxy
         protected IFeignOptions FeignOptions => _feignOptions;
 
         TService IFeignClient<TService>.Service { get { return this as TService; } }
+
+        Type IFeignClient<TService>.ServiceType { get { return typeof(TService); } }
+
         /// <summary>
         /// 获取服务的 serviceId
         /// </summary>
@@ -105,7 +107,7 @@ namespace Feign.Proxy
 
         protected string BaseUrl { get; }
 
-        protected HttpClient HttpClient { get; }
+        protected FeignHttpClient HttpClient { get; }
 
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用
@@ -160,7 +162,7 @@ namespace Feign.Proxy
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-            
+
             return FeignClientUtils.ReplaceRequestQuery<T>(_feignOptions.Converters, uri, name, value);
         }
         #endregion

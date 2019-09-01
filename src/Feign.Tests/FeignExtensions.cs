@@ -52,7 +52,7 @@ namespace Feign.Tests
             };
             feignBuilder.Options.FeignClientPipeline.Initializing += (sender, e) =>
             {
-
+                
             };
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").Initializing += (sender, e) =>
             {
@@ -109,7 +109,7 @@ namespace Feign.Tests
             feignBuilder.Options.FeignClientPipeline.SendingRequest += FeignClientPipeline_SendingRequest;
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").ReceivingResponse += (sender, e) =>
             {
-
+                
             };
             feignBuilder.Options.FeignClientPipeline.ReceivingQueryResult();
             feignBuilder.Options.FeignClientPipeline.CancelRequest += (sender, e) =>

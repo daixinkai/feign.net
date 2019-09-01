@@ -69,7 +69,11 @@ namespace Feign.Proxy
         {
             try
             {
-                await SendAsync(request);
+                await SendAsync(request)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
             catch (TerminatedRequestException)
             {
@@ -85,14 +89,22 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                await fallback.Invoke();
+                await fallback.Invoke()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request, Func<Task<TResult>> fallback)
         {
             try
             {
-                return await SendAsync<TResult>(request);
+                return await SendAsync<TResult>(request)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
             catch (TerminatedRequestException)
             {
@@ -108,7 +120,11 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                return await fallback.Invoke();
+                return await fallback.Invoke()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected virtual void Send(FeignClientHttpRequest request, Action fallback)

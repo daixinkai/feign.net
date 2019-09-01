@@ -96,7 +96,11 @@ namespace Feign.Proxy
                 _feignClient.OnCancelRequest(cancelArgs);
                 #endregion
 
-                return await base.SendAsync(request, cancellationToken);
+                return await base.SendAsync(request, cancellationToken)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
             catch (Exception e)
             {

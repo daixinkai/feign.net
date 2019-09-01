@@ -18,6 +18,6 @@ namespace Feign
         /// <summary>
         /// 获取HttpClient
         /// </summary>
-        HttpClient HttpClient { get; set; }
+        FeignHttpClient HttpClient { get; set; }
     }
 }

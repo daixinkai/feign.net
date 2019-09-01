@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 using Steeltoe.Discovery.Client;
 
 namespace Feign.TestWeb
@@ -41,7 +42,17 @@ namespace Feign.TestWeb
                 .AddTestFeignClients()
                 //.AddSteeltoeServiceDiscovery()
                 ;
-            builder.AddPolly(null);
+            builder.AddPolly(options =>
+            {
+                options.Configure(asyncPolicy =>
+                {
+                    return Policy.WrapAsync(
+                       asyncPolicy,
+                       Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
+                    );
+                });
+
+            });
 
         }
 

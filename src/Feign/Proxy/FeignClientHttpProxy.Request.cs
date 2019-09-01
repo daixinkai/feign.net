@@ -47,13 +47,29 @@ namespace Feign.Proxy
 
         protected virtual async Task SendAsync(FeignClientHttpRequest request)
         {
-            HttpResponseMessage response = await GetResponseMessageAsync(request);
-            await GetResultAsync<string>(request, response);
+            HttpResponseMessage response = await GetResponseMessageAsync(request)
+#if  CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                ;
+            await GetResultAsync<string>(request, response)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                ;
         }
         protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request)
         {
-            HttpResponseMessage response = await GetResponseMessageAsync(request);
-            return await GetResultAsync<TResult>(request, response);
+            HttpResponseMessage response = await GetResponseMessageAsync(request)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                ;
+            return await GetResultAsync<TResult>(request, response)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                ;
         }
         protected virtual void Send(FeignClientHttpRequest request)
         {
@@ -98,7 +114,11 @@ namespace Feign.Proxy
         {
             try
             {
-                return await SendAsyncInternal(request);
+                return await SendAsyncInternal(request)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
             catch (TerminatedRequestException)
             {
@@ -146,7 +166,11 @@ namespace Feign.Proxy
         {
             if (!responseMessage.IsSuccessStatusCode)
             {
-                string content = await responseMessage.Content.ReadAsStringAsync();
+                string content = await responseMessage.Content.ReadAsStringAsync()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
                 _logger?.LogError($"request on \"{responseMessage.RequestMessage.RequestUri.ToString()}\" status code : " + responseMessage.StatusCode.GetHashCode() + " content : " + content);
                 throw new FeignHttpRequestException(this,
                     responseMessage.RequestMessage as FeignHttpRequestMessage,
@@ -215,14 +239,22 @@ namespace Feign.Proxy
                 return receivingResponseEventArgs.GetResult<TResult>();
             }
             #endregion
-            await EnsureSuccessAsync(request, responseMessage);
+            await EnsureSuccessAsync(request, responseMessage)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                ;
             if (typeof(TResult) == typeof(Task))
             {
                 return (TResult)(object)TaskEx.CompletedTask;
             }
             if (typeof(TResult) == typeof(string))
             {
-                return (TResult)(object)await responseMessage.Content.ReadAsStringAsync();
+                return (TResult)(object)await responseMessage.Content.ReadAsStringAsync()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
             IMediaTypeFormatter mediaTypeFormatter = _feignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
             if (mediaTypeFormatter == null)
@@ -231,7 +263,14 @@ namespace Feign.Proxy
                      responseMessage.RequestMessage as FeignHttpRequestMessage,
                      new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType.ToString()}' not supported"));
             }
-            return mediaTypeFormatter.GetResult<TResult>(await responseMessage.Content.ReadAsByteArrayAsync(), FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType));
+            return mediaTypeFormatter.GetResult<TResult>(
+                await responseMessage.Content.ReadAsByteArrayAsync()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                ,
+                FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType)
+                );
         }
 
 
