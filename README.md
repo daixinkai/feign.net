@@ -199,9 +199,9 @@ ICastleWindsorFeignBuilder feignBuilder = services.AddFeignClients(options=>
 
 ## 扩展组件
 
-[Steeltoe](https://github.com/daixinkai/feign.net/tree/master/src/Feign.Steeltoe/README.md) -- enable .NET Core and .NET Framework apps to easily leverage Netflix Eureka, Hystrix, Spring Cloud Config Server, and Cloud Foundry services:https://github.com/SteeltoeOSS/Samples
+[Steeltoe](https://github.com/daixinkai/feign.net/tree/master/src/Feign.Steeltoe) -- enable .NET Core and .NET Framework apps to easily leverage Netflix Eureka, Hystrix, Spring Cloud Config Server, and Cloud Foundry services:https://github.com/SteeltoeOSS/Samples
 
-[Polly](https://github.com/daixinkai/feign.net/tree/master/src/Feign.Polly/README.md) -- Polly是一个被.NET基金会认可的弹性和瞬态故障处理库，允许我们以非常顺畅和线程安全的方式来执诸如行重试，断路，超时，故障恢复等策略 https://github.com/App-vNext/Polly
+[Polly](https://github.com/daixinkai/feign.net/tree/master/src/Feign.Polly) -- Polly是一个被.NET基金会认可的弹性和瞬态故障处理库，允许我们以非常顺畅和线程安全的方式来执诸如行重试，断路，超时，故障恢复等策略 https://github.com/App-vNext/Polly
 
 
 # 未完待续
