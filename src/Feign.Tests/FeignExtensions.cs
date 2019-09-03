@@ -26,6 +26,7 @@ namespace Feign.Tests
             };
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
             {
+                var types = feignBuilder.Options.Types;
                 if (e.RequestMessage.Content != null)
                 {
                     MultipartFormDataContent multipartFormDataContent = e.RequestMessage.Content as MultipartFormDataContent;

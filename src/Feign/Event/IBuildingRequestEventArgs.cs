@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Request;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,9 @@ namespace Feign
         /// 获取请求头
         /// </summary>
         IDictionary<string, string> Headers { get; }
+        /// <summary>
+        /// 获取请求
+        /// </summary>
+        FeignClientHttpRequest Request { get; }
     }
 }

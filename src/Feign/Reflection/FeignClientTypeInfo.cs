@@ -14,6 +14,7 @@ namespace Feign.Reflection
         public FeignClientTypeInfo(Type serviceType)
         {
             ServiceType = serviceType;
+            Methods = new List<FeignClientMethodInfo>();
         }
         /// <summary>
         /// 获取服务类型
@@ -27,6 +28,10 @@ namespace Feign.Reflection
         /// 获取或设置生成的类型
         /// </summary>
         public Type BuildType { get; set; }
+        /// <summary>
+        /// 获取方法集合
+        /// </summary>
+        public List<FeignClientMethodInfo> Methods { get; }
 
     }
 }

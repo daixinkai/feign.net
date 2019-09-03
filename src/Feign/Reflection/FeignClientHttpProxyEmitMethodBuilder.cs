@@ -41,13 +41,18 @@ namespace Feign.Reflection
 
         #endregion
 
-        public void BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute)
+        public FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute)
         {
-            BuildMethod(typeBuilder, serviceType, method, feignClientAttribute, GetRequestMappingAttribute(method));
+            return BuildMethod(typeBuilder, serviceType, method, feignClientAttribute, GetRequestMappingAttribute(method));
         }
 
-        void BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute, RequestMappingBaseAttribute requestMapping)
+        FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute, RequestMappingBaseAttribute requestMapping)
         {
+            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo
+            {
+                MethodId = GetMethodId(method),
+                MethodMetadata = method
+            };
             //创建方法
             MethodBuilder methodBuilder = CreateMethodBuilder(typeBuilder, method);
             ILGenerator iLGenerator = methodBuilder.GetILGenerator();
@@ -56,7 +61,11 @@ namespace Feign.Reflection
                 //如果找不到mapping,抛出 NotSupportedException 异常
                 iLGenerator.Emit(OpCodes.Newobj, typeof(NotSupportedException).GetConstructor(Type.EmptyTypes));
                 iLGenerator.Emit(OpCodes.Throw);
-                return;
+                return new FeignClientMethodInfo
+                {
+                    MethodId = GetMethodId(method),
+                    MethodMetadata = method
+                };
             }
             string uri = requestMapping.Value ?? "";
             LocalBuilder local_Uri = iLGenerator.DeclareLocal(typeof(string)); // 定义uri 
@@ -64,7 +73,8 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ldstr, uri);
             iLGenerator.Emit(OpCodes.Stloc, local_Uri);
             List<EmitRequestContent> emitRequestContents = EmitParameter(typeBuilder, iLGenerator, method, local_Uri, local_OldValue);
-            EmitCallMethod(typeBuilder, methodBuilder, iLGenerator, serviceType, method, requestMapping, local_Uri, emitRequestContents);
+            EmitCallMethod(typeBuilder, methodBuilder, iLGenerator, serviceType, feignClientMethodInfo, requestMapping, local_Uri, emitRequestContents);
+            return feignClientMethodInfo;
         }
         /// <summary>
         /// 获取调用的Send方法 
@@ -191,16 +201,16 @@ namespace Feign.Reflection
         /// <param name="requestMapping"></param>
         /// <param name="uri"></param>
         /// <param name="emitRequestContents"></param>
-        protected virtual void EmitCallMethod(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, MethodInfo method, RequestMappingBaseAttribute requestMapping, LocalBuilder uri, List<EmitRequestContent> emitRequestContents)
+        protected virtual void EmitCallMethod(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, FeignClientMethodInfo feignClientMethodInfo, RequestMappingBaseAttribute requestMapping, LocalBuilder uri, List<EmitRequestContent> emitRequestContents)
         {
             //得到Send方法
-            var invokeMethod = GetInvokeMethod(serviceType, method, requestMapping);
+            var invokeMethod = GetInvokeMethod(serviceType, feignClientMethodInfo.MethodMetadata, requestMapping);
             if (emitRequestContents != null && emitRequestContents.Count > 0 && !SupportRequestContent(invokeMethod, requestMapping))
             {
                 throw new NotSupportedException("不支持RequestBody或者RequestForm");
             }
             //定义请求的详情 FeignClientHttpRequest
-            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, method);
+            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo);
             iLGenerator.Emit(OpCodes.Ldarg_0);  //this
             iLGenerator.Emit(OpCodes.Ldloc, feignClientRequest);
             iLGenerator.Emit(OpCodes.Call, invokeMethod);
@@ -217,7 +227,7 @@ namespace Feign.Reflection
         /// <param name="emitRequestContents"></param>
         /// <param name="methodInfo"></param>
         /// <returns></returns>
-        protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent> emitRequestContents, MethodInfo methodInfo)
+        protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent> emitRequestContents, FeignClientMethodInfo feignClientMethodInfo)
         {
             LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(FeignClientHttpRequest));
             // baseUrl
@@ -278,11 +288,16 @@ namespace Feign.Reflection
             {
                 iLGenerator.Emit(OpCodes.Ldnull);
             }
-            //method
-            // method=null
-            LocalBuilder methodInfoLocalBuilder = iLGenerator.DeclareLocal(typeof(MethodInfo));
-            iLGenerator.Emit(OpCodes.Ldnull);
-            iLGenerator.Emit(OpCodes.Stloc, methodInfoLocalBuilder);
+            #region new
+
+            //feignClientMethodInfo
+            //feignClientMethodInfo=null
+            LocalBuilder feignClientMethodInfoLocalBuilder = iLGenerator.DeclareLocal(typeof(FeignClientMethodInfo));
+            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientMethodInfo).GetConstructors()[0]);
+            iLGenerator.Emit(OpCodes.Stloc, feignClientMethodInfoLocalBuilder);
+            iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
+            iLGenerator.Emit(OpCodes.Ldstr, feignClientMethodInfo.MethodId);
+            iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodId").SetMethod);
             Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
 
             #region if (base.FeignOptions.IncludeMethodMetadata) set the call method
@@ -295,16 +310,57 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ldc_I4, 1);
             iLGenerator.Emit(OpCodes.Ceq);
             iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);
-            ReflectionHelper.EmitMethodInfo(iLGenerator, methodInfo);
-            iLGenerator.Emit(OpCodes.Stloc, methodInfoLocalBuilder);
-
+            iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
+            ReflectionHelper.EmitMethodInfo(iLGenerator, feignClientMethodInfo.MethodMetadata);
+            iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodMetadata").SetMethod);
             #endregion
             //处理下 if GOTO
             iLGenerator.MarkLabel(newFeingClientRequestLabel);
-            iLGenerator.Emit(OpCodes.Ldloc, methodInfoLocalBuilder);
+            iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
             iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetConstructors()[0]);
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
             return localBuilder;
+
+            #endregion
+
+            #region old
+            ////method
+            //// method=null
+            //LocalBuilder methodInfoLocalBuilder = iLGenerator.DeclareLocal(typeof(MethodInfo));
+            //iLGenerator.Emit(OpCodes.Ldnull);
+            //iLGenerator.Emit(OpCodes.Stloc, methodInfoLocalBuilder);
+            //Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
+
+            //#region if (base.FeignOptions.IncludeMethodMetadata) set the call method
+            ////这里获取方法元数据
+            //PropertyInfo feignOptionsProperty = typeBuilder.BaseType.GetProperty("FeignOptions", BindingFlags.Instance | BindingFlags.NonPublic);
+            //PropertyInfo includeMethodMetadataProperty = feignOptionsProperty.PropertyType.GetProperty("IncludeMethodMetadata");
+            //iLGenerator.Emit(OpCodes.Ldarg_0);
+            //iLGenerator.Emit(OpCodes.Call, feignOptionsProperty.GetMethod);
+            //iLGenerator.Emit(OpCodes.Call, includeMethodMetadataProperty.GetMethod);
+            //iLGenerator.Emit(OpCodes.Ldc_I4, 1);
+            //iLGenerator.Emit(OpCodes.Ceq);
+            //iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);
+            //ReflectionHelper.EmitMethodInfo(iLGenerator, methodInfo);
+            //iLGenerator.Emit(OpCodes.Stloc, methodInfoLocalBuilder);
+
+            //#endregion
+            ////处理下 if GOTO
+            //iLGenerator.MarkLabel(newFeingClientRequestLabel);
+            //iLGenerator.Emit(OpCodes.Ldloc, methodInfoLocalBuilder);
+            //iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetConstructors()[0]);
+            //iLGenerator.Emit(OpCodes.Stloc, localBuilder);
+            //return localBuilder; 
+            #endregion
+        }
+
+        string GetMethodId(MethodInfo methodInfo)
+        {
+            if (methodInfo.IsDefined(typeof(MethodIdAttribute)))
+            {
+                return methodInfo.GetCustomAttribute<MethodIdAttribute>().MethodId;
+            }
+            return methodInfo.Name + "(" + string.Join(",", methodInfo.GetParameters().Select(s => s.ParameterType.FullName)) + ")";
         }
 
         void EmitFeignClientRequestContent(ILGenerator iLGenerator, EmitRequestContent emitRequestContent, LocalBuilder localBuilder)

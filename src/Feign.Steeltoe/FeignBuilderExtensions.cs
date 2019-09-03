@@ -7,14 +7,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Feign
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class FeignBuilderExtensions
     {
-        public static IFeignBuilder AddSteeltoeServiceDiscovery(this IFeignBuilder feignBuilder)
+        public static T AddSteeltoe<T>(this T feignBuilder) where T : IFeignBuilder
         {
-            return feignBuilder.AddServiceDiscovery<SteeltoeServiceDiscovery>();
+            feignBuilder.AddServiceDiscovery<SteeltoeServiceDiscovery>();
+            return feignBuilder;
         }
+
     }
 }

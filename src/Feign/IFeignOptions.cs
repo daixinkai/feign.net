@@ -1,4 +1,5 @@
 ﻿using Feign.Formatting;
+using Feign.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,5 +35,9 @@ namespace Feign
         /// 获取或设置一个值,指示是否需要包含声明服务的方法元数据 默认 : false
         /// </summary>
         bool IncludeMethodMetadata { get; set; }
+        /// <summary>
+        /// 获取生成的类型
+        /// </summary>
+        IList<FeignClientTypeInfo> Types { get; }
     }
 }

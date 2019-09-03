@@ -31,14 +31,20 @@ namespace Feign.Polly
 
         public void Configure(string serviceId, Func<IAsyncPolicy, IAsyncPolicy> setup)
         {
-            var setups = _serviceIdPolicySetupsMap.GetOrAdd(serviceId, key => new List<Func<IAsyncPolicy, IAsyncPolicy>>());
-            setups.Add(setup);
+            if (setup != null)
+            {
+                var setups = _serviceIdPolicySetupsMap.GetOrAdd(serviceId, key => new List<Func<IAsyncPolicy, IAsyncPolicy>>());
+                setups.Add(setup);
+            }
         }
 
         public void Configure<TService>(Func<IAsyncPolicy, IAsyncPolicy> setup)
         {
-            var setups = _serviceTypePolicySetupsMap.GetOrAdd(typeof(TService), key => new List<Func<IAsyncPolicy, IAsyncPolicy>>());
-            setups.Add(setup);
+            if (setup != null)
+            {
+                var setups = _serviceTypePolicySetupsMap.GetOrAdd(typeof(TService), key => new List<Func<IAsyncPolicy, IAsyncPolicy>>());
+                setups.Add(setup);
+            }
         }
 
         public void ConfigureAsync(Func<IAsyncPolicy, Task<IAsyncPolicy>> setup)
@@ -51,14 +57,20 @@ namespace Feign.Polly
 
         public void ConfigureAsync(string serviceId, Func<IAsyncPolicy, Task<IAsyncPolicy>> setup)
         {
-            var setups = _serviceIdPolicyAsyncSetupsMap.GetOrAdd(serviceId, key => new List<Func<IAsyncPolicy, Task<IAsyncPolicy>>>());
-            setups.Add(setup);
+            if (setup != null)
+            {
+                var setups = _serviceIdPolicyAsyncSetupsMap.GetOrAdd(serviceId, key => new List<Func<IAsyncPolicy, Task<IAsyncPolicy>>>());
+                setups.Add(setup);
+            }
         }
 
         public void ConfigureAsync<TService>(Func<IAsyncPolicy, Task<IAsyncPolicy>> setup)
         {
-            var setups = _serviceTypePolicyAsyncSetupsMap.GetOrAdd(typeof(TService), key => new List<Func<IAsyncPolicy, Task<IAsyncPolicy>>>());
-            setups.Add(setup);
+            if (setup != null)
+            {
+                var setups = _serviceTypePolicyAsyncSetupsMap.GetOrAdd(typeof(TService), key => new List<Func<IAsyncPolicy, Task<IAsyncPolicy>>>());
+                setups.Add(setup);
+            }
         }
 
         internal void SetupAllPolly(IFeignClient<object> feignClient, PollyDelegatingHandler pollyDelegatingHandler)

@@ -1,4 +1,5 @@
 ﻿using Feign.Formatting;
+using Feign.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Feign
             MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter() { MediaType = Constants.MediaTypes.TEXT_XML });
             FeignClientPipeline = new GlobalFeignClientPipeline();
             Lifetime = FeignClientLifetime.Transient;
+            Types = new List<FeignClientTypeInfo>();
         }
         public IList<Assembly> Assemblies { get; }
         public ConverterCollection Converters { get; }
@@ -30,6 +32,8 @@ namespace Feign
         public IGlobalFeignClientPipeline FeignClientPipeline { get; }
         public FeignClientLifetime Lifetime { get; set; }
         public bool IncludeMethodMetadata { get; set; }
+
+        public IList<FeignClientTypeInfo> Types { get; }
 
     }
 }

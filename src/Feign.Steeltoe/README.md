@@ -7,6 +7,6 @@ services.AddDiscoveryClient(Configuration);
 
 var builder = services.AddFeignClients();
 
-builder.AddSteeltoeServiceDiscovery();
+builder.AddSteeltoe();
 
 ```

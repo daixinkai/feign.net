@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Request;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,11 +11,12 @@ namespace Feign
     /// <typeparam name="TService"></typeparam>
     public sealed class BuildingRequestEventArgs<TService> : FeignClientEventArgs<TService>, IBuildingRequestEventArgs<TService>
     {
-        internal BuildingRequestEventArgs(IFeignClient<TService> feignClient, string method, Uri requestUri, IDictionary<string, string> headers) : base(feignClient)
+        internal BuildingRequestEventArgs(IFeignClient<TService> feignClient, string method, Uri requestUri, IDictionary<string, string> headers, FeignClientHttpRequest request) : base(feignClient)
         {
             Method = method;
             RequestUri = requestUri;
             Headers = headers;
+            Request = request;
         }
         /// <summary>
         /// 获取http method
@@ -28,6 +30,10 @@ namespace Feign
         /// 获取请求头
         /// </summary>
         public IDictionary<string, string> Headers { get; }
+        /// <summary>
+        /// 获取请求
+        /// </summary>
+        public FeignClientHttpRequest Request { get; }
     }
 
 }

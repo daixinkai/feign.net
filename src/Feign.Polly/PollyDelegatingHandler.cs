@@ -24,13 +24,13 @@ namespace Feign.Polly
             _asyncPolicy = Policy.NoOpAsync();
         }
 
-        internal IAsyncPolicy  _asyncPolicy;
+        internal IAsyncPolicy _asyncPolicy;
 
         public IAsyncPolicy AsyncPolicy => _asyncPolicy;
 
-        protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            return await _asyncPolicy.ExecuteAsync(() => base.SendAsync(request, cancellationToken));
+            return _asyncPolicy.ExecuteAsync(() => base.SendAsync(request, cancellationToken));
         }
     }
 }

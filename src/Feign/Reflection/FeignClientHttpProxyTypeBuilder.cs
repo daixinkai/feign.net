@@ -99,7 +99,8 @@ namespace Feign.Reflection
             foreach (var method in serviceType.GetMethods())
             {
                 //生成方法
-                methodBuilder.BuildMethod(typeBuilder, serviceType, method, feignClientAttribute);
+                var buildMethod = methodBuilder.BuildMethod(typeBuilder, serviceType, method, feignClientAttribute);
+                feignClientTypeInfo.Methods.Add(buildMethod);
             }
             var typeInfo = typeBuilder.CreateTypeInfo();
             Type type = typeInfo.AsType();

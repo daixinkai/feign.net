@@ -11,6 +11,6 @@ namespace Feign.Reflection
     /// </summary>
     internal interface IMethodBuilder
     {
-        void BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute);
+        FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute);
     }
 }

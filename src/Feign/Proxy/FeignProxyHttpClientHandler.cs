@@ -57,7 +57,7 @@ namespace Feign.Proxy
             {
 
                 #region BuildingRequest
-                BuildingRequestEventArgs<TService> buildingArgs = new BuildingRequestEventArgs<TService>(_feignClient, request.Method.ToString(), request.RequestUri, new Dictionary<string, string>());
+                BuildingRequestEventArgs<TService> buildingArgs = new BuildingRequestEventArgs<TService>(_feignClient, request.Method.ToString(), request.RequestUri, new Dictionary<string, string>(), request.FeignClientRequest);
                 _feignClient.OnBuildingRequest(buildingArgs);
                 //request.Method = new HttpMethod(buildingArgs.Method);
                 request.RequestUri = buildingArgs.RequestUri;

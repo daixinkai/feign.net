@@ -1,4 +1,5 @@
 ﻿using Feign.Internal;
+using Feign.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Feign.Request
     /// </summary>
     public class FeignClientHttpRequest
     {
-        public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType, FeignClientHttpRequestContent requestContent, MethodInfo method)
+        public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType, FeignClientHttpRequestContent requestContent, FeignClientMethodInfo method)
         {
             BaseUrl = baseUrl;
             MappingUri = mappingUri;
@@ -63,10 +64,13 @@ namespace Feign.Request
         /// 获取RequestContent
         /// </summary>
         public FeignClientHttpRequestContent RequestContent { get; }
-        /// <summary>
-        /// 获取方法元数据
-        /// </summary>
-        public MethodInfo Method { get; }
+        ///// <summary>
+        ///// 获取方法元数据
+        ///// </summary>
+        //public MethodInfo Method { get; }
+
+        public FeignClientMethodInfo Method { get; set; }
+
         /// <summary>
         /// 获取随请求一起发送的HttpContent
         /// </summary>
