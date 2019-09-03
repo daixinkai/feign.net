@@ -9,7 +9,7 @@ namespace Feign.Fallback
     /// <summary>
     /// 一个接口,表示支持降级操作的服务对象
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TService"></typeparam>
     public interface IFallbackFactoryFeignClient<TService> : IFeignClient<TService>
     {
         /// <summary>

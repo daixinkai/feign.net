@@ -17,11 +17,10 @@ namespace Feign
     public static class FeignBuilderExtensions
     {
         /// <summary>
-        /// 添加FeignClients
+        /// 添加默认FeignClients
         /// </summary>
         /// <typeparam name="TFeignBuilder"></typeparam>
         /// <param name="feignBuilder"></param>
-        /// <param name="options"></param>
         /// <returns></returns>
         public static TFeignBuilder AddDefaultFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder) where TFeignBuilder : IFeignBuilder
         {

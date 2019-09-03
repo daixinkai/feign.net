@@ -3,12 +3,22 @@
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0;</TargetFrameworks>
     <AssemblyVersion>1.1.1.0</AssemblyVersion>
-    <Version>1.1.1</Version>
+    <Version>1.2.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
     <Authors>daixinkai</Authors>
     <PackageId>Feign.Polly</PackageId>
-    <Description>spring cloud feign for .net</Description>
+    <Description>feign Polly Component</Description>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

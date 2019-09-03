@@ -197,7 +197,7 @@ namespace Feign.Reflection
         /// <param name="methodBuilder"></param>
         /// <param name="iLGenerator"></param>
         /// <param name="serviceType"></param>
-        /// <param name="method"></param>
+        /// <param name="feignClientMethodInfo"></param>
         /// <param name="requestMapping"></param>
         /// <param name="uri"></param>
         /// <param name="emitRequestContents"></param>
@@ -225,7 +225,7 @@ namespace Feign.Reflection
         /// <param name="uri"></param>
         /// <param name="requestMapping"></param>
         /// <param name="emitRequestContents"></param>
-        /// <param name="methodInfo"></param>
+        /// <param name="feignClientMethodInfo"></param>
         /// <returns></returns>
         protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent> emitRequestContents, FeignClientMethodInfo feignClientMethodInfo)
         {

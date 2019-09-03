@@ -24,7 +24,7 @@ namespace Feign.Discovery
         private ICacheProvider _serviceCacheProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceDiscoveryHttpClientHandler"/> class.
+        /// Initializes a new instance of the <see cref="ServiceDiscoveryHttpClientHandler{TService}"/> class.
         /// </summary>
         public ServiceDiscoveryHttpClientHandler(FeignClientHttpProxy<TService> feignClient, IServiceDiscovery serviceDiscovery, ICacheProvider serviceCacheProvider, ILogger logger) : base(feignClient, logger)
         {

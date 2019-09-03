@@ -34,7 +34,6 @@ namespace Feign
         /// Gets the specified service Pipeline
         /// </summary>
         /// <param name="globalFeignClientPipeline"></param>
-        /// <param name="serviceId"></param>
         /// <returns></returns>
         public static IFeignClientPipeline<TService> Service<TService>(this IGlobalFeignClientPipeline globalFeignClientPipeline)
         {

@@ -54,6 +54,7 @@ namespace Feign
     /// 表示响应请求时提供的参数
     /// </summary>
     /// <typeparam name="TService"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
     public sealed class ReceivingResponseEventArgs<TService, TResult> : ReceivingResponseEventArgs<TService>
     {
         internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, HttpResponseMessage responseMessage) : base(feignClient, responseMessage, typeof(TResult))
