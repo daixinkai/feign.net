@@ -19,7 +19,7 @@
         /// <returns></returns>
         [RequestMapping("/{id}", Method = "GET")]
         //[GetMapping("/{id}")]
-		[MethodId("GetAsync")]
+        [MethodId("GetAsync")]
         Task<string> GetAsync([PathVariable("id")]int id);
 
         /// <summary>
@@ -76,7 +76,7 @@
         public async Task<ActionResult<object>> Get(int id, [FromServices] ITestService testService)
         {
             await testService.GetAsync(id);
-			testService.PostJson(id, new TestServiceParam());
+	        testService.PostJson(id, new TestServiceParam());
             testService.UploadFile(
                 new FilePathHttpRequestFile(@"E:\asdasdasd.txt"),
                 new FilePathHttpRequestFile(@"E:\asdasdasd.txt")
