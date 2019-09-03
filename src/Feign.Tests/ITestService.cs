@@ -27,6 +27,7 @@ namespace Feign.Tests
         //string Get();
 
         [RequestMapping("/{id}/asdasdsad", Method = "POST")]
+        [MethodId("PostValueAsync")]
         Task PostValueAsync();
 
         [RequestMapping("/Values/uploadFile", Method = "POST")]

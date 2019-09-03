@@ -19,6 +19,7 @@
         /// <returns></returns>
         [RequestMapping("/{id}", Method = "GET")]
         //[GetMapping("/{id}")]
+		[MethodId("GetAsync")]
         Task<string> GetAsync([PathVariable("id")]int id);
 
         /// <summary>
