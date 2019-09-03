@@ -3,6 +3,7 @@ using Feign.Internal;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -208,12 +209,16 @@ namespace Feign.Proxy
             {
                 return (TResult)(object)responseMessage.Content.ReadAsStringAsync().GetResult();
             }
+            if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)
+            {
+                return default(TResult);
+            }
             IMediaTypeFormatter mediaTypeFormatter = _feignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
             if (mediaTypeFormatter == null)
             {
                 throw new FeignHttpRequestException(this,
                  responseMessage.RequestMessage as FeignHttpRequestMessage,
-                 new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType.ToString()}' not supported"));
+                 new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
             return mediaTypeFormatter.GetResult<TResult>(responseMessage.Content.ReadAsStreamAsync().GetResult(), FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType));
         }
@@ -256,12 +261,16 @@ namespace Feign.Proxy
 #endif
                     ;
             }
+            if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)
+            {
+                return default(TResult);
+            }
             IMediaTypeFormatter mediaTypeFormatter = _feignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
             if (mediaTypeFormatter == null)
             {
                 throw new FeignHttpRequestException(this,
                      responseMessage.RequestMessage as FeignHttpRequestMessage,
-                     new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType.ToString()}' not supported"));
+                     new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
             return mediaTypeFormatter.GetResult<TResult>(
                 await responseMessage.Content.ReadAsStreamAsync()
