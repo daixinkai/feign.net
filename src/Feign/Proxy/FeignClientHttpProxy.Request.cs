@@ -97,6 +97,10 @@ namespace Feign.Proxy
                 }
                 throw;
             }
+            catch (ServiceResolveFailException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 #region ErrorRequest
@@ -127,6 +131,10 @@ namespace Feign.Proxy
                 {
                     return null;
                 }
+                throw;
+            }
+            catch (ServiceResolveFailException)
+            {
                 throw;
             }
             catch (Exception ex)

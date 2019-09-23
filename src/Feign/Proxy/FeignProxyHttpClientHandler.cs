@@ -36,11 +36,11 @@ namespace Feign.Proxy
         /// <summary>
         /// 查找服务路径
         /// </summary>
-        /// <param name="uri"></param>
+        /// <param name="requestMessage"></param>
         /// <returns></returns>
-        protected virtual Uri LookupRequestUri(Uri uri)
+        protected virtual Uri LookupRequestUri(FeignHttpRequestMessage requestMessage)
         {
-            return uri;
+            return requestMessage.RequestUri;
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -69,7 +69,7 @@ namespace Feign.Proxy
                     }
                 }
                 #endregion
-                request.RequestUri = LookupRequestUri(request.RequestUri);
+                request.RequestUri = LookupRequestUri(request);
                 #region SendingRequest
                 SendingRequestEventArgs<TService> sendingArgs = new SendingRequestEventArgs<TService>(_feignClient, request);
                 _feignClient.OnSendingRequest(sendingArgs);

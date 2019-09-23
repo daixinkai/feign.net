@@ -2,6 +2,7 @@
 using Feign.Internal;
 using Feign.Logging;
 using Feign.Proxy;
+using Feign.Request;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -38,18 +39,28 @@ namespace Feign.Discovery
         public bool ShouldResolveService { get; set; }
 
 
-        protected override Uri LookupRequestUri(Uri uri)
+        protected override Uri LookupRequestUri(FeignHttpRequestMessage requestMessage)
         {
             if (!ShouldResolveService)
             {
-                return uri;
+                return requestMessage.RequestUri;
             }
             if (_serviceDiscovery == null)
             {
-                return uri;
+                ServiceResolveFail(requestMessage);
+                return requestMessage.RequestUri;
             }
-            IList<IServiceInstance> services = _serviceDiscovery.GetServiceInstancesWithCache(uri.Host, _serviceCacheProvider);
-            return _serviceResolve.ResolveService(uri, services);
+            IList<IServiceInstance> services = _serviceDiscovery.GetServiceInstancesWithCache(requestMessage.RequestUri.Host, _serviceCacheProvider);
+            if (services == null || services.Count == 0)
+            {
+                ServiceResolveFail(requestMessage);
+            }
+            return _serviceResolve.ResolveService(requestMessage.RequestUri, services);
+        }
+
+        void ServiceResolveFail(FeignHttpRequestMessage requestMessage)
+        {
+            throw new ServiceResolveFailException($"Resolve service fail : {requestMessage.RequestUri.ToString()}");
         }
 
     }

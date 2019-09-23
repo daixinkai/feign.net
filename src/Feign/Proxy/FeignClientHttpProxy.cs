@@ -97,6 +97,7 @@ namespace Feign.Proxy
         /// 是否响应终止的请求? 此值如果是false的话将继续往上层抛异常
         /// </summary>
         protected virtual bool IsResponseTerminatedRequest => true;
+
         /// <summary>
         /// 获取服务的base uri
         /// </summary>

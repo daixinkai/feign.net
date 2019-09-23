@@ -42,6 +42,7 @@ namespace Feign.TestWeb
                 .AddTestFeignClients()
                 //.AddSteeltoe()
                 ;
+            return;
             builder.AddPolly(options =>
             {
                 options.Configure(asyncPolicy =>

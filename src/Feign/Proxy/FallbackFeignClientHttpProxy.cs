@@ -79,13 +79,17 @@ namespace Feign.Proxy
             {
                 return;
             }
-            catch (Exception)
+            catch (ServiceResolveFailException)
+            {
+                throw;
+            }
+            catch (Exception ex)
             {
                 if (fallback == null)
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback))
+                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
                 {
                     throw;
                 }
@@ -110,13 +114,13 @@ namespace Feign.Proxy
             {
                 return default(TResult);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (fallback == null)
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback))
+                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
                 {
                     throw;
                 }
@@ -137,13 +141,13 @@ namespace Feign.Proxy
             {
                 return;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (fallback == null)
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback))
+                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
                 {
                     throw;
                 }
@@ -160,13 +164,13 @@ namespace Feign.Proxy
             {
                 return default(TResult);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (fallback == null)
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback))
+                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
                 {
                     throw;
                 }
@@ -186,8 +190,9 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="request"></param>
         /// <param name="delegate"></param>
+        /// <param name="serviceResolveFailException"></param>
         /// <returns></returns>
-        bool InvokeFallbackRequestPipeline(FeignClientHttpRequest request, Delegate @delegate)
+        bool InvokeFallbackRequestPipeline(FeignClientHttpRequest request, Delegate @delegate, ServiceResolveFailException serviceResolveFailException)
         {
             IFallbackProxy fallbackProxy = @delegate.Target as IFallbackProxy;
             FallbackRequestEventArgs<TService> eventArgs;
