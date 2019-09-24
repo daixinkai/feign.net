@@ -38,8 +38,6 @@ namespace Feign.Discovery
 
         public bool ShouldResolveService { get; set; }
 
-        public bool UseServiceDiscoveryCache { get; set; }
-
 
         protected override Uri LookupRequestUri(FeignHttpRequestMessage requestMessage)
         {
