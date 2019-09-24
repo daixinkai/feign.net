@@ -38,6 +38,8 @@ namespace Feign.Discovery
 
         public bool ShouldResolveService { get; set; }
 
+        public bool UseServiceDiscoveryCache { get; set; }
+
 
         protected override Uri LookupRequestUri(FeignHttpRequestMessage requestMessage)
         {
@@ -50,7 +52,8 @@ namespace Feign.Discovery
                 ServiceResolveFail(requestMessage);
                 return requestMessage.RequestUri;
             }
-            IList<IServiceInstance> services = _serviceDiscovery.GetServiceInstancesWithCache(requestMessage.RequestUri.Host, _serviceCacheProvider);
+
+            IList<IServiceInstance> services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ? _serviceDiscovery.GetServiceInstancesWithCache(requestMessage.RequestUri.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value) : _serviceDiscovery.GetServiceInstances(requestMessage.RequestUri.Host);
             if (services == null || services.Count == 0)
             {
                 ServiceResolveFail(requestMessage);

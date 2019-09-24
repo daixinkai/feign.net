@@ -25,6 +25,7 @@ namespace Feign
             FeignClientPipeline = new GlobalFeignClientPipeline();
             Lifetime = FeignClientLifetime.Transient;
             Types = new List<FeignClientTypeInfo>();
+            DiscoverServiceCacheTime = TimeSpan.FromMinutes(10);
         }
         public IList<Assembly> Assemblies { get; }
         public ConverterCollection Converters { get; }
@@ -34,6 +35,6 @@ namespace Feign
         public bool IncludeMethodMetadata { get; set; }
 
         public IList<FeignClientTypeInfo> Types { get; }
-
+        public TimeSpan? DiscoverServiceCacheTime { get; set; }
     }
 }

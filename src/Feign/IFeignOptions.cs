@@ -39,5 +39,11 @@ namespace Feign
         /// 获取生成的类型
         /// </summary>
         IList<FeignClientTypeInfo> Types { get; }
+        /// <summary>
+        /// 缓存服务时间 default : 10min
+        /// 设置为null则不使用缓存
+        /// </summary>
+        TimeSpan? DiscoverServiceCacheTime { get; set; }
+
     }
 }

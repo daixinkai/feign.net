@@ -10,7 +10,7 @@ namespace Feign
 {
     static class ServiceDiscoveryExtensions
     {
-        public static async Task<IList<IServiceInstance>> GetServiceInstancesWithCacheAsync(this IServiceDiscovery serviceDiscovery, string serviceId, ICacheProvider cacheProvider, string serviceInstancesKeyPrefix = "ServiceDiscovery-ServiceInstances-")
+        public static async Task<IList<IServiceInstance>> GetServiceInstancesWithCacheAsync(this IServiceDiscovery serviceDiscovery, string serviceId, ICacheProvider cacheProvider, TimeSpan time, string serviceInstancesKeyPrefix = "ServiceDiscovery-ServiceInstances-")
         {
             // if distributed cache was provided, just make the call back to the provider
             if (cacheProvider != null)
@@ -28,13 +28,13 @@ namespace Feign
             if (cacheProvider != null)
             {
                 List<SerializableServiceInstance> cacheValue = instances.Select(i => new SerializableServiceInstance(i)).ToList();
-                await cacheProvider.SetAsync(serviceInstancesKeyPrefix + serviceId, cacheValue, TimeSpan.FromMinutes(10));
+                await cacheProvider.SetAsync(serviceInstancesKeyPrefix + serviceId, cacheValue, time);
             }
 
             return instances;
         }
 
-        public static IList<IServiceInstance> GetServiceInstancesWithCache(this IServiceDiscovery serviceDiscovery, string serviceId, ICacheProvider cacheProvider, string serviceInstancesKeyPrefix = "ServiceDiscovery-ServiceInstances-")
+        public static IList<IServiceInstance> GetServiceInstancesWithCache(this IServiceDiscovery serviceDiscovery, string serviceId, ICacheProvider cacheProvider, TimeSpan time, string serviceInstancesKeyPrefix = "ServiceDiscovery-ServiceInstances-")
         {
             // if distributed cache was provided, just make the call back to the provider
             if (cacheProvider != null)
@@ -52,7 +52,7 @@ namespace Feign
             if (cacheProvider != null)
             {
                 List<SerializableServiceInstance> cacheValue = instances.Select(i => new SerializableServiceInstance(i)).ToList();
-                cacheProvider.Set(serviceInstancesKeyPrefix + serviceId, cacheValue, TimeSpan.FromMinutes(10));
+                cacheProvider.Set(serviceInstancesKeyPrefix + serviceId, cacheValue, time);
             }
 
             return instances;

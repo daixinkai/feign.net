@@ -21,6 +21,8 @@ namespace Feign.Proxy
         private readonly ILogger _logger;
         private FeignClientHttpProxy<TService> _feignClient;
 
+        public FeignClientHttpProxy<TService> FeignClient => _feignClient;
+
         //IFeignClient IFeignHttpClientHandler.FeignClient => _feignClient;
 
         /// <summary>

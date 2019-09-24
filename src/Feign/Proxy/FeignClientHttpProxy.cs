@@ -83,7 +83,7 @@ namespace Feign.Proxy
 
         IFeignOptions _feignOptions;
 
-        protected IFeignOptions FeignOptions => _feignOptions;
+        protected internal IFeignOptions FeignOptions => _feignOptions;
 
         TService IFeignClient<TService>.Service { get { return this as TService; } }
 
