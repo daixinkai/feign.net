@@ -172,7 +172,7 @@ namespace Feign.Reflection
 
         internal static bool NeedBuildType(Type type)
         {
-            return type.IsInterface && type.IsDefinedIncludingBaseInterfaces<FeignClientAttribute>() && !type.IsDefined(typeof(NonFeignClientAttribute));
+            return type.IsInterface && type.IsDefinedIncludingBaseInterfaces<FeignClientAttribute>() && !type.IsDefined(typeof(NonFeignClientAttribute)) && !type.IsGenericType;
         }
 
 

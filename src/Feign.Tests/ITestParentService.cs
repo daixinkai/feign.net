@@ -14,10 +14,10 @@ namespace Feign.Tests
     //, Url = ""
     )]
     [NonFeignClient]
-    public interface ITestParentService
+    public interface ITestParentService<TModel>
     {
         [RequestMapping("/{id}", Method = "GET")]
         [MethodId("GetById")]
-        Task<string> GetById(object id);
+        Task<TModel> GetById(object id);
     }
 }

@@ -10,7 +10,7 @@ namespace Feign.Tests
 {
     //[CustomFeignClient("asdasdasd")]
     //[RequestMapping("/organizations")]
-    public interface ITestService : ITestParentService
+    public interface ITestService : ITestParentService<string>
     {
 
 
