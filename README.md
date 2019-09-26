@@ -63,11 +63,33 @@
     }
 ```
 
+## 支持继承父接口服务 : 
+
+```csharp
+    [FeignClient("test-service", Url = "http://testservice.xx.com")]
+    [NonFeignClient]
+    public interface ITestParentService<TModel>
+    {
+        /// <summary>
+        /// async get一个请求
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [RequestMapping("/{id}", Method = "GET")]
+        [MethodId("GetAsync")]
+        Task<TModel> GetByIdAsync([PathVariable("id")]object id);
+    }
+    [RequestMapping("/api/test")]
+    public interface ITestService:ITestParentService<string>
+    {
+    }
+```
+
 ### 使用服务,这里以asp.net core为例
 
 ```csharp
 
-[Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
