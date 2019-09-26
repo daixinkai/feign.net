@@ -9,6 +9,59 @@ namespace Feign
 {
     static class ReflectionExtensions
     {
+
+        //public static IEnumerable<T> GetCustomAttributesIncludingBaseInterfaces<T>(this Type type) where T : Attribute
+        //{
+        //    return type.GetCustomAttributes<T>().
+        //      Union(type.GetInterfaces().
+        //      SelectMany(interfaceType => interfaceType.GetCustomAttributes<T>())).
+        //      Distinct();
+        //}
+
+        //public static T GetCustomAttributeIncludingBaseInterfaces<T>(this Type type) where T : Attribute
+        //{
+        //    return type.GetCustomAttributesIncludingBaseInterfaces<T>().FirstOrDefault();
+        //}
+
+
+        public static T GetCustomAttributeIncludingBaseInterfaces<T>(this Type type) where T : Attribute
+        {
+            T attribute = type.GetCustomAttribute<T>();
+            if (attribute != null)
+            {
+                return attribute;
+            }
+            return GetCustomAttributeFromBaseInterfaces<T>(type);
+        }
+
+        static T GetCustomAttributeFromBaseInterfaces<T>(this Type type) where T : Attribute
+        {
+            T attribute = null;
+            foreach (var item in type.GetInterfaces())
+            {
+                attribute = item.GetCustomAttribute<T>();
+                if (attribute != null)
+                {
+                    return attribute;
+                }
+            }
+            foreach (var item in type.GetInterfaces())
+            {
+                attribute = GetCustomAttributeFromBaseInterfaces<T>(item);
+                if (attribute != null)
+                {
+                    return attribute;
+                }
+            }
+            return null;
+        }
+
+
+        public static bool IsDefinedIncludingBaseInterfaces<T>(this Type type)
+        {
+            return type.IsDefined(typeof(T)) || type.GetInterfaces().Any(s => IsDefinedIncludingBaseInterfaces<T>(s));
+        }
+
         public static bool IsVoidMethod(this MethodInfo method)
         {
             return method.ReturnType == null || method.ReturnType == typeof(void);

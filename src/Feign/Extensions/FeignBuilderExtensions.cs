@@ -64,7 +64,8 @@ namespace Feign
                     continue;
                 }
                 feignBuilder.Options.Types.Add(feignClientTypeInfo);
-                FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttribute<FeignClientAttribute>();
+                //FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttribute<FeignClientAttribute>();
+                FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttributeIncludingBaseInterfaces<FeignClientAttribute>();
                 feignBuilder.AddService(serviceType, feignClientTypeInfo.BuildType, feignClientAttribute.Lifetime ?? lifetime);
                 // add fallback
                 if (feignClientAttribute.Fallback != null)

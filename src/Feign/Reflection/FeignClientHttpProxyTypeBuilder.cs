@@ -46,7 +46,8 @@ namespace Feign.Reflection
                 return null;
             }
             //获取一下描述特性
-            FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttribute<FeignClientAttribute>();
+            //FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttribute<FeignClientAttribute>();
+            FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttributeIncludingBaseInterfaces<FeignClientAttribute>();
 
             IMethodBuilder methodBuilder;
 
@@ -84,15 +85,15 @@ namespace Feign.Reflection
             BuildConstructor(typeBuilder, parentType);
 
             //写入serviceId
-            BuildReadOnlyProperty(typeBuilder, serviceType, "ServiceId", serviceType.GetCustomAttribute<FeignClientAttribute>().Name);
+            BuildReadOnlyProperty(typeBuilder, serviceType, "ServiceId", feignClientAttribute.Name);
 
             //写入baseUri
             BuildReadOnlyProperty(typeBuilder, serviceType, "BaseUri", serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value);
 
             // 写入url
-            if (serviceType.GetCustomAttribute<FeignClientAttribute>().Url != null)
+            if (feignClientAttribute.Url != null)
             {
-                BuildReadOnlyProperty(typeBuilder, serviceType, "Url", serviceType.GetCustomAttribute<FeignClientAttribute>().Url);
+                BuildReadOnlyProperty(typeBuilder, serviceType, "Url", feignClientAttribute.Url);
             }
             //生成的类型必须实现服务
             typeBuilder.AddInterfaceImplementation(serviceType);
@@ -170,8 +171,9 @@ namespace Feign.Reflection
 
         internal static bool NeedBuildType(Type type)
         {
-            return type.IsInterface && type.IsDefined(typeof(FeignClientAttribute));
+            return type.IsInterface && type.IsDefinedIncludingBaseInterfaces<FeignClientAttribute>() && !type.IsDefined(typeof(NonFeignClientAttribute));
         }
+
 
         private TypeBuilder CreateTypeBuilder(string typeName, Type parentType)
         {

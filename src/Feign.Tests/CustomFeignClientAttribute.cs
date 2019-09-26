@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Feign.Tests
 {
-    [AttributeUsage(AttributeTargets.Interface, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Interface, Inherited = true, AllowMultiple = false)]
     public class CustomFeignClientAttribute : FeignClientAttribute
     {
         public CustomFeignClientAttribute(string name) : base(name)
