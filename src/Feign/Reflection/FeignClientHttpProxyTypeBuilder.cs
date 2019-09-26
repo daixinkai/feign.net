@@ -97,7 +97,8 @@ namespace Feign.Reflection
             }
             //生成的类型必须实现服务
             typeBuilder.AddInterfaceImplementation(serviceType);
-            foreach (var method in serviceType.GetMethods())
+            //foreach (var method in serviceType.GetMethods())
+            foreach (var method in serviceType.GetMethodsIncludingBaseInterfaces())
             {
                 //生成方法
                 var buildMethod = methodBuilder.BuildMethod(typeBuilder, serviceType, method, feignClientAttribute);

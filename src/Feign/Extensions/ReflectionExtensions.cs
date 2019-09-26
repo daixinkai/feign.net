@@ -62,6 +62,31 @@ namespace Feign
             return type.IsDefined(typeof(T)) || type.GetInterfaces().Any(s => IsDefinedIncludingBaseInterfaces<T>(s));
         }
 
+        public static MethodInfo[] GetMethodsIncludingBaseInterfaces(this Type type)
+        {
+            List<MethodInfo> methods = new List<MethodInfo>(type.GetMethods());
+            GetMethodsFromBaseInterfaces(type, methods);
+            return methods.ToArray();
+        }
+
+        static void GetMethodsFromBaseInterfaces(this Type type, List<MethodInfo> methods)
+        {
+            foreach (var item in type.GetInterfaces())
+            {
+                foreach (var method in item.GetMethods())
+                {
+                    if (!methods.Contains(method))
+                    {
+                        methods.Add(method);
+                    }
+                }
+            }
+            foreach (var item in type.GetInterfaces())
+            {
+                GetMethodsFromBaseInterfaces(item, methods);
+            }
+        }
+
         public static bool IsVoidMethod(this MethodInfo method)
         {
             return method.ReturnType == null || method.ReturnType == typeof(void);

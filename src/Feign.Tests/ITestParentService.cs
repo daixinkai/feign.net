@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Feign.Tests
 {
@@ -15,5 +16,8 @@ namespace Feign.Tests
     [NonFeignClient]
     public interface ITestParentService
     {
+        [RequestMapping("/{id}", Method = "GET")]
+        [MethodId("GetById")]
+        Task<string> GetById(object id);
     }
 }

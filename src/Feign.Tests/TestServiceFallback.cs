@@ -166,5 +166,10 @@ namespace Feign.Tests
         {
             throw new NotImplementedException();
         }
+
+        public Task<string> GetById(object id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
