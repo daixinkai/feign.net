@@ -128,7 +128,12 @@ namespace Feign.Reflection
         /// <returns></returns>
         protected bool SupportRequestContent(MethodInfo method, RequestMappingBaseAttribute requestMappingBaseAttribute)
         {
-            return "POST".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase) || "PUT".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase);
+
+            return
+                "POST".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase)
+                || "PUT".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase)
+                || "DELETE".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase)
+                ;
         }
 
         protected RequestMappingBaseAttribute GetRequestMappingAttribute(MethodInfo method)

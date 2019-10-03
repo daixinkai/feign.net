@@ -171,5 +171,10 @@ namespace Feign.Tests
         {
             throw new NotImplementedException();
         }
+
+        public Task<string> DeleteAsync([RequestBody] int[] ids)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

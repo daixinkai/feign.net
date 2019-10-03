@@ -72,6 +72,9 @@ namespace Feign.Tests
         //[GetMapping("/{id}")]
         //Task<JObject> GetValueAsync([PathVariable]int id, [RequestParam] string test, [RequestQuery] TestServiceParam param);
 
+        [DeleteMapping]
+        Task<string> DeleteAsync([RequestBody]int[] ids);
+
     }
 
 

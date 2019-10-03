@@ -301,7 +301,7 @@ namespace Feign.Proxy
             HttpMethod httpMethod = GetHttpMethod(request.HttpMethod);
             HttpRequestMessage httpRequestMessage = CreateRequestMessage(request, httpMethod, CreateUri(BuildUri(request.Uri)));
             // if support content
-            if (httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put)
+            if (IsSupportContent(httpMethod))
             {
                 HttpContent httpContent = request.GetHttpContent();
                 if (httpContent != null)
@@ -310,6 +310,15 @@ namespace Feign.Proxy
                 }
             }
             return HttpClient.SendAsync(httpRequestMessage);
+        }
+
+        bool IsSupportContent(HttpMethod httpMethod)
+        {
+            return
+                httpMethod == HttpMethod.Post
+                || httpMethod == HttpMethod.Put
+                || httpMethod == HttpMethod.Delete
+                ;
         }
 
         private HttpMethod GetHttpMethod(string method)
