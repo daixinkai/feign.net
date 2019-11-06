@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Feign.Reflection;
 using Feign.Request;
 using Newtonsoft.Json.Linq;
 
@@ -30,6 +31,8 @@ namespace Feign.Tests
 
         public Task PostValueAsync()
         {
+            //var invoker= new Func<Task>(_testService1.PostValueAsync);
+            //return invoker.Invoke();
             return Task.FromResult<object>(null);
         }
 
@@ -37,6 +40,7 @@ namespace Feign.Tests
         {
             try
             {
+                var invoker = new Func<Task<QueryResult<JObject>>>(() => _testService1.GetQueryResultValueAsync(id, param));
                 return Task.FromResult(new QueryResult<JObject>());
             }
             catch (Exception)
@@ -66,11 +70,13 @@ namespace Feign.Tests
             return GetValueAsync(id, fallback);
         }
 
+        public bool IncludeMethodMetadata { get; }
+
         public Task<JObject> GetValueAsync([PathVariable("id")] string id, Func<Task<JObject>> fallback)
         {
             try
             {
-                return Task.FromResult<JObject>(null);
+                return Task.FromResult<JObject>(default(JObject));
             }
             catch (Exception)
             {
@@ -81,6 +87,13 @@ namespace Feign.Tests
 
         public Task<JObject> GetValueAsync([PathVariable] int id, [RequestParam] string test)
         {
+            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+            feignClientMethodInfo.MethodId = "GetById";
+            if (IncludeMethodMetadata)
+            {
+                feignClientMethodInfo.MethodMetadata = typeof(FeignClientMethodInfo).GetMethod("");
+            }
+            FeignClientHttpRequest request = new FeignClientHttpRequest("", "", "", "", "", null, feignClientMethodInfo);
             throw new NotImplementedException();
         }
 

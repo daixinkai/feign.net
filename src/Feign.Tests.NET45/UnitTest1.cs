@@ -83,11 +83,15 @@ namespace Feign.Tests.NET45
             ITestService testService = FeignClients.Get<ITestService>();
             Assert.IsNotNull(testService);
 
+            testService.PostValueAsync().Wait();
+
             FilePathHttpRequestFile filePathRequestFile = new FilePathHttpRequestFile(@"E:\asdasdasd.txt");
             filePathRequestFile = null;
 
             //string value1 = testService.UploadFileAsync(filePathRequestFile, "asdasd").Result;
             //Assert.IsNotNull(value1);
+
+
 
             string value2 = testService.UploadFileAsync(new TestServiceUploadFileParam
             {

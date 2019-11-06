@@ -108,7 +108,7 @@ namespace Feign.Reflection
                 {
                     iLGenerator.Emit(OpCodes.Box, parameterFields[i].FieldType);
                 }
-                iLGenerator.Emit(OpCodes.Call, addMethod);
+                iLGenerator.Emit(OpCodes.Callvirt, addMethod);
             }
 
             iLGenerator.Emit(OpCodes.Ldloc, map);

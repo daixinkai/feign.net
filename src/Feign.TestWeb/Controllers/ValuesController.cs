@@ -45,6 +45,8 @@ namespace Feign.TestWeb.Controllers
         public async Task<ActionResult<object>> Get(int id, [FromServices] ITestService testService/*, [FromServices] ITestService1 testService1*/)
         {
 
+            //await testService.PostValueAsync();
+
             await testService.DeleteAsync(new int[] { 1 });
 
             //await testService.PostValueAsync();

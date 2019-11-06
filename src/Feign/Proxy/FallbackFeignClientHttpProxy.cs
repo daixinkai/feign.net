@@ -79,10 +79,6 @@ namespace Feign.Proxy
             {
                 return;
             }
-            catch (ServiceResolveFailException)
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 if (fallback == null)

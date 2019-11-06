@@ -311,7 +311,7 @@ namespace Feign.Reflection
             PropertyInfo includeMethodMetadataProperty = feignOptionsProperty.PropertyType.GetProperty("IncludeMethodMetadata");
             iLGenerator.Emit(OpCodes.Ldarg_0);
             iLGenerator.Emit(OpCodes.Call, feignOptionsProperty.GetMethod);
-            iLGenerator.Emit(OpCodes.Call, includeMethodMetadataProperty.GetMethod);
+            iLGenerator.Emit(OpCodes.Callvirt, includeMethodMetadataProperty.GetMethod);
             iLGenerator.Emit(OpCodes.Ldc_I4, 1);
             iLGenerator.Emit(OpCodes.Ceq);
             iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);

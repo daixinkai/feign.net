@@ -117,7 +117,8 @@ namespace Feign.Reflection
             {
                 iLGenerator.Emit(OpCodes.Ldarg_0); //this
                 iLGenerator.Emit(OpCodes.Call, typeBuilder.BaseType.GetProperty("Fallback").GetMethod); //.Fallback
-                iLGenerator.Emit(OpCodes.Ldftn, method);
+                iLGenerator.Emit(OpCodes.Dup);
+                iLGenerator.Emit(OpCodes.Ldvirtftn, method);
             }
 
             iLGenerator.Emit(OpCodes.Newobj, delegateConstructor);
