@@ -19,6 +19,7 @@ namespace Feign.Tests
 
         public TestServiceInstance(string uri) : this(new Uri(uri))
         {
+            
         }
         public TestServiceInstance(string serviceId, string uri) : this(serviceId, new Uri(uri))
         {

@@ -24,7 +24,7 @@ namespace Feign.Formatting
         public TResult GetResult<TResult>(byte[] buffer, Encoding encoding)
         {
             string json = (encoding ?? Encoding.Default).GetString(buffer);
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<TResult>(json);
+            return JsonHelper.DeserializeObject<TResult>(json);
         }
 
         public TResult GetResult<TResult>(Stream stream, Encoding encoding)

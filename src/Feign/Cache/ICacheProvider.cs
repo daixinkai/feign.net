@@ -24,8 +24,8 @@ namespace Feign.Cache
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        /// <param name="slidingExpiration">失效时间</param>
-        void Set<T>(string name, T value, TimeSpan? slidingExpiration);
+        /// <param name="expirationTime">失效时间</param>
+        void Set<T>(string name, T value, TimeSpan? expirationTime);
         /// <summary>
         /// 获取缓存
         /// </summary>
@@ -39,9 +39,9 @@ namespace Feign.Cache
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        /// <param name="slidingExpiration">失效时间</param>
+        /// <param name="expirationTime">失效时间</param>
         /// <returns></returns>
-        Task SetAsync<T>(string name, T value, TimeSpan? slidingExpiration);
+        Task SetAsync<T>(string name, T value, TimeSpan? expirationTime);
 
     }
 }

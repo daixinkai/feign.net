@@ -14,7 +14,7 @@ namespace Feign.Internal
 
         static string ToJson(object value)
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(value);
+            return JsonHelper.SerializeObject(value);
         }
 
     }

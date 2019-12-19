@@ -22,5 +22,19 @@ namespace Feign.Internal
             }
         }
 
+
+        public static Task FromException(Exception exception)
+        {
+#if NET45
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            tcs.SetException(exception);
+            return tcs.Task;
+#endif
+
+#if NETSTANDARD
+                return Task.FromException(exception);
+#endif
+        }
+
     }
 }

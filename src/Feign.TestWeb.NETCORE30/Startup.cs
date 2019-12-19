@@ -24,12 +24,22 @@ namespace Feign.TestWeb.NETCORE30
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
             services.AddRazorPages();
 
-            var builder = services.AddFeignClients()
+            var builder = services.AddFeignClients(options =>
+            {
+                //options.DiscoverServiceCacheTime = TimeSpan.FromSeconds(10);
+            })
               .AddTestFeignClients()
+              //.AddServiceDiscovery<TestServiceDiscovery>()
               //.AddSteeltoe()
               ;
+            builder.Options.FeignClientPipeline.Initializing += (sender, e) =>
+            {
+                e.HttpClient.DefaultRequestVersion = new Version(2, 0);
+            };
 
         }
 

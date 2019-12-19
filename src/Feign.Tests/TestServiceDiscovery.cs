@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Feign.Tests
 {
-    class TestServiceDiscovery : IServiceDiscovery
+    public class TestServiceDiscovery : IServiceDiscovery
     {
         public IList<string> Services => new List<string>();
 

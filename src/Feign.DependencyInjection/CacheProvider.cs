@@ -39,19 +39,21 @@ namespace Feign.Cache
             return default(T);
         }
 
-        public void Set<T>(string name, T value, TimeSpan? slidingExpiration)
+        public void Set<T>(string name, T value, TimeSpan? expirationTime)
         {
             _distributedCache?.Set(name, SerializeForCache(value), new DistributedCacheEntryOptions
             {
-                SlidingExpiration = slidingExpiration
+                //SlidingExpiration = expirationTime
+                AbsoluteExpirationRelativeToNow = expirationTime
             });
         }
 
-        public async Task SetAsync<T>(string name, T value, TimeSpan? slidingExpiration)
+        public async Task SetAsync<T>(string name, T value, TimeSpan? expirationTime)
         {
             await _distributedCache?.SetAsync(name, SerializeForCache(value), new DistributedCacheEntryOptions
             {
-                SlidingExpiration = slidingExpiration
+                //SlidingExpiration = expirationTime
+                AbsoluteExpirationRelativeToNow = expirationTime
             });
         }
 

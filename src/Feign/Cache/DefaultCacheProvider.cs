@@ -22,11 +22,11 @@ namespace Feign.Cache
             return Task.FromResult(default(T));
         }
 
-        public void Set<T>(string name, T value, TimeSpan? slidingExpiration)
+        public void Set<T>(string name, T value, TimeSpan? expirationTime)
         {
         }
 
-        public Task SetAsync<T>(string name, T value, TimeSpan? slidingExpiration)
+        public Task SetAsync<T>(string name, T value, TimeSpan? expirationTime)
         {
             return TaskEx.CompletedTask;
         }

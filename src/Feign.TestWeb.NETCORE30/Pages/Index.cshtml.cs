@@ -18,11 +18,11 @@ namespace Feign.TestWeb.NETCORE30.Pages
             _logger = logger;
         }
 
-        public void OnGet([FromServices]ITestService testService)
+        public async Task OnGet([FromServices]ITestService testService)
         {
             //var r = testService.GetById(1).Result;
-            var r = testService.GetQueryResultValueAsync("", new TestServiceParam { }).Result;
-            testService.PostValueAsync().Wait();
+            var r = await testService.GetQueryResultValueAsync("", new TestServiceParam { });
+            await testService.PostValueAsync();
         }
     }
 }
