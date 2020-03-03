@@ -15,18 +15,16 @@ namespace Feign.Polly
     /// </summary>
     public class PollyDelegatingHandler : DelegatingHandler
     {
-        public PollyDelegatingHandler() : base()
+        public PollyDelegatingHandler(IAsyncPolicy asyncPolicy) : base()
         {
-            _asyncPolicy = Policy.NoOpAsync();
+            _asyncPolicy = asyncPolicy;
         }
-        public PollyDelegatingHandler(HttpMessageHandler innerHandler) : base(innerHandler)
+        public PollyDelegatingHandler(IAsyncPolicy asyncPolicy, HttpMessageHandler innerHandler) : base(innerHandler)
         {
-            _asyncPolicy = Policy.NoOpAsync();
+            _asyncPolicy = asyncPolicy;
         }
 
-        internal IAsyncPolicy _asyncPolicy;
-
-        public IAsyncPolicy AsyncPolicy => _asyncPolicy;
+        IAsyncPolicy _asyncPolicy;
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

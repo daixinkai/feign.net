@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Feign;
 using Feign.Tests;
+using Polly;
 
 namespace Feign.TestWeb.NETCORE30
 {
@@ -33,9 +34,41 @@ namespace Feign.TestWeb.NETCORE30
                 //options.DiscoverServiceCacheTime = TimeSpan.FromSeconds(10);
             })
               .AddTestFeignClients()
-              //.AddServiceDiscovery<TestServiceDiscovery>()
-              //.AddSteeltoe()
-              ;
+            //.AddServiceDiscovery<TestServiceDiscovery>()
+            //.AddSteeltoe()
+            .AddPolly(options =>
+                    {
+                        options.Configure(asyncPolicy =>
+                        {
+                            return Policy.WrapAsync(
+                               asyncPolicy,
+                               Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
+                            );
+                        });
+                        options.ConfigureAsync(async asyncPolicy =>
+                        {
+                            await Task.FromResult(0);
+                            return Policy.WrapAsync(
+                                      asyncPolicy,
+                                      Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
+                                 );
+                        });
+                        options.Configure("serviceId", asyncPolicy =>
+                        {
+                            return Policy.WrapAsync(
+                               asyncPolicy,
+                               Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
+                            );
+                        });
+                        options.Configure<ITestService>(asyncPolicy =>
+                        {
+                            return Policy.WrapAsync(
+                               asyncPolicy,
+                               Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
+                            );
+                        });
+                    });
+            ;
             builder.Options.FeignClientPipeline.Initializing += (sender, e) =>
             {
                 e.HttpClient.DefaultRequestVersion = new Version(2, 0);

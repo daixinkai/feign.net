@@ -31,8 +31,8 @@ namespace Feign
             }
             feignBuilder.Options.FeignClientPipeline.Initializing += (sender, e) =>
             {
-                PollyDelegatingHandler pollyDelegatingHandler = new PollyDelegatingHandler(e.HttpClient.Handler.InnerHandler);
-                options.SetupAllPolly(e.FeignClient, pollyDelegatingHandler);
+                IAsyncPolicy asyncPolicy = options.GetAsyncPolicy(e.FeignClient);
+                PollyDelegatingHandler pollyDelegatingHandler = new PollyDelegatingHandler(asyncPolicy, e.HttpClient.Handler.InnerHandler);
                 e.HttpClient.Handler.InnerHandler = pollyDelegatingHandler;
             };
             return feignBuilder;
