@@ -266,6 +266,48 @@ namespace Feign.Reflection
                 iLGenerator.Emit(OpCodes.Ldstr, contentType);
             }
 
+            //accept
+            string accept = requestMapping.Accept;
+            if (string.IsNullOrWhiteSpace(contentType) && serviceType.IsDefined(typeof(RequestMappingAttribute)))
+            {
+                accept = serviceType.GetCustomAttribute<RequestMappingAttribute>().Accept;
+            }
+            if (accept == null)
+            {
+                iLGenerator.Emit(OpCodes.Ldnull);
+            }
+            else
+            {
+                iLGenerator.Emit(OpCodes.Ldstr, accept);
+            }
+
+            //headers
+            List<string> headers = new List<string>();
+            if (serviceType.IsDefined(typeof(HeadersAttribute), true))
+            {
+                var serviceHeaders = serviceType.GetCustomAttribute<HeadersAttribute>().Headers;
+                if (serviceHeaders != null)
+                {
+                    headers.AddRange(serviceHeaders);
+                }
+            }
+            if (feignClientMethodInfo.MethodMetadata.IsDefined(typeof(HeadersAttribute), true))
+            {
+                var methodHeaders = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<HeadersAttribute>().Headers;
+                if (methodHeaders != null)
+                {
+                    headers.AddRange(methodHeaders);
+                }
+            }
+            if (headers.Count == 0)
+            {
+                iLGenerator.Emit(OpCodes.Ldnull);
+            }
+            else
+            {
+                EmitStringArray(iLGenerator, headers);
+            }
+
             //requestContent
             if (emitRequestContents != null && emitRequestContents.Count > 0)
             {
@@ -438,6 +480,21 @@ namespace Feign.Reflection
             PropertyInfo propertyInfo = typeof(FeignClientHttpProxy<>).MakeGenericType(serviceType).GetProperty("BaseUrl", BindingFlags.Instance | BindingFlags.NonPublic);
             iLGenerator.Emit(OpCodes.Ldarg_0); //this
             iLGenerator.Emit(OpCodes.Callvirt, propertyInfo.GetMethod);
+        }
+
+        void EmitStringArray(ILGenerator iLGenerator, IEnumerable<string> list)
+        {
+            iLGenerator.Emit(OpCodes.Ldc_I4, list.Count());
+            iLGenerator.Emit(OpCodes.Newarr, typeof(string));
+            int index = 0;
+            foreach (var item in list)
+            {
+                iLGenerator.Emit(OpCodes.Dup);
+                iLGenerator.Emit(OpCodes.Ldc_I4, index);
+                iLGenerator.Emit(OpCodes.Ldstr, item);
+                iLGenerator.Emit(OpCodes.Stelem_Ref);
+                index++;
+            }
         }
 
         /// <summary>

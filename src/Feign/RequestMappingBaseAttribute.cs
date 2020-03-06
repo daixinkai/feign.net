@@ -27,6 +27,10 @@ namespace Feign
         /// </summary>
         public string ContentType { get; set; }
         /// <summary>
+        /// 获取或设置Accept
+        /// </summary>
+        public string Accept { get; set; }
+        /// <summary>
         /// 获取请求的http方法
         /// </summary>
         /// <returns></returns>

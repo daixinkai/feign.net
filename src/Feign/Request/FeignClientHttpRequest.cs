@@ -16,7 +16,7 @@ namespace Feign.Request
     /// </summary>
     public class FeignClientHttpRequest
     {
-        public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType, FeignClientHttpRequestContent requestContent, FeignClientMethodInfo method)
+        public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType, string accept, string[] headers, FeignClientHttpRequestContent requestContent, FeignClientMethodInfo method)
         {
             BaseUrl = baseUrl;
             MappingUri = mappingUri;
@@ -24,6 +24,8 @@ namespace Feign.Request
             HttpMethod = httpMethod;
             RequestContent = requestContent;
             Method = method;
+            Accept = accept;
+            Headers = headers;
             if (string.IsNullOrWhiteSpace(contentType))
             {
                 contentType = "application/json; charset=utf-8";
@@ -49,6 +51,10 @@ namespace Feign.Request
         /// </summary>
         public string Uri { get; }
         /// <summary>
+        /// 获取Headers
+        /// </summary>
+        public string[] Headers { get; set; }
+        /// <summary>
         /// 获取HttpMethod
         /// </summary>
         public string HttpMethod { get; }
@@ -60,6 +66,10 @@ namespace Feign.Request
         /// 获取媒体类型
         /// </summary>
         public string MediaType { get; }
+        /// <summary>
+        /// 获取Accept
+        /// </summary>
+        public string Accept { get; set; }
         /// <summary>
         /// 获取RequestContent
         /// </summary>

@@ -11,7 +11,8 @@ namespace Feign.Tests
     //, Url = "http://localhost:8802/"
     //, Url = "http://10.1.5.90:8802/"
     //, Url = "http://localhost:62088/"
-    , Url = "http://www.baidu.com/"
+    //, Url = "http://www.baidu.com/"
+    ,Url = "https://www.jd.com/"
     )]
     [NonFeignClient]
     public interface ITestParentService<TModel>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -53,6 +54,7 @@ namespace Feign.Tests
             };
             feignBuilder.Options.FeignClientPipeline.Initializing += (sender, e) =>
             {
+                ((HttpClientHandler)e.HttpClient.Handler.InnerHandler).AutomaticDecompression = DecompressionMethods.None | DecompressionMethods.GZip | DecompressionMethods.Deflate;
             };
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").Initializing += (sender, e) =>
             {
@@ -62,14 +64,14 @@ namespace Feign.Tests
             {
 
             };
-            feignBuilder.Options.FeignClientPipeline.Authorization(proxy =>
-            {
-#if NETSTANDARD
-                return ("global", "asdasd");
-#else
-                            return new AuthenticationHeaderValue("global", "asdasd");
-#endif
-            });
+            //            feignBuilder.Options.FeignClientPipeline.Authorization(proxy =>
+            //            {
+            //#if NETSTANDARD
+            //                return ("global", "asdasd");
+            //#else
+            //                return new AuthenticationHeaderValue("global", "asdasd");
+            //#endif
+            //            });
             feignBuilder.Options.FeignClientPipeline.BuildingRequest += FeignClientPipeline_BuildingRequest;
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().BuildingRequest += (sender, e) =>
             {
@@ -98,14 +100,14 @@ namespace Feign.Tests
                 e.Headers.Add("cookie", "csrftoken=EGxYkyZeT3DxEsvYsdR5ncmzpi9pmnQx; _bl_uid=nLjRstOyqOejLv2s0xtzqs74Xsmg; courseId=1; versionId=522; textbookId=2598; Hm_lvt_f0984c42ef98965e03c60661581cd219=1559783251,1559818390,1560213044,1560396804; uuid=6a30ff68-2b7c-4cde-a355-2e332b74e31d##1; Hm_lpvt_f0984c42ef98965e03c60661581cd219=1560413345; SESSION=5ee4854d-34b7-423a-9cca-76ddc8a0f111; sid=5ee4854d-34b7-423a-9cca-76ddc8a0f111");
 
             };
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().Authorization(proxy =>
-            {
-#if NETSTANDARD
-                return ("service", "asdasd");
-#else
-                return new AuthenticationHeaderValue("service", "asdasd");
-#endif
-            });
+            //            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().Authorization(proxy =>
+            //            {
+            //#if NETSTANDARD
+            //                return ("service", "asdasd");
+            //#else
+            //                return new AuthenticationHeaderValue("service", "asdasd");
+            //#endif
+            //            });
             feignBuilder.Options.FeignClientPipeline.SendingRequest += FeignClientPipeline_SendingRequest;
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").ReceivingResponse += (sender, e) =>
             {
@@ -140,7 +142,7 @@ namespace Feign.Tests
         public static void ReceivingQueryResult(this IGlobalFeignClientPipeline globalFeignClient)
         {
             globalFeignClient.ReceivingResponse += (sender, e) =>
-            {
+            {                
                 if (!typeof(QueryResult).IsAssignableFrom(e.ResultType))
                 {
                     return;
@@ -159,7 +161,10 @@ namespace Feign.Tests
                     QueryResult queryResult;
                     if (e.ResponseMessage.IsSuccessStatusCode)
                     {
-                        string json = e.ResponseMessage.Content.ReadAsStringAsync().Result;
+                        var content = e.ResponseMessage.Content;
+                        var buffer = content.ReadAsByteArrayAsync().Result;
+                        var json1 = Encoding.GetEncoding("iso-8859-1").GetString(buffer);
+                        string json = content.ReadAsStringAsync().Result;
                         object data = Newtonsoft.Json.JsonConvert.DeserializeObject(json, e.ResultType.GetGenericArguments()[0]);
                         if (data == null)
                         {

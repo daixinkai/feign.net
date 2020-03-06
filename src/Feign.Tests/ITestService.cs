@@ -10,15 +10,16 @@ namespace Feign.Tests
 {
     //[CustomFeignClient("asdasdasd")]
     //[RequestMapping("/organizations")]
+    [Headers("Cache-Control:max-age=0000", "Accept-Encoding: gzip, deflate, br", "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8")]
     public interface ITestService : ITestParentService<string>
     {
 
 
 
         //string Name { get; }
-
-        //string Get();
-
+        [Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
+        [RequestMapping]
+        Task<string> Get();
         [RequestMapping("/{id}/asdasdsad", Method = "POST")]
         [MethodId("PostValueAsync")]
         Task PostValueAsync();
@@ -38,7 +39,8 @@ namespace Feign.Tests
         [RequestMapping("/Values/uploadFiles", Method = "POST")]
         Task<string> UploadFilesAsync(IHttpRequestFile file1, IHttpRequestFile file2, IHttpRequestFile file3);
 
-        [RequestMapping("/{id}", Method = "GET")]
+        [Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
+        [RequestMapping("/{id}", Method = "GET", Accept = "text/html")]
         Task<QueryResult<JObject>> GetQueryResultValueAsync([PathVariable("id")]string id, [RequestQuery] TestServiceParam param);
 
         [RequestMapping("/{id}", Method = "GET")]

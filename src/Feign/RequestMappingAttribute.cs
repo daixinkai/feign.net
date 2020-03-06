@@ -9,7 +9,7 @@ namespace Feign
     /// </summary>
     public class RequestMappingAttribute : RequestMappingBaseAttribute
     {
-        public RequestMappingAttribute() { }
+        public RequestMappingAttribute() : this(null) { }
         public RequestMappingAttribute(string value) : this(value, "GET")
         {
         }

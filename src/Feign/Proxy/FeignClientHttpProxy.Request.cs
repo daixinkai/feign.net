@@ -45,6 +45,11 @@ namespace Feign.Proxy
         #endregion
 
 
+        struct SpecialResult<T>
+        {
+            public bool IsSpecialResult { get; set; }
+            public T Result { get; set; }
+        }
 
         protected virtual async Task SendAsync(FeignClientHttpRequest request)
         {
@@ -209,13 +214,11 @@ namespace Feign.Proxy
             }
             #endregion
             EnsureSuccess(request, responseMessage);
-            if (typeof(TResult) == typeof(Task))
+
+            var specialResult = GetSpecialResult<TResult>(responseMessage);
+            if (specialResult.IsSpecialResult)
             {
-                return (TResult)(object)TaskEx.CompletedTask;
-            }
-            if (typeof(TResult) == typeof(string))
-            {
-                return (TResult)(object)responseMessage.Content.ReadAsStringAsync().GetResult();
+                return specialResult.Result;
             }
             if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)
             {
@@ -257,18 +260,17 @@ namespace Feign.Proxy
            .ConfigureAwait(false)
 #endif
                 ;
-            if (typeof(TResult) == typeof(Task))
-            {
-                return (TResult)(object)TaskEx.CompletedTask;
-            }
-            if (typeof(TResult) == typeof(string))
-            {
-                return (TResult)(object)await responseMessage.Content.ReadAsStringAsync()
+
+            var specialResult = await GetSpecialResultAsync<TResult>(responseMessage)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
-                    ;
+                 ;
+            if (specialResult.IsSpecialResult)
+            {
+                return specialResult.Result;
             }
+
             if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)
             {
                 return default(TResult);
@@ -290,6 +292,89 @@ namespace Feign.Proxy
                 );
         }
 
+        private SpecialResult<TResult> GetSpecialResult<TResult>(HttpResponseMessage responseMessage)
+        {
+            SpecialResult<TResult> result = new SpecialResult<TResult>();
+            if (typeof(TResult) == typeof(Task))
+            {
+                result.Result = (TResult)(object)TaskEx.CompletedTask;
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(string))
+            {
+                result.Result = (TResult)(object)responseMessage.Content.ReadAsStringAsync().GetResult();
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(Stream))
+            {
+                result.Result = (TResult)(object)responseMessage.Content.ReadAsStreamAsync().GetResult();
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(byte[]))
+            {
+                result.Result = (TResult)(object)responseMessage.Content.ReadAsByteArrayAsync().GetResult();
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(HttpResponseMessage))
+            {
+                result.Result = (TResult)(object)responseMessage;
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(HttpContent))
+            {
+                result.Result = (TResult)(object)responseMessage.Content;
+                result.IsSpecialResult = true;
+            }
+            return result;
+        }
+
+        private async Task<SpecialResult<TResult>> GetSpecialResultAsync<TResult>(HttpResponseMessage responseMessage)
+        {
+            SpecialResult<TResult> result = new SpecialResult<TResult>();
+            if (typeof(TResult) == typeof(Task))
+            {
+                result.Result = (TResult)(object)TaskEx.CompletedTask;
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(string))
+            {
+                result.Result = (TResult)(object)await responseMessage.Content.ReadAsStringAsync()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(Stream))
+            {
+                result.Result = (TResult)(object)await responseMessage.Content.ReadAsStreamAsync()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(byte[]))
+            {
+                result.Result = (TResult)(object)await responseMessage.Content.ReadAsByteArrayAsync()
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(HttpResponseMessage))
+            {
+                result.Result = (TResult)(object)responseMessage;
+                result.IsSpecialResult = true;
+            }
+            else if (typeof(TResult) == typeof(HttpContent))
+            {
+                result.Result = (TResult)(object)responseMessage.Content;
+                result.IsSpecialResult = true;
+            }
+            return result;
+        }
 
         /// <summary>
         /// 发送请求
@@ -357,6 +442,21 @@ namespace Feign.Proxy
         private HttpRequestMessage CreateRequestMessage(FeignClientHttpRequest request, HttpMethod method, Uri uri)
         {
             FeignHttpRequestMessage requestMessage = new FeignHttpRequestMessage(request, method, uri);
+            if (!string.IsNullOrWhiteSpace(request.Accept))
+            {
+                requestMessage.Headers.Accept.ParseAdd(request.Accept);
+            }
+            if (request.Headers != null && request.Headers.Length > 0)
+            {
+                foreach (var header in request.Headers)
+                {
+                    string[] values = header.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (values.Length == 2)
+                    {
+                        requestMessage.Headers.TryAddWithoutValidation(values[0], values[1]);
+                    }
+                }
+            }
             return requestMessage;
         }
 

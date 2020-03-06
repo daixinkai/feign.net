@@ -29,6 +29,11 @@ namespace Feign.Tests
 
         public string Name => throw new NotImplementedException();
 
+        public Task<string> Get()
+        {
+            return Task.FromResult("fallback_get");
+        }
+
         public Task PostValueAsync()
         {
             //var invoker= new Func<Task>(_testService1.PostValueAsync);
@@ -93,7 +98,10 @@ namespace Feign.Tests
             {
                 feignClientMethodInfo.MethodMetadata = typeof(FeignClientMethodInfo).GetMethod("");
             }
-            FeignClientHttpRequest request = new FeignClientHttpRequest("", "", "", "", "", null, feignClientMethodInfo);
+            FeignClientHttpRequest request = new FeignClientHttpRequest("", "", "", "", "", "", new string[] {
+                "1","2"
+            },
+            null, feignClientMethodInfo);
             throw new NotImplementedException();
         }
 
@@ -171,11 +179,6 @@ namespace Feign.Tests
         }
 
         public Task<string> UploadFileAsync(TestServiceUploadFileParam param)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string Get()
         {
             throw new NotImplementedException();
         }

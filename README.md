@@ -9,6 +9,7 @@
 
 ```csharp
     [FeignClient("test-service", Url = "http://testservice.xx.com")]
+    [Headers("Cache-Control:max-age=0")]
     [RequestMapping("/api/test")]
     public interface ITestService
     {
@@ -17,6 +18,7 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Headers("Cache-Control:max-age=0","User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36")]
         [RequestMapping("/{id}", Method = "GET")]
         //[GetMapping("/{id}")]
         [MethodId("GetAsync")]

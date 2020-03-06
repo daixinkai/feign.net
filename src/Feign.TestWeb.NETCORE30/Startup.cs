@@ -36,39 +36,39 @@ namespace Feign.TestWeb.NETCORE30
               .AddTestFeignClients()
             //.AddServiceDiscovery<TestServiceDiscovery>()
             //.AddSteeltoe()
-            .AddPolly(options =>
-                    {
-                        options.Configure(asyncPolicy =>
-                        {
-                            return Policy.WrapAsync(
-                               asyncPolicy,
-                               Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
-                            );
-                        });
-                        options.ConfigureAsync(async asyncPolicy =>
-                        {
-                            await Task.FromResult(0);
-                            return Policy.WrapAsync(
-                                      asyncPolicy,
-                                      Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
-                                 );
-                        });
-                        options.Configure("serviceId", asyncPolicy =>
-                        {
-                            return Policy.WrapAsync(
-                               asyncPolicy,
-                               Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
-                            );
-                        });
-                        options.Configure<ITestService>(asyncPolicy =>
-                        {
-                            return Policy.WrapAsync(
-                               asyncPolicy,
-                               Policy.Handle<Exception>().CircuitBreakerAsync(1, TimeSpan.FromSeconds(5))
-                            );
-                        });
-                    });
             ;
+            builder.AddPolly(options =>
+            {
+                options.Configure(asyncPolicy =>
+                {
+                    return Policy.WrapAsync(
+                       asyncPolicy,
+                       Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+                    );
+                });
+                options.ConfigureAsync(async asyncPolicy =>
+                {
+                    await Task.FromResult(0);
+                    return Policy.WrapAsync(
+                              asyncPolicy,
+                              Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+                         );
+                });
+                options.Configure("serviceId", asyncPolicy =>
+                {
+                    return Policy.WrapAsync(
+                       asyncPolicy,
+                       Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+                    );
+                });
+                options.Configure<ITestService>(asyncPolicy =>
+                {
+                    return Policy.WrapAsync(
+                       asyncPolicy,
+                       Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+                    );
+                });
+            });
             builder.Options.FeignClientPipeline.Initializing += (sender, e) =>
             {
                 e.HttpClient.DefaultRequestVersion = new Version(2, 0);
