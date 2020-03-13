@@ -17,6 +17,7 @@ namespace Feign.Tests
     [NonFeignClient]
     public interface ITestParentService<TModel>
     {
+        string Name { get; set; }
         [RequestMapping("/{id}", Method = "GET")]
         [MethodId("GetById")]
         Task<TModel> GetById(object id);

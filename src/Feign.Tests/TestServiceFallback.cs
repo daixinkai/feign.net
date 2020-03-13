@@ -27,7 +27,7 @@ namespace Feign.Tests
 
         TestServiceFallback _testService2;
 
-        public string Name => throw new NotImplementedException();
+        public string Name { get; set; }
 
         public Task<string> Get()
         {

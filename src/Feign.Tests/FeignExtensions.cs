@@ -1,4 +1,8 @@
-﻿using Feign.Fallback;
+﻿using Feign;
+using Feign.Cache;
+using Feign.Discovery;
+using Feign.Fallback;
+using Feign.Logging;
 using Feign.Tests;
 using System;
 using System.Collections.Generic;
@@ -12,15 +16,16 @@ using System.Text;
 
 namespace Feign.Tests
 {
+
     public static class FeignExtensions
     {
 
         public static IFeignBuilder AddTestFeignClients(this IFeignBuilder feignBuilder)
         {
-            feignBuilder.AddConverter(new TestServiceParamStringConverter());
+            Feign.FeignBuilderExtensions.AddConverter<TestServiceParam, string>(feignBuilder, new TestServiceParamStringConverter());
             //feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
-            feignBuilder.AddFeignClients(Assembly.GetExecutingAssembly(), FeignClientLifetime.Transient);
+            Feign.FeignBuilderExtensions.AddFeignClients<IFeignBuilder>(feignBuilder, Assembly.GetExecutingAssembly(), FeignClientLifetime.Transient);
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
             {
                 //e.Terminate();
@@ -56,6 +61,10 @@ namespace Feign.Tests
             {
                 ((HttpClientHandler)e.HttpClient.Handler.InnerHandler).AutomaticDecompression = DecompressionMethods.None | DecompressionMethods.GZip | DecompressionMethods.Deflate;
             };
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().Initializing += (sender, e) =>
+            {
+                e.FeignClient.Service.Name = "Initializing set";
+            };
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").Initializing += (sender, e) =>
             {
 
@@ -80,13 +89,13 @@ namespace Feign.Tests
             };
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").BuildingRequest += (sender, e) =>
             {
-                var fallbackFeignClient = e.FeignClient.AsFallback();
+                var fallbackFeignClient = e.FeignClient.AsFallback<object>();
                 fallbackFeignClient = e.FeignClient.AsFallback<object>();
                 fallbackFeignClient = e.FeignClient.AsFallback<ITestService>();
 
                 var fallback = fallbackFeignClient?.Fallback;
 
-                fallback = e.FeignClient.GetFallback();
+                fallback = e.FeignClient.GetFallback<object>();
                 fallback = e.FeignClient.GetFallback<object>();
                 //     fallback = e.FeignClient.GetFallback<ITestService>();
 

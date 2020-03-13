@@ -17,12 +17,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Feign.Tests.NET45
 {
+
     [TestClass]
     public class UnitTest1
     {
         [TestMethod]
         public void TestMethod1()
-        {            
+        {
             DynamicAssembly dynamicAssembly = new DynamicAssembly();
             dynamicAssembly.DEBUG_MODE = true;
             FeignClientHttpProxyTypeBuilder feignClientTypeBuilder = new FeignClientHttpProxyTypeBuilder(dynamicAssembly);

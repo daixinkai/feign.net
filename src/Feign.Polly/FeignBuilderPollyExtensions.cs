@@ -14,7 +14,7 @@ using System.Text;
 namespace Feign
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class FeignBuilderExtensions
+    public static class FeignBuilderPollyExtensions
     {
         /// <summary>
         /// 添加Polly支持

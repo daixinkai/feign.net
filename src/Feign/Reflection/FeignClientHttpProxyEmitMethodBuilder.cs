@@ -74,6 +74,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Stloc, local_Uri);
             List<EmitRequestContent> emitRequestContents = EmitParameter(typeBuilder, iLGenerator, method, local_Uri, local_OldValue);
             EmitCallMethod(typeBuilder, methodBuilder, iLGenerator, serviceType, feignClientMethodInfo, requestMapping, local_Uri, emitRequestContents);
+            methodBuilder.CopyCustomAttributes(method);
             return feignClientMethodInfo;
         }
         /// <summary>

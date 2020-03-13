@@ -16,7 +16,7 @@ namespace Feign.TestWeb.Controllers
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get([FromServices] IDistributedCache distributedCache)
-        {
+        {            
             return new string[] { "value1", "value2", distributedCache?.GetHashCode().ToString() };
         }
 

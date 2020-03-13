@@ -94,7 +94,15 @@ namespace Feign.Reflection
                CallingConventions.Standard,
                fieldBuilders.Select(s => s.FieldType).ToArray());
 
+            for (int i = 0; i < fieldBuilders.Count; i++)
+            {
+                constructorBuilder.DefineParameter(i + 1, ParameterAttributes.None, fieldBuilders[i].Name);
+            }
+
             ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
+
+            constructorIlGenerator.CallBaseTypeDefaultConstructor(typeBuilder.BaseType);
+            constructorIlGenerator.Emit(OpCodes.Nop);
             if (fieldBuilders.Count > 0)
             {
                 for (int i = 0; i < fieldBuilders.Count; i++)

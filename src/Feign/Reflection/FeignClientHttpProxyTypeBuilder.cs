@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -104,6 +105,12 @@ namespace Feign.Reflection
                 var buildMethod = methodBuilder.BuildMethod(typeBuilder, serviceType, method, feignClientAttribute);
                 feignClientTypeInfo.Methods.Add(buildMethod);
             }
+
+            foreach (var property in serviceType.GetPropertiesIncludingBaseInterfaces())
+            {
+                BuildAutoProperty(typeBuilder, serviceType, property);
+            }
+
             var typeInfo = typeBuilder.CreateTypeInfo();
             Type type = typeInfo.AsType();
 
@@ -129,21 +136,22 @@ namespace Feign.Reflection
         void BuildConstructor(TypeBuilder typeBuilder, Type parentType)
         {
             ConstructorInfo baseConstructorInfo = GetConstructor(parentType);
-            var parameterTypes = baseConstructorInfo.GetParameters().Select(s => s.ParameterType).ToArray();
+            typeBuilder.BuildCallBaseTypeConstructor(baseConstructorInfo);
+            //var parameterTypes = baseConstructorInfo.GetParameters().Select(s => s.ParameterType).ToArray();
 
-            ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
-               MethodAttributes.Public,
-               CallingConventions.Standard,
-               parameterTypes);
+            //ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
+            //   MethodAttributes.Public,
+            //   CallingConventions.Standard,
+            //   parameterTypes);
 
-            ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
-            constructorIlGenerator.Emit(OpCodes.Ldarg_0);
-            for (int i = 1; i <= baseConstructorInfo.GetParameters().Length; i++)
-            {
-                constructorIlGenerator.Emit(OpCodes.Ldarg_S, i);
-            }
-            constructorIlGenerator.Emit(OpCodes.Call, baseConstructorInfo);
-            constructorIlGenerator.Emit(OpCodes.Ret);
+            //ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
+            //constructorIlGenerator.Emit(OpCodes.Ldarg_0);
+            //for (int i = 1; i <= baseConstructorInfo.GetParameters().Length; i++)
+            //{
+            //    constructorIlGenerator.Emit(OpCodes.Ldarg_S, i);
+            //}
+            //constructorIlGenerator.Emit(OpCodes.Call, baseConstructorInfo);
+            //constructorIlGenerator.Emit(OpCodes.Ret);
         }
 
         void BuildReadOnlyProperty(TypeBuilder typeBuilder, Type interfaceType, string propertyName, string propertyValue)
@@ -162,6 +170,48 @@ namespace Feign.Reflection
             }
             iLGenerator.Emit(OpCodes.Ret);
             propertyBuilder.SetGetMethod(propertyGet);
+        }
+
+        void BuildAutoProperty(TypeBuilder typeBuilder, Type type, PropertyInfo property)
+        {
+
+            MethodAttributes methodAttributes =
+                MethodAttributes.Public
+                | MethodAttributes.SpecialName
+                | MethodAttributes.HideBySig
+                | MethodAttributes.NewSlot
+                | MethodAttributes.Virtual
+                | MethodAttributes.Final;
+
+            string fieldName = "<" + property.Name + ">k__BackingField";
+            FieldBuilder fieldBuilder = typeBuilder.DefineField(fieldName, property.PropertyType, FieldAttributes.Private);
+            fieldBuilder.SetCustomAttribute(() => new CompilerGeneratedAttribute());
+            PropertyBuilder propertyBuilder = typeBuilder.DefineProperty(property.Name, PropertyAttributes.None, property.PropertyType, Type.EmptyTypes);
+            if (property.CanRead)
+            {
+                MethodBuilder propertyGet = typeBuilder.DefineMethod("get_" + property.Name, methodAttributes, property.PropertyType, Type.EmptyTypes);
+                propertyGet.SetCustomAttribute(() => new CompilerGeneratedAttribute());
+                ILGenerator iLGenerator = propertyGet.GetILGenerator();
+                iLGenerator.Emit(OpCodes.Ldarg_0);
+                iLGenerator.Emit(OpCodes.Ldfld, fieldBuilder);
+                iLGenerator.Emit(OpCodes.Ret);
+                propertyBuilder.SetGetMethod(propertyGet);
+            }
+
+            if (property.CanWrite)
+            {
+                MethodBuilder propertySet = typeBuilder.DefineMethod("set_" + property.Name, methodAttributes, typeof(void), new Type[] { property.PropertyType });
+                propertySet.SetCustomAttribute(() => new CompilerGeneratedAttribute());
+                propertySet.DefineParameter(1, ParameterAttributes.None, "value");
+                ILGenerator iLGenerator = propertySet.GetILGenerator();
+                iLGenerator.Emit(OpCodes.Ldarg_0);
+                iLGenerator.Emit(OpCodes.Ldarg_1);
+                iLGenerator.Emit(OpCodes.Stfld, fieldBuilder);
+                iLGenerator.Emit(OpCodes.Ret);
+                propertyBuilder.SetSetMethod(propertySet);
+            }
+
+            propertyBuilder.CopyCustomAttributes(property);
         }
 
         string GetTypeFullName(Type serviceType)
