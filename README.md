@@ -23,6 +23,24 @@
         //[GetMapping("/{id}")]
         [MethodId("GetAsync")]
         Task<string> GetAsync([PathVariable("id")]int id);
+        /// <summary>
+        /// 获取流
+        /// </summary>
+        /// <returns></returns>
+        [GetMapping("/stream")]
+        Task<Stream> GetStreamAsync();
+        /// <summary>
+        /// 获取buffer
+        /// </summary>
+        /// <returns></returns>
+        [GetMapping("/stream")]
+        Task<byte[]> GetBufferAsync();
+        /// <summary>
+        /// 获取HttpResponseMessage
+        /// </summary>
+        /// <returns></returns>
+        [GetMapping("/stream")]
+        Task<HttpResponseMessage> GetHttpResponseMessageAsync();
 
         /// <summary>
         /// 以json的方式post一个请求
