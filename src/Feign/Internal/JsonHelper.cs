@@ -30,6 +30,12 @@ namespace Feign.Internal
         }
 
 #if SYSTEM_TEXT_JSON
+
+        readonly static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         public static string SerializeObject(object value)
         {
             return JsonSerializer.Serialize(value, value.GetType());
@@ -37,12 +43,12 @@ namespace Feign.Internal
 
         public static TResult DeserializeObject<TResult>(string value)
         {
-            return JsonSerializer.Deserialize<TResult>(value);
+            return JsonSerializer.Deserialize<TResult>(value, _jsonSerializerOptions);
         }
 
 
         public static void Serialize(Stream stream, object value, Type type, Encoding encoding)
-        {            
+        {
             using (Utf8JsonWriter utf8JsonWriter = new Utf8JsonWriter(stream))
             {
                 JsonSerializer.Serialize(utf8JsonWriter, value);
