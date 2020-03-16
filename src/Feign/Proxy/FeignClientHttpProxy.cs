@@ -17,7 +17,7 @@ namespace Feign.Proxy
     /// <typeparam name="TService"></typeparam>
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
     {
-        public FeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory)
+        public FeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null)
         {
             _feignOptions = feignOptions;
             _globalFeignClientPipeline = _feignOptions?.FeignClientPipeline as GlobalFeignClientPipeline;

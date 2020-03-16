@@ -294,87 +294,106 @@ namespace Feign.Proxy
 
         private SpecialResult<TResult> GetSpecialResult<TResult>(HttpResponseMessage responseMessage)
         {
-            SpecialResult<TResult> result = new SpecialResult<TResult>();
             if (typeof(TResult) == typeof(Task))
             {
-                result.Result = (TResult)(object)TaskEx.CompletedTask;
-                result.IsSpecialResult = true;
+                return GetSpecialResult<Task, TResult>(TaskEx.CompletedTask);
             }
             else if (typeof(TResult) == typeof(string))
             {
-                result.Result = (TResult)(object)responseMessage.Content.ReadAsStringAsync().GetResult();
-                result.IsSpecialResult = true;
+                return GetSpecialResult<string, TResult>(responseMessage.Content.ReadAsStringAsync());
             }
             else if (typeof(TResult) == typeof(Stream))
             {
-                result.Result = (TResult)(object)responseMessage.Content.ReadAsStreamAsync().GetResult();
-                result.IsSpecialResult = true;
+                return GetSpecialResult<Stream, TResult>(responseMessage.Content.ReadAsStreamAsync());
             }
             else if (typeof(TResult) == typeof(byte[]))
             {
-                result.Result = (TResult)(object)responseMessage.Content.ReadAsByteArrayAsync().GetResult();
-                result.IsSpecialResult = true;
+                return GetSpecialResult<byte[], TResult>(responseMessage.Content.ReadAsByteArrayAsync());
             }
             else if (typeof(TResult) == typeof(HttpResponseMessage))
             {
-                result.Result = (TResult)(object)responseMessage;
-                result.IsSpecialResult = true;
+                return GetSpecialResult<HttpResponseMessage, TResult>(responseMessage);
             }
             else if (typeof(TResult) == typeof(HttpContent))
             {
-                result.Result = (TResult)(object)responseMessage.Content;
-                result.IsSpecialResult = true;
+                return GetSpecialResult<HttpContent, TResult>(responseMessage.Content);
             }
+            SpecialResult<TResult> result = new SpecialResult<TResult>();
             return result;
+        }
+        private Task<SpecialResult<TResult>> GetSpecialResultAsync<TResult>(HttpResponseMessage responseMessage)
+        {
+            if (typeof(TResult) == typeof(Task))
+            {
+                return GetSpecialResultAsync<Task, TResult>(TaskEx.CompletedTask);
+            }
+            else if (typeof(TResult) == typeof(string))
+            {
+                return GetSpecialResultAsync<string, TResult>(responseMessage.Content.ReadAsStringAsync());
+            }
+            else if (typeof(TResult) == typeof(Stream))
+            {
+                return GetSpecialResultAsync<Stream, TResult>(responseMessage.Content.ReadAsStreamAsync());
+            }
+            else if (typeof(TResult) == typeof(byte[]))
+            {
+                return GetSpecialResultAsync<byte[], TResult>(responseMessage.Content.ReadAsByteArrayAsync());
+            }
+            else if (typeof(TResult) == typeof(HttpResponseMessage))
+            {
+                return GetSpecialResultAsync<HttpResponseMessage, TResult>(responseMessage);
+            }
+            else if (typeof(TResult) == typeof(HttpContent))
+            {
+                return GetSpecialResultAsync<HttpContent, TResult>(responseMessage.Content);
+            }
+            SpecialResult<TResult> result = new SpecialResult<TResult>();
+            return Task.FromResult(result);
         }
 
-        private async Task<SpecialResult<TResult>> GetSpecialResultAsync<TResult>(HttpResponseMessage responseMessage)
+        private SpecialResult<TResult> GetSpecialResult<TSource, TResult>(Task<TSource> task)
         {
-            SpecialResult<TResult> result = new SpecialResult<TResult>();
-            if (typeof(TResult) == typeof(Task))
+            SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
             {
-                result.Result = (TResult)(object)TaskEx.CompletedTask;
-                result.IsSpecialResult = true;
-            }
-            else if (typeof(TResult) == typeof(string))
-            {
-                result.Result = (TResult)(object)await responseMessage.Content.ReadAsStringAsync()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
-                result.IsSpecialResult = true;
-            }
-            else if (typeof(TResult) == typeof(Stream))
-            {
-                result.Result = (TResult)(object)await responseMessage.Content.ReadAsStreamAsync()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
-                result.IsSpecialResult = true;
-            }
-            else if (typeof(TResult) == typeof(byte[]))
-            {
-                result.Result = (TResult)(object)await responseMessage.Content.ReadAsByteArrayAsync()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
-                result.IsSpecialResult = true;
-            }
-            else if (typeof(TResult) == typeof(HttpResponseMessage))
-            {
-                result.Result = (TResult)(object)responseMessage;
-                result.IsSpecialResult = true;
-            }
-            else if (typeof(TResult) == typeof(HttpContent))
-            {
-                result.Result = (TResult)(object)responseMessage.Content;
-                result.IsSpecialResult = true;
-            }
-            return result;
+                IsSpecialResult = true
+            };
+            specialResult.Result = (TResult)(object)task.GetResult();
+            return specialResult;
         }
+
+        private SpecialResult<TResult> GetSpecialResult<TSource, TResult>(TSource result)
+        {
+            SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
+            {
+                IsSpecialResult = true
+            };
+            specialResult.Result = (TResult)(object)result;
+            return specialResult;
+        }
+        private async Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource,TResult>(Task<TSource> task)
+        {
+            SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
+            {
+                IsSpecialResult = true
+            };
+            specialResult.Result = (TResult)(object)await task
+#if CONFIGUREAWAIT_FALSE               
+           .ConfigureAwait(false)
+#endif
+                    ;
+            return specialResult;
+        }
+
+        private Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource, TResult>(TSource result)
+        {
+            SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
+            {
+                IsSpecialResult = true
+            };
+            specialResult.Result = (TResult)(object)result;
+            return Task.FromResult(specialResult);
+        }
+
 
         /// <summary>
         /// 发送请求

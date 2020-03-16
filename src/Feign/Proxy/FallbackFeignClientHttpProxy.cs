@@ -23,7 +23,7 @@ namespace Feign.Proxy
         where TFallback : TService
     {
 
-        public FallbackFeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory, TFallback fallback) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+        public FallbackFeignClientHttpProxy(TFallback fallback, IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
         {
             Fallback = fallback;
         }

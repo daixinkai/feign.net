@@ -15,7 +15,7 @@ namespace Feign.Standalone.Proxy
         where TFallbackFactory : IFallbackFactory<TService>
         where TService : class
     {
-        public StandaloneFallbackFactoryFeignClientHttpProxy() : base(GetService<IFeignOptions>(), GetService<IServiceDiscovery>(), GetService<ICacheProvider>(), GetService<ILoggerFactory>(), GetService<TFallbackFactory>())
+        public StandaloneFallbackFactoryFeignClientHttpProxy() : base(GetService<TFallbackFactory>(), GetService<IFeignOptions>(), GetService<IServiceDiscovery>(), GetService<ICacheProvider>(), GetService<ILoggerFactory>())
         {
         }
 

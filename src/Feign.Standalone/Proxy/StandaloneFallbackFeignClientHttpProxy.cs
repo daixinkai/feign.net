@@ -14,7 +14,7 @@ namespace Feign.Standalone.Proxy
     public abstract class StandaloneFallbackFeignClientHttpProxy<TService, TFallback> : FallbackFeignClientHttpProxy<TService, TFallback> where TService : class
       where TFallback : TService
     {
-        public StandaloneFallbackFeignClientHttpProxy() : base(GetService<IFeignOptions>(), GetService<IServiceDiscovery>(), GetService<ICacheProvider>(), GetService<ILoggerFactory>(), GetService<TFallback>())
+        public StandaloneFallbackFeignClientHttpProxy() : base(GetService<TFallback>(), GetService<IFeignOptions>(), GetService<IServiceDiscovery>(), GetService<ICacheProvider>(), GetService<ILoggerFactory>())
         {
         }
 

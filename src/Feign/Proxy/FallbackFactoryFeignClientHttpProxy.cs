@@ -18,7 +18,7 @@ namespace Feign.Proxy
     public abstract class FallbackFactoryFeignClientHttpProxy<TService, TFallbackFactory> : FallbackFeignClientHttpProxy<TService, TService>, IFallbackFactoryFeignClient<TService>, IFeignClient<TService> where TService : class
         where TFallbackFactory : IFallbackFactory<TService>
     {
-        public FallbackFactoryFeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory, TFallbackFactory fallbackFactory) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory, GetFallback(fallbackFactory))
+        public FallbackFactoryFeignClientHttpProxy(TFallbackFactory fallbackFactory, IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null) : base(GetFallback(fallbackFactory), feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
         {
             FallbackFactory = fallbackFactory;
         }

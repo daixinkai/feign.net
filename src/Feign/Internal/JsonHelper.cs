@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD2_1&&false
+﻿#if NETSTANDARD2_1
 #define SYSTEM_TEXT_JSON
 #else
 #define NEWTONSOFT_JSON
@@ -42,9 +42,11 @@ namespace Feign.Internal
 
 
         public static void Serialize(Stream stream, object value, Type type, Encoding encoding)
-        {
-            Utf8JsonWriter utf8JsonWriter = new Utf8JsonWriter(stream);
-            utf8JsonWriter.WriteStringValue(SerializeObject(value));
+        {            
+            using (Utf8JsonWriter utf8JsonWriter = new Utf8JsonWriter(stream))
+            {
+                JsonSerializer.Serialize(utf8JsonWriter, value);
+            }
         }
 
 #endif
@@ -70,6 +72,7 @@ namespace Feign.Internal
                 jsonWriter.Flush();
             }
         }
+
         static JsonWriter CreateJsonWriter(Type type, Stream writeStream, Encoding effectiveEncoding)
         {
             if (type == null)
