@@ -1,4 +1,10 @@
-﻿using Feign.Cache;
+﻿#if USE_SYSTEM_TEXT_JSON
+using System.Text.Json;
+using JsonSerializerSettings = System.Text.Json.JsonSerializerOptions;
+#else
+using Newtonsoft.Json;
+#endif
+using Feign.Cache;
 using Feign.Discovery;
 using Feign.Formatting;
 using Feign.Logging;
@@ -125,6 +131,18 @@ namespace Feign
         public static IFeignBuilder AddCacheProvider<TCacheProvider>(this IFeignBuilder feignBuilder) where TCacheProvider : ICacheProvider
         {
             feignBuilder.AddOrUpdateService(typeof(ICacheProvider), typeof(TCacheProvider), FeignClientLifetime.Singleton);
+            return feignBuilder;
+        }
+        /// <summary>
+        /// Configure JsonSettings
+        /// </summary>
+        /// <typeparam name="TFeignBuilder"></typeparam>
+        /// <param name="feignBuilder"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static TFeignBuilder ConfigureJsonSettings<TFeignBuilder>(this TFeignBuilder feignBuilder, Action<JsonSerializerSettings> configure) where TFeignBuilder : IFeignBuilder
+        {
+            feignBuilder.Options.ConfigureJsonSettings(configure);
             return feignBuilder;
         }
 

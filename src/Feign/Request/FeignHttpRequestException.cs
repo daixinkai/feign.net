@@ -12,7 +12,7 @@ namespace Feign.Request
     /// </summary>
     public class FeignHttpRequestException : HttpRequestException
     {
-        public FeignHttpRequestException(IFeignClient feignClient, FeignHttpRequestMessage requestMessage, HttpRequestException httpRequestException) : base(GetMessage(feignClient, requestMessage, httpRequestException))
+        public FeignHttpRequestException(IFeignClient feignClient, FeignHttpRequestMessage requestMessage, Exception exception) : base(GetMessage(feignClient, requestMessage, exception), exception)
         {
             FeignClient = feignClient;
             RequestMessage = requestMessage;
@@ -26,11 +26,11 @@ namespace Feign.Request
         /// </summary>
         public FeignHttpRequestMessage RequestMessage { get; }
 
-        static string GetMessage(IFeignClient feignClient, FeignHttpRequestMessage httpRequestMessage, HttpRequestException httpRequestException)
+        static string GetMessage(IFeignClient feignClient, FeignHttpRequestMessage httpRequestMessage, Exception exception)
         {
             //string url = BuildUrl(httpRequestMessage.FeignClientRequest.BaseUrl, httpRequestMessage.FeignClientRequest.MappingUri);
             string url = httpRequestMessage.RequestUri.ToString();
-            return $"{httpRequestMessage.Method.Method} request error on {url} : {httpRequestException.Message}";
+            return $"{httpRequestMessage.Method.Method} request error on {url} : {exception.Message}";
         }
 
         static string BuildUrl(string baseUrl, string uri)

@@ -10,7 +10,7 @@ using System.Text;
 namespace Feign
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class FeignBuilderExtensions
+    public static class SteeltoeFeignBuilderExtensions
     {
         public static T AddSteeltoe<T>(this T feignBuilder) where T : IFeignBuilder
         {

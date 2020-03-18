@@ -18,10 +18,11 @@ namespace Feign
             Converters.AddConverter(new ObjectStringConverter());
             MediaTypeFormatters = new MediaTypeFormatterCollection();
             MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter());
+            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(Constants.MediaTypes.TEXT_JSON));
+            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter());
+            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter(Constants.MediaTypes.TEXT_XML));
             MediaTypeFormatters.AddFormatter(new FormUrlEncodedMediaTypeFormatter());
             MediaTypeFormatters.AddFormatter(new MultipartFormDataMediaTypeFormatter());
-            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter());
-            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter() { MediaType = Constants.MediaTypes.TEXT_XML });
             FeignClientPipeline = new GlobalFeignClientPipeline();
             Lifetime = FeignClientLifetime.Transient;
             Types = new List<FeignClientTypeInfo>();

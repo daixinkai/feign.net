@@ -32,11 +32,16 @@ namespace Feign.TestWeb.NETCORE30
             var builder = services.AddFeignClients(options =>
             {
                 //options.DiscoverServiceCacheTime = TimeSpan.FromSeconds(10);
+            }).ConfigureJsonSettings(options =>
+            {
+                options.IgnoreNullValues = true;
+                options.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             })
               .AddTestFeignClients()
             //.AddServiceDiscovery<TestServiceDiscovery>()
             //.AddSteeltoe()
             ;
+            builder.Options.FeignClientPipeline.Service<IAngleSharpTestService>().AddAngleSharp();
             builder.AddPolly(options =>
             {
                 options.Configure(asyncPolicy =>
@@ -96,6 +101,7 @@ namespace Feign.TestWeb.NETCORE30
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
         }

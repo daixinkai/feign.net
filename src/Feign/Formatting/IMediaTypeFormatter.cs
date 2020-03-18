@@ -17,5 +17,7 @@ namespace Feign.Formatting
         string MediaType { get; }
         //TResult GetResult<TResult>(byte[] buffer, Encoding encoding);
         TResult GetResult<TResult>(Stream stream, Encoding encoding);
+        //Task<TResult> ReadAsync<TResult>(Stream stream, Encoding encoding);
+        //Task WriteAsync<TSource>(TSource source, Stream stream, Encoding encoding);
     }
 }

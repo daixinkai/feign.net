@@ -15,11 +15,14 @@ namespace Feign.Formatting
     /// </summary>
     public class XmlMediaTypeFormatter : IMediaTypeFormatter
     {
-        public XmlMediaTypeFormatter()
+        public XmlMediaTypeFormatter() : this(Constants.MediaTypes.APPLICATION_XML)
         {
-            MediaType = Constants.MediaTypes.APPLICATION_XML;
         }
-        public string MediaType { get; set; }
+        public XmlMediaTypeFormatter(string mediaType)
+        {
+            MediaType = mediaType;
+        }
+        public string MediaType { get; }
 
         public HttpContent GetHttpContent(object content, MediaTypeHeaderValue contentType)
         {

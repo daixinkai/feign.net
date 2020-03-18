@@ -1,0 +1,35 @@
+﻿#if USE_SYSTEM_TEXT_JSON
+using System.Text.Json;
+using JsonSerializerSettings = System.Text.Json.JsonSerializerOptions;
+#else
+using Newtonsoft.Json;
+#endif
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Feign
+{
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static class FeignOptionsExtensions
+    {
+        /// <summary>
+        /// Configure JsonSettings
+        /// </summary>
+        /// <param name="feignOptions"></param>
+        /// <param name="configure"></param>
+        public static void ConfigureJsonSettings(this IFeignOptions feignOptions, Action<JsonSerializerSettings> configure)
+        {
+
+#if USE_SYSTEM_TEXT_JSON
+            configure?.Invoke(Internal.JsonHelper._jsonSerializerOptions);
+#else
+            configure?.Invoke(Internal.JsonHelper._jsonSerializerSettings);
+#endif
+
+        }
+    }
+}

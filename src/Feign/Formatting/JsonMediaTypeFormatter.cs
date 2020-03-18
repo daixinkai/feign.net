@@ -1,4 +1,10 @@
-﻿using Feign.Internal;
+﻿#if USE_SYSTEM_TEXT_JSON
+using System.Text.Json;
+#else
+using Newtonsoft.Json;
+#endif
+
+using Feign.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,23 +21,38 @@ namespace Feign.Formatting
     /// </summary>
     public class JsonMediaTypeFormatter : IMediaTypeFormatter
     {
-        public JsonMediaTypeFormatter()
+#if USE_SYSTEM_TEXT_JSON
+        public JsonSerializerOptions JsonSerializerOptions { get; }
+#else
+        public JsonSerializerSettings JsonSerializerSettings { get; }
+#endif
+
+        public JsonMediaTypeFormatter() : this(Constants.MediaTypes.APPLICATION_JSON)
         {
-            MediaType = Constants.MediaTypes.APPLICATION_JSON;
+        }
+
+        public JsonMediaTypeFormatter(string mediaType)
+        {
+#if USE_SYSTEM_TEXT_JSON
+            JsonSerializerOptions = new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true
+            };
+#else
+            JsonSerializerSettings = new JsonSerializerSettings();
+#endif
+            MediaType = mediaType;
         }
         public string MediaType { get; }
 
         public TResult GetResult<TResult>(byte[] buffer, Encoding encoding)
         {
-            string json = (encoding ?? Encoding.Default).GetString(buffer);
-            return JsonHelper.DeserializeObject<TResult>(json);
+            return JsonHelper.DeserializeObject<TResult>(buffer, encoding);
         }
 
         public TResult GetResult<TResult>(Stream stream, Encoding encoding)
         {
-            byte[] buffer = new byte[stream.Length];
-            stream.Read(buffer, 0, buffer.Length);
-            return GetResult<TResult>(buffer, encoding);
+            return JsonHelper.DeserializeObject<TResult>(stream, encoding);
         }
     }
 }
