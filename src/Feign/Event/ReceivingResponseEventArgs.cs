@@ -60,6 +60,12 @@ namespace Feign
         internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, HttpResponseMessage responseMessage) : base(feignClient, responseMessage, typeof(TResult))
         {
         }
+
+        internal TResult GetResult()
+        {
+            return base.GetResult<TResult>();
+        }
+
     }
 
 }

@@ -22,6 +22,8 @@ namespace Feign.TestWeb.NETCORE30.Pages
         public async Task OnGet([FromServices]ITestService testService)
         {
             string name = testService.Name;
+            string serviceId = testService.ServiceId;
+            Type serviceType = testService.ServiceType;
             var r = await testService.Get();
             //var r = testService.GetById(1).Result;
             //var r = await testService.GetQueryResultValueAsync("", new TestServiceParam { });

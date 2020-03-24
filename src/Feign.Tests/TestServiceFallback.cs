@@ -27,7 +27,10 @@ namespace Feign.Tests
 
         TestServiceFallback _testService2;
 
-        public string Name { get; set; }
+        //public string Name { get; set; }
+        string ITestParentService<string>.Name { get; set; }
+        string ITestParentService<string>.ServiceId { get; set; }
+        Type ITestParentService<string>.ServiceType { get; set; }
 
         public Task<string> Get()
         {

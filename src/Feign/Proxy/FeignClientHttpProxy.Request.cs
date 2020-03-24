@@ -51,11 +51,16 @@ namespace Feign.Proxy
            .ConfigureAwait(false)
 #endif
                 ;
-            await GetResultAsync<string>(request, response)
+            //            await GetResultAsync<string>(request, response)
+            //#if CONFIGUREAWAIT_FALSE
+            //           .ConfigureAwait(false)
+            //#endif
+            //                ;
+            await EnsureSuccessAsync(request, response)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
-                ;
+           ;
         }
         protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request)
         {
@@ -73,7 +78,8 @@ namespace Feign.Proxy
         protected virtual void Send(FeignClientHttpRequest request)
         {
             HttpResponseMessage response = GetResponseMessage(request);
-            GetResult<string>(request, response);
+            //GetResult<string>(request, response);
+            EnsureSuccess(request, response);
         }
         protected virtual TResult Send<TResult>(FeignClientHttpRequest request)
         {
@@ -203,7 +209,7 @@ namespace Feign.Proxy
             //if (receivingResponseEventArgs.Result != null)
             if (receivingResponseEventArgs._isSetResult)
             {
-                return receivingResponseEventArgs.GetResult<TResult>();
+                return receivingResponseEventArgs.GetResult();
             }
             #endregion
             EnsureSuccess(request, responseMessage);
@@ -248,7 +254,7 @@ namespace Feign.Proxy
             //if (receivingResponseEventArgs.Result != null)
             if (receivingResponseEventArgs._isSetResult)
             {
-                return receivingResponseEventArgs.GetResult<TResult>();
+                return receivingResponseEventArgs.GetResult();
             }
             #endregion
             await EnsureSuccessAsync(request, responseMessage)

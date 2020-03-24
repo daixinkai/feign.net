@@ -137,7 +137,7 @@ namespace Feign.Reflection
             {
                 iLGenerator.Emit(OpCodes.Ldloc, types);
                 iLGenerator.Emit(OpCodes.Ldc_I4, i);
-                ReflectionHelper.EmitType(iLGenerator, parameters[i].ParameterType);
+                iLGenerator.EmitType(parameters[i].ParameterType);
                 iLGenerator.Emit(OpCodes.Stelem_Ref);
             }
 
@@ -184,7 +184,7 @@ namespace Feign.Reflection
             PropertyBuilder propertyBuilder = typeBuilder.DefineProperty("Method", PropertyAttributes.None, typeof(MethodInfo), Type.EmptyTypes);
             MethodBuilder propertyGet = typeBuilder.DefineMethod("get_Method", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Final, typeof(MethodInfo), Type.EmptyTypes);
             ILGenerator iLGenerator = propertyGet.GetILGenerator();
-            ReflectionHelper.EmitMethodInfo(iLGenerator, method);
+            iLGenerator.EmitMethodInfo(method);
             iLGenerator.Emit(OpCodes.Ret);
             propertyBuilder.SetGetMethod(propertyGet);
         }

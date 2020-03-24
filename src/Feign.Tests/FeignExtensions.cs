@@ -64,6 +64,8 @@ namespace Feign.Tests
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().Initializing += (sender, e) =>
             {
                 e.FeignClient.Service.Name = "Initializing set";
+                e.FeignClient.Service.ServiceId = e.FeignClient.ServiceId;
+                e.FeignClient.Service.ServiceType = e.FeignClient.ServiceType;
             };
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").Initializing += (sender, e) =>
             {

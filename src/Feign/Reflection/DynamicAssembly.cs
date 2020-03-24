@@ -74,5 +74,19 @@ namespace Feign.Reflection
             }
         }
 
+
+        public TypeBuilder DefineType(string typeName, TypeAttributes typeAttributes, Type parentType, Type[] interfaces)
+        {
+            return ModuleBuilder.DefineType(typeName,
+                          TypeAttributes.Public |
+                          TypeAttributes.Class |
+                          TypeAttributes.AutoClass |
+                          TypeAttributes.AnsiClass |
+                          TypeAttributes.BeforeFieldInit |
+                          TypeAttributes.AutoLayout,
+                          parentType,
+                          interfaces);
+        }
+
     }
 }

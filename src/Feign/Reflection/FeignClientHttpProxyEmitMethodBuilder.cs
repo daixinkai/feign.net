@@ -196,6 +196,7 @@ namespace Feign.Reflection
             typeBuilder.DefineMethodOverride(methodBuilder, method);
             return methodBuilder;
         }
+
         /// <summary>
         /// 调用方法
         /// </summary>
@@ -306,7 +307,7 @@ namespace Feign.Reflection
             }
             else
             {
-                EmitStringArray(iLGenerator, headers);
+                iLGenerator.EmitStringArray(headers);
             }
 
             //requestContent
@@ -359,7 +360,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ceq);
             iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);
             iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
-            ReflectionHelper.EmitMethodInfo(iLGenerator, feignClientMethodInfo.MethodMetadata);
+            iLGenerator.EmitMethodInfo(feignClientMethodInfo.MethodMetadata);
             iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodMetadata").SetMethod);
             #endregion
             //处理下 if GOTO
@@ -368,37 +369,6 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetConstructors()[0]);
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
             return localBuilder;
-
-            #endregion
-
-            #region old
-            ////method
-            //// method=null
-            //LocalBuilder methodInfoLocalBuilder = iLGenerator.DeclareLocal(typeof(MethodInfo));
-            //iLGenerator.Emit(OpCodes.Ldnull);
-            //iLGenerator.Emit(OpCodes.Stloc, methodInfoLocalBuilder);
-            //Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
-
-            //#region if (base.FeignOptions.IncludeMethodMetadata) set the call method
-            ////这里获取方法元数据
-            //PropertyInfo feignOptionsProperty = typeBuilder.BaseType.GetProperty("FeignOptions", BindingFlags.Instance | BindingFlags.NonPublic);
-            //PropertyInfo includeMethodMetadataProperty = feignOptionsProperty.PropertyType.GetProperty("IncludeMethodMetadata");
-            //iLGenerator.Emit(OpCodes.Ldarg_0);
-            //iLGenerator.Emit(OpCodes.Call, feignOptionsProperty.GetMethod);
-            //iLGenerator.Emit(OpCodes.Call, includeMethodMetadataProperty.GetMethod);
-            //iLGenerator.Emit(OpCodes.Ldc_I4, 1);
-            //iLGenerator.Emit(OpCodes.Ceq);
-            //iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);
-            //ReflectionHelper.EmitMethodInfo(iLGenerator, methodInfo);
-            //iLGenerator.Emit(OpCodes.Stloc, methodInfoLocalBuilder);
-
-            //#endregion
-            ////处理下 if GOTO
-            //iLGenerator.MarkLabel(newFeingClientRequestLabel);
-            //iLGenerator.Emit(OpCodes.Ldloc, methodInfoLocalBuilder);
-            //iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetConstructors()[0]);
-            //iLGenerator.Emit(OpCodes.Stloc, localBuilder);
-            //return localBuilder; 
             #endregion
         }
 
@@ -481,21 +451,6 @@ namespace Feign.Reflection
             PropertyInfo propertyInfo = typeof(FeignClientHttpProxy<>).MakeGenericType(serviceType).GetProperty("BaseUrl", BindingFlags.Instance | BindingFlags.NonPublic);
             iLGenerator.Emit(OpCodes.Ldarg_0); //this
             iLGenerator.Emit(OpCodes.Callvirt, propertyInfo.GetMethod);
-        }
-
-        void EmitStringArray(ILGenerator iLGenerator, IEnumerable<string> list)
-        {
-            iLGenerator.Emit(OpCodes.Ldc_I4, list.Count());
-            iLGenerator.Emit(OpCodes.Newarr, typeof(string));
-            int index = 0;
-            foreach (var item in list)
-            {
-                iLGenerator.Emit(OpCodes.Dup);
-                iLGenerator.Emit(OpCodes.Ldc_I4, index);
-                iLGenerator.Emit(OpCodes.Ldstr, item);
-                iLGenerator.Emit(OpCodes.Stelem_Ref);
-                index++;
-            }
         }
 
         /// <summary>

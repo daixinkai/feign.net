@@ -12,11 +12,13 @@ namespace Feign.Tests
     //, Url = "http://10.1.5.90:8802/"
     //, Url = "http://localhost:62088/"
     //, Url = "http://www.baidu.com/"
-    ,Url = "https://www.jd.com/"
+    , Url = "https://www.jd.com/"
     )]
     [NonFeignClient]
     public interface ITestParentService<TModel>
     {
+        Type ServiceType { get; set; }
+        string ServiceId { get; set; }
         string Name { get; set; }
         [RequestMapping("/{id}", Method = "GET")]
         [MethodId("GetById")]
