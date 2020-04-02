@@ -90,15 +90,30 @@ namespace Feign.Reflection
         /// <returns></returns>
         protected MethodInfo GetInvokeMethod(Type serviceType, MethodInfo method, RequestMappingBaseAttribute requestMapping)
         {
-            if (method.IsTaskMethod())
+            return GetInvokeMethod(serviceType, requestMapping, GetReturnType(method), method.IsTaskMethod());
+            //if (method.IsTaskMethod())
+            //{
+            //    if (method.ReturnType.IsGenericType)
+            //    {
+            //        return GetInvokeMethod(serviceType, requestMapping, method.ReturnType.GenericTypeArguments[0], true);
+            //    }
+            //    return GetInvokeMethod(serviceType, requestMapping, method.ReturnType, true);
+            //}
+            //return GetInvokeMethod(serviceType, requestMapping, method.ReturnType, false);
+        }
+
+        Type GetReturnType(MethodInfo method)
+        {
+            Type returnType;
+            if (method.IsTaskMethod() && method.ReturnType.IsGenericType)
             {
-                if (method.ReturnType.IsGenericType)
-                {
-                    return GetInvokeMethod(serviceType, requestMapping, method.ReturnType.GenericTypeArguments[0], true);
-                }
-                return GetInvokeMethod(serviceType, requestMapping, method.ReturnType, true);
+                returnType = method.ReturnType.GenericTypeArguments[0];
             }
-            return GetInvokeMethod(serviceType, requestMapping, method.ReturnType, false);
+            else
+            {
+                returnType = method.ReturnType;
+            }
+            return returnType;
         }
 
         protected virtual MethodInfo GetInvokeMethod(Type serviceType, RequestMappingBaseAttribute requestMapping, Type returnType, bool async)
@@ -347,6 +362,23 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
             iLGenerator.Emit(OpCodes.Ldstr, feignClientMethodInfo.MethodId);
             iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodId").SetMethod);
+
+            #region ResultType
+            //feignClientMethodInfo.ResultType=typeof(xx);
+            ResultTypeAttribute resultTypeAttribute = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<ResultTypeAttribute>();
+            Type returnType = GetReturnType(feignClientMethodInfo.MethodMetadata);
+            if (returnType != null && resultTypeAttribute != null)
+            {
+                Type resultType = resultTypeAttribute.ConvertType(returnType);
+                if (resultType != null)
+                {
+                    iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
+                    iLGenerator.EmitType(resultType);
+                    iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("ResultType").SetMethod);
+                }
+            }
+            #endregion
+
             Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
 
             #region if (base.FeignOptions.IncludeMethodMetadata) set the call method

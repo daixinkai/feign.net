@@ -29,5 +29,10 @@ namespace Feign.Formatting
         {
             throw new NotImplementedException();
         }
+
+        public object GetResult(Type type, Stream stream, Encoding encoding)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

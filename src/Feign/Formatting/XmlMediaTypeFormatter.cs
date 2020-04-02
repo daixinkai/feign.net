@@ -67,11 +67,17 @@ namespace Feign.Formatting
 
         public TResult GetResult<TResult>(Stream stream, Encoding encoding)
         {
+            return (TResult)GetResult(typeof(TResult), stream, encoding);
+        }
+
+        public object GetResult(Type type, Stream stream, Encoding encoding)
+        {
             using (StreamReader sr = new StreamReader(stream, encoding))
             {
-                XmlSerializer xz = new XmlSerializer(typeof(TResult));
-                return (TResult)xz.Deserialize(sr);
+                XmlSerializer xz = new XmlSerializer(type);
+                return xz.Deserialize(sr);
             }
         }
+
     }
 }

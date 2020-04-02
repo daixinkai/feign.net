@@ -44,30 +44,30 @@ namespace Feign.Tests
             return Task.FromResult<object>(null);
         }
 
-        public Task<QueryResult<JObject>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] TestServiceParam param)
-        {
-            try
-            {
-                var invoker = new Func<Task<QueryResult<JObject>>>(() => _testService1.GetQueryResultValueAsync(id, param));
-                return Task.FromResult(new QueryResult<JObject>());
-            }
-            catch (Exception)
-            {
-                return _testService1.GetQueryResultValueAsync(id, param);
-            }
-        }
+        //public Task<IQueryResult<JObject>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] TestServiceParam param)
+        //{
+        //    try
+        //    {
+        //        var invoker = new Func<Task<IQueryResult<JObject>>>(() => _testService1.GetQueryResultValueAsync(id, param));
+        //        return Task.FromResult<IQueryResult<JObject>>(new QueryResult<JObject>());
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return _testService1.GetQueryResultValueAsync(id, param);
+        //    }
+        //}
 
-        public QueryResult<JObject> GetQueryResultValue([PathVariable("id")] string id, [RequestQuery] TestServiceParam param)
-        {
-            try
-            {
-                return new QueryResult<JObject>();
-            }
-            catch (Exception)
-            {
-                return _testService1.GetQueryResultValue(id, param);
-            }
-        }
+        //public IQueryResult<JObject> GetQueryResultValue([PathVariable("id")] string id, [RequestQuery] TestServiceParam param)
+        //{
+        //    try
+        //    {
+        //        return new QueryResult<JObject>();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return _testService1.GetQueryResultValue(id, param);
+        //    }
+        //}
 
         public Task<JObject> GetValueAsync([PathVariable("id")] string id)
         {

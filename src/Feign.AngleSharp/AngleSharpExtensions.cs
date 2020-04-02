@@ -16,7 +16,7 @@ namespace Feign
             {
                 if (e.ResultType == typeof(IHtmlDocument))
                 {
-                    var stream = await e.ResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var stream = await e.ResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     e.Result = new HtmlParser().ParseDocument(stream);
                 }
             };

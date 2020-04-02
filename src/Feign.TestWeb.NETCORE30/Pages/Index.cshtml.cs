@@ -19,17 +19,27 @@ namespace Feign.TestWeb.NETCORE30.Pages
             _logger = logger;
         }
 
-        public async Task OnGet([FromServices]ITestService testService)
+        public async Task<IActionResult> OnGet([FromServices]ITestService testService, [FromServices] ITestControllerService testControllerService)
         {
+
+            var t = await testControllerService.GetQueryResultValueAsync("1", new TestServiceParam
+            {
+                Age = 11,
+                Name = "OnGet"
+            });
+
             string name = testService.Name;
             string serviceId = testService.ServiceId;
             Type serviceType = testService.ServiceType;
-            var r = await testService.Get();
-            //var r = testService.GetById(1).Result;
-            //var r = await testService.GetQueryResultValueAsync("", new TestServiceParam { });
-            //await testService.PostValueAsync();
-            HttpContext.Response.ContentType = "text/html;charset=utf-8";
-            await HttpContext.Response.WriteAsync(r);
+            //var r = await testService.Get();
+
+
+            ////var r = testService.GetById(1).Result;
+            ////var r = await testService.GetQueryResultValueAsync("", new TestServiceParam { });
+            ////await testService.PostValueAsync();
+            //HttpContext.Response.ContentType = "text/html;charset=utf-8";
+            //await HttpContext.Response.WriteAsync(r);
+            return new JsonResult(t);
         }
     }
 }

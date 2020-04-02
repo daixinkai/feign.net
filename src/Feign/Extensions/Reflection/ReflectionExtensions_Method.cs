@@ -20,6 +20,13 @@ namespace Feign
             return method.ReturnType == typeof(Task) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task<>);
         }
 
+#if NETSTANDARD2_1
+        public static bool IsValueTaskMethod(this MethodInfo method)
+        {
+            return method.ReturnType == typeof(ValueTask) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>);
+        }
+#endif
+
         public static MethodInfo[] GetMethodsIncludingBaseInterfaces(this Type type)
         {
             List<MethodInfo> methods = new List<MethodInfo>(type.GetMethods().Where(s => !s.IsSpecialName));

@@ -126,6 +126,40 @@ namespace Feign.Internal
 
                 //    }
                 //}
+
+                // get properties
+
+                foreach (var property in typeof(T).GetProperties())
+                {
+                    if (property.GetMethod == null)
+                    {
+                        continue;
+                    }
+                    object propertyValue = property.GetValue(value);
+                    if (propertyValue == null)
+                    {
+                        continue;
+                    }
+                    if (propertyValue is string)
+                    {
+                        uri = ReplaceRequestQuery(uri, property.Name, propertyValue.ToString());
+                        continue;
+                    }
+                    if (propertyValue is IEnumerable)
+                    {
+                        foreach (var item in propertyValue as IEnumerable)
+                        {
+                            if (item == null)
+                            {
+                                continue;
+                            }
+                            uri = ReplaceRequestQuery(uri, property.Name, converters.ConvertValue<string>(item, true));
+                        }
+                        continue;
+                    }
+                    uri = ReplaceRequestQuery(uri, property.Name, converters.ConvertValue<string>(propertyValue, true));
+                }
+
                 return uri;
             }
             else

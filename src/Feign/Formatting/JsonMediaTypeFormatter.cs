@@ -54,5 +54,10 @@ namespace Feign.Formatting
         {
             return JsonHelper.DeserializeObject<TResult>(stream, encoding);
         }
+
+        public object GetResult(Type type, Stream stream, Encoding encoding)
+        {
+            return JsonHelper.DeserializeObject(stream, type, encoding);
+        }
     }
 }

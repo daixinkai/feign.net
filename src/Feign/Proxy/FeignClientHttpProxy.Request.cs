@@ -51,16 +51,20 @@ namespace Feign.Proxy
            .ConfigureAwait(false)
 #endif
                 ;
-            //            await GetResultAsync<string>(request, response)
-            //#if CONFIGUREAWAIT_FALSE
-            //           .ConfigureAwait(false)
-            //#endif
-            //                ;
-            await EnsureSuccessAsync(request, response)
+            using (response)
+            {
+                //            await GetResultAsync<string>(request, response)
+                //#if CONFIGUREAWAIT_FALSE
+                //           .ConfigureAwait(false)
+                //#endif
+                //                ;
+                await EnsureSuccessAsync(request, response)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
            ;
+            }
+
         }
         protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request)
         {
@@ -69,22 +73,33 @@ namespace Feign.Proxy
            .ConfigureAwait(false)
 #endif
                 ;
-            return await GetResultAsync<TResult>(request, response)
+
+            using (response)
+            {
+                return await GetResultAsync<TResult>(request, response)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
                 ;
+            }
+
         }
         protected virtual void Send(FeignClientHttpRequest request)
         {
             HttpResponseMessage response = GetResponseMessage(request);
-            //GetResult<string>(request, response);
-            EnsureSuccess(request, response);
+            using (response)
+            {
+                //GetResult<string>(request, response);
+                EnsureSuccess(request, response);
+            }
         }
         protected virtual TResult Send<TResult>(FeignClientHttpRequest request)
         {
             HttpResponseMessage response = GetResponseMessage(request);
-            return GetResult<TResult>(request, response);
+            using (response)
+            {
+                return GetResult<TResult>(request, response);
+            }
         }
 
         private HttpResponseMessage GetResponseMessage(FeignClientHttpRequest request)
@@ -190,109 +205,6 @@ namespace Feign.Proxy
                     new HttpRequestException($"Response status code does not indicate success: {responseMessage.StatusCode.GetHashCode()} ({responseMessage.ReasonPhrase}).\r\nContent : {content}"));
             }
         }
-        /// <summary>
-        /// 获取响应结果
-        /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="responseMessage"></param>
-        /// <returns></returns>
-        private TResult GetResult<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
-        {
-            if (responseMessage == null)
-            {
-                return default(TResult);
-            }
-            #region ReceivingResponse
-            ReceivingResponseEventArgs<TService, TResult> receivingResponseEventArgs = new ReceivingResponseEventArgs<TService, TResult>(this, responseMessage);
-            OnReceivingResponse(receivingResponseEventArgs);
-            //if (receivingResponseEventArgs.Result != null)
-            if (receivingResponseEventArgs._isSetResult)
-            {
-                return receivingResponseEventArgs.GetResult();
-            }
-            #endregion
-            EnsureSuccess(request, responseMessage);
-
-            var specialResult = SpecialResults.GetSpecialResult<TResult>(responseMessage);
-            if (specialResult.IsSpecialResult)
-            {
-                return specialResult.Result;
-            }
-            if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)
-            {
-                return default(TResult);
-            }
-            IMediaTypeFormatter mediaTypeFormatter = _feignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
-            if (mediaTypeFormatter == null)
-            {
-                throw new FeignHttpRequestException(this,
-                 responseMessage.RequestMessage as FeignHttpRequestMessage,
-                 new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
-            }
-            return mediaTypeFormatter.GetResult<TResult>(
-                responseMessage.Content.ReadAsStreamAsync().GetResult(),
-                FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType)
-            );
-        }
-        /// <summary>
-        /// 获取响应结果
-        /// </summary>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="responseMessage"></param>
-        /// <returns></returns>
-        private async Task<TResult> GetResultAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
-        {
-            if (responseMessage == null)
-            {
-                return default(TResult);
-            }
-            #region ReceivingResponse
-            ReceivingResponseEventArgs<TService, TResult> receivingResponseEventArgs = new ReceivingResponseEventArgs<TService, TResult>(this, responseMessage);
-            OnReceivingResponse(receivingResponseEventArgs);
-            //if (receivingResponseEventArgs.Result != null)
-            if (receivingResponseEventArgs._isSetResult)
-            {
-                return receivingResponseEventArgs.GetResult();
-            }
-            #endregion
-            await EnsureSuccessAsync(request, responseMessage)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                ;
-
-            var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                 ;
-            if (specialResult.IsSpecialResult)
-            {
-                return specialResult.Result;
-            }
-
-            if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)
-            {
-                return default(TResult);
-            }
-            IMediaTypeFormatter mediaTypeFormatter = _feignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
-            if (mediaTypeFormatter == null)
-            {
-                throw new FeignHttpRequestException(this,
-                     responseMessage.RequestMessage as FeignHttpRequestMessage,
-                     new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
-            }
-            return mediaTypeFormatter.GetResult<TResult>(
-                await responseMessage.Content.ReadAsStreamAsync()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                ,
-                FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType)
-                );
-        }
 
 
         /// <summary>
@@ -300,20 +212,27 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        private Task<HttpResponseMessage> SendAsyncInternal(FeignClientHttpRequest request)
+        private async Task<HttpResponseMessage> SendAsyncInternal(FeignClientHttpRequest request)
         {
             HttpMethod httpMethod = GetHttpMethod(request.HttpMethod);
             HttpRequestMessage httpRequestMessage = CreateRequestMessage(request, httpMethod, CreateUri(BuildUri(request.Uri)));
-            // if support content
-            if (IsSupportContent(httpMethod))
+            using (httpRequestMessage)
             {
-                HttpContent httpContent = request.GetHttpContent();
-                if (httpContent != null)
+                // if support content
+                if (IsSupportContent(httpMethod))
                 {
-                    httpRequestMessage.Content = httpContent;
+                    HttpContent httpContent = request.GetHttpContent();
+                    if (httpContent != null)
+                    {
+                        httpRequestMessage.Content = httpContent;
+                    }
                 }
+                return await HttpClient.SendAsync(httpRequestMessage)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                    ;
             }
-            return HttpClient.SendAsync(httpRequestMessage);
         }
 
         bool IsSupportContent(HttpMethod httpMethod)

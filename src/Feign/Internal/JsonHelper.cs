@@ -22,11 +22,24 @@ namespace Feign.Internal
             return DeserializeObject<TResult>(json);
         }
 
+        public static object DeserializeObject(byte[] buffer, Type type, Encoding encoding)
+        {
+            string json = (encoding ?? Encoding.Default).GetString(buffer);
+            return DeserializeObject(json, type);
+        }
+
         public static TResult DeserializeObject<TResult>(Stream stream, Encoding encoding)
         {
             byte[] buffer = new byte[stream.Length];
             stream.Read(buffer, 0, buffer.Length);
             return DeserializeObject<TResult>(buffer, encoding);
+        }
+
+        public static object DeserializeObject(Stream stream, Type type, Encoding encoding)
+        {
+            byte[] buffer = new byte[stream.Length];
+            stream.Read(buffer, 0, buffer.Length);
+            return DeserializeObject(buffer, type, encoding);
         }
 
 #if USE_SYSTEM_TEXT_JSON
@@ -49,6 +62,11 @@ namespace Feign.Internal
         public static TResult DeserializeObject<TResult>(string value)
         {
             return JsonSerializer.Deserialize<TResult>(value, _jsonSerializerOptions);
+        }
+
+        public static object DeserializeObject(string value, Type type)
+        {
+            return JsonSerializer.Deserialize(value, type, _jsonSerializerOptions);
         }
 
 
@@ -76,6 +94,12 @@ namespace Feign.Internal
         {
             return JsonConvert.DeserializeObject<TResult>(value, _jsonSerializerSettings);
         }
+
+        public static object DeserializeObject(string value, Type type)
+        {
+            return JsonConvert.DeserializeObject(value, type, _jsonSerializerSettings);
+        }
+
         public static void Serialize(Stream stream, object value, Type type, Encoding encoding)
         {
             using (JsonWriter jsonWriter = CreateJsonWriter(type, stream, encoding))

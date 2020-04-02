@@ -36,12 +36,14 @@ namespace Feign.Tests
         [RequestMapping("/Values/uploadFiles", Method = "POST")]
         Task<string> UploadFilesAsync(IHttpRequestFile file1, IHttpRequestFile file2, IHttpRequestFile file3);
 
-        [Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
-        [RequestMapping("/{id}", Method = "GET", Accept = "text/html")]
-        Task<QueryResult<JObject>> GetQueryResultValueAsync([PathVariable("id")]string id, [RequestQuery] TestServiceParam param);
+        //[ResultType(typeof(QueryResult<>))]
+        //[Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
+        //[RequestMapping("/{id}", Method = "GET", Accept = "text/html")]
+        //Task<IQueryResult<JObject>> GetQueryResultValueAsync([PathVariable("id")]string id, [RequestQuery] TestServiceParam param);
 
-        [RequestMapping("/{id}", Method = "GET")]
-        QueryResult<JObject> GetQueryResultValue([PathVariable("id")]string id, [RequestQuery] TestServiceParam param);
+        //[ResultType(typeof(QueryResult<>))]
+        //[RequestMapping("/{id}", Method = "GET")]
+        //IQueryResult<JObject> GetQueryResultValue([PathVariable("id")]string id, [RequestQuery] TestServiceParam param);
 
         //[RequestMapping("/{id}", Method = "GET")]
         //Task<JObject> GetValueAsync([PathVariable("id")]string id);

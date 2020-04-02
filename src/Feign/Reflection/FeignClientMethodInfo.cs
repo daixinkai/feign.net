@@ -18,7 +18,16 @@ namespace Feign.Reflection
             MethodMetadata = method;
         }
 
+        public FeignClientMethodInfo(string methodId, MethodInfo method, Type resultType)
+        {
+            MethodId = methodId;
+            MethodMetadata = method;
+            ResultType = resultType;
+        }
+
         public string MethodId { get; set; }
+
+        public Type ResultType { get; set; }
 
         public MethodInfo MethodMetadata { get; set; }
 

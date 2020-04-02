@@ -28,6 +28,7 @@ namespace Feign.Tests.NET45
             dynamicAssembly.DEBUG_MODE = true;
             FeignClientHttpProxyTypeBuilder feignClientTypeBuilder = new FeignClientHttpProxyTypeBuilder(dynamicAssembly);
             FeignClientTypeInfo feignClientTypeInfo = feignClientTypeBuilder.Build(typeof(ITestService));
+            FeignClientTypeInfo feignClientTypeInfo1 = feignClientTypeBuilder.Build(typeof(ITestControllerService));
             feignClientTypeBuilder.Save();
         }
 
@@ -45,11 +46,11 @@ namespace Feign.Tests.NET45
 
             IContainer container = containerBuilder.Build();
 
-            using (ILifetimeScope lifetimeScope = container.BeginLifetimeScope())
-            {
-                ITestService testService = lifetimeScope.Resolve<ITestService>();
-                var result = testService.GetQueryResultValue("1", null);
-            }
+            //using (ILifetimeScope lifetimeScope = container.BeginLifetimeScope())
+            //{
+            //    ITestService testService = lifetimeScope.Resolve<ITestService>();
+            //    var result = testService.GetQueryResultValue("1", null);
+            //}
 
 
 
@@ -68,7 +69,7 @@ namespace Feign.Tests.NET45
             ;
             ITestService testService = windsorContainer.Resolve<ITestService>();
             Assert.IsNotNull(testService);
-            var result = testService.GetQueryResultValue("", null);
+            //var result = testService.GetQueryResultValue("", null);
         }
 
         [TestMethod]
@@ -127,7 +128,7 @@ namespace Feign.Tests.NET45
             Assert.IsNotNull(value);
 
             Assert.AreNotEqual(value, "");
-            var result = testService.GetQueryResultValue("", null);
+            //var result = testService.GetQueryResultValue("", null);
         }
 
         [TestMethod]

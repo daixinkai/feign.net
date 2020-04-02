@@ -19,7 +19,8 @@ namespace Feign
         /// <summary>
         /// 获取响应信息
         /// </summary>
-        public HttpResponseMessage ResponseMessage { get; }
+        public HttpResponseMessage ResponseMessage { get; }        
+
         /// <summary>
         /// 获取返回的类型
         /// </summary>

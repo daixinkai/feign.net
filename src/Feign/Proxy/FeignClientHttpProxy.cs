@@ -164,7 +164,6 @@ namespace Feign.Proxy
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-
             return FeignClientUtils.ReplaceRequestQuery<T>(_feignOptions.Converters, uri, name, value);
         }
         #endregion

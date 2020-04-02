@@ -9,7 +9,7 @@ namespace Feign.Tests
     /// <summary>
     /// 查询结果
     /// </summary>
-    public class QueryResult
+    public class QueryResult : IQueryResult
     {
         /// <summary>
         /// 状态码
@@ -28,7 +28,7 @@ namespace Feign.Tests
     /// 查询结果
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class QueryResult<T> : QueryResult
+    public class QueryResult<T> : QueryResult, IQueryResult<T>
     {
         public QueryResult()
         {
@@ -41,7 +41,7 @@ namespace Feign.Tests
         /// 结果
         /// </summary>
         public T Data { get; set; }
-                
+
 
     }
 }

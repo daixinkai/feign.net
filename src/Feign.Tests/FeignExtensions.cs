@@ -124,7 +124,7 @@ namespace Feign.Tests
             {
 
             };
-            feignBuilder.Options.FeignClientPipeline.ReceivingQueryResult();
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().ReceivingQueryResult();
             feignBuilder.Options.FeignClientPipeline.CancelRequest += (sender, e) =>
             {
                 e.CancellationToken.Register((state) =>
@@ -150,15 +150,15 @@ namespace Feign.Tests
         }
 
 
-        public static void ReceivingQueryResult(this IGlobalFeignClientPipeline globalFeignClient)
+        public static void ReceivingQueryResult<T>(this IFeignClientPipeline<T> globalFeignClient)
         {
             globalFeignClient.ReceivingResponse += (sender, e) =>
-            {                
-                if (!typeof(QueryResult).IsAssignableFrom(e.ResultType))
+            {
+                if (!typeof(IQueryResult).IsAssignableFrom(e.ResultType))
                 {
                     return;
                 }
-                if (e.ResultType == typeof(QueryResult))
+                if (e.ResultType == typeof(IQueryResult))
                 {
                     e.Result = new QueryResult()
                     {
@@ -167,7 +167,39 @@ namespace Feign.Tests
                     return;
                 }
 
-                if (e.ResultType.IsGenericType && e.ResultType.GetGenericTypeDefinition() == typeof(QueryResult<>))
+                Feign.Request.FeignHttpRequestMessage feignHttpRequestMessage = e.ResponseMessage.RequestMessage as Feign.Request.FeignHttpRequestMessage;
+
+                var resultType = feignHttpRequestMessage.FeignClientRequest.Method.ResultType;
+
+
+                if (e.ResultType.IsGenericType && e.ResultType.GetGenericTypeDefinition() == typeof(IQueryResult<>))
+                {
+                    QueryResult queryResult;
+                    if (e.ResponseMessage.IsSuccessStatusCode)
+                    {
+                        var content = e.ResponseMessage.Content;
+                        var buffer = content.ReadAsByteArrayAsync().Result;
+                        var json1 = Encoding.GetEncoding("iso-8859-1").GetString(buffer);
+                        string json = content.ReadAsStringAsync().Result;
+                        object data = Newtonsoft.Json.JsonConvert.DeserializeObject(json, e.ResultType.GetGenericArguments()[0]);
+                        if (data == null)
+                        {
+                            queryResult = InvokeQueryResultConstructor(e.ResultType.GetGenericArguments()[0]);
+                        }
+                        else
+                        {
+                            queryResult = InvokeQueryResultConstructor(data.GetType(), data);
+                        }
+                    }
+                    else
+                    {
+                        queryResult = InvokeQueryResultConstructor(e.ResultType.GetGenericArguments()[0]);
+                    }
+                    queryResult.StatusCode = e.ResponseMessage.StatusCode;
+                    e.Result = queryResult;
+                }
+
+                else if (e.ResultType.IsGenericType && e.ResultType.GetGenericTypeDefinition() == typeof(QueryResult<>))
                 {
                     QueryResult queryResult;
                     if (e.ResponseMessage.IsSuccessStatusCode)
