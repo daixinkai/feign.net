@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Request;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,13 @@ namespace Feign
     /// <typeparam name="TService"></typeparam>
     public interface ICancelRequestEventArgs<out TService> : IFeignClientEventArgs<TService>
     {
+        /// <summary>
+        /// 获取CancellationToken
+        /// </summary>
         CancellationToken CancellationToken { get; }
+        /// <summary>
+        /// 获取请求
+        /// </summary>
+        FeignHttpRequestMessage RequestMessage { get; }
     }
 }

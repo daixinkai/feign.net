@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Feign.Tests
@@ -15,7 +16,7 @@ namespace Feign.Tests
     {
 
         [Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
-        [RequestMapping]
+        [RequestMapping(CompletionOption = HttpCompletionOption.ResponseHeadersRead)]
         Task<string> Get();
         [RequestMapping("/{id}/asdasdsad", Method = "POST")]
         [MethodId("PostValueAsync")]

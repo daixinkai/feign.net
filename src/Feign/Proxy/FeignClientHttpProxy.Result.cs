@@ -3,6 +3,7 @@ using Feign.Internal;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -91,18 +92,19 @@ namespace Feign.Proxy
                  responseMessage.RequestMessage as FeignHttpRequestMessage,
                  new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
-            if (request.Method.ResultType!=null)
+            using (var stream = responseMessage.Content.ReadAsStreamAsync().GetResult())
             {
-                return (TResult)mediaTypeFormatter.GetResult(
-                    request.Method.ResultType,
-                    responseMessage.Content.ReadAsStreamAsync().GetResult(),
-                    FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType)
-                );
+                if (stream.CanSeek)
+                {
+                    return GetResultInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method.ResultType);
+                }
+                using (Stream seekStream = new MemoryStream())
+                {
+                    stream.CopyTo(seekStream);
+                    seekStream.Position = 0;
+                    return GetResultInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType);
+                }
             }
-            return mediaTypeFormatter.GetResult<TResult>(
-                responseMessage.Content.ReadAsStreamAsync().GetResult(),
-                FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType)
-            );
         }
 
         private async Task<TResult> GetResultInternalAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
@@ -135,29 +137,39 @@ namespace Feign.Proxy
                      new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
 
-            if (request.Method.ResultType != null)
-            {
-                return (TResult)mediaTypeFormatter.GetResult(
-                    request.Method.ResultType,
-                    await responseMessage.Content.ReadAsStreamAsync()
+            using (var stream = await responseMessage.Content.ReadAsStreamAsync()
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
-                ,
-                    FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType)
-                    );
+           )
+            {
+                if (stream.CanSeek)
+                {
+                    return GetResultInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method.ResultType);
+                }
+                using (Stream seekStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(seekStream)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                        ;
+                    seekStream.Position = 0;
+                    return GetResultInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType);
+                }
             }
 
-            return mediaTypeFormatter.GetResult<TResult>(
-                await responseMessage.Content.ReadAsStreamAsync()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                ,
-                FeignClientUtils.GetEncoding(responseMessage.Content.Headers.ContentType)
-                );
         }
 
+
+        private TResult GetResultInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, System.Net.Http.Headers.MediaTypeHeaderValue mediaTypeHeaderValue, Type resultType)
+        {
+            if (resultType != null)
+            {
+                return (TResult)mediaTypeFormatter.GetResult(resultType, stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue));
+            }
+            return mediaTypeFormatter.GetResult<TResult>(stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue));
+        }
 
     }
 }

@@ -53,7 +53,7 @@ namespace Feign.Request
         /// <summary>
         /// 获取Headers
         /// </summary>
-        public string[] Headers { get; set; }
+        public string[] Headers { get; }
         /// <summary>
         /// 获取HttpMethod
         /// </summary>
@@ -69,7 +69,11 @@ namespace Feign.Request
         /// <summary>
         /// 获取Accept
         /// </summary>
-        public string Accept { get; set; }
+        public string Accept { get; }
+        /// <summary>
+        /// 获取或设置HttpCompletionOption
+        /// </summary>
+        public HttpCompletionOption CompletionOption { get; set; }
         /// <summary>
         /// 获取RequestContent
         /// </summary>

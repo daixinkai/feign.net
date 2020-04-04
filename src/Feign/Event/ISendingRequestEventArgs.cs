@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 
 namespace Feign
 {
@@ -16,6 +17,12 @@ namespace Feign
         /// 获取请求
         /// </summary>
         FeignHttpRequestMessage RequestMessage { get; }
+
+        /// <summary>
+        /// 获取 <see cref="System.Threading.CancellationTokenSource"/>
+        /// </summary>
+        CancellationTokenSource CancellationTokenSource { get; }
+
         /// <summary>
         /// 获取一个值,指示是否终止请求
         /// </summary>

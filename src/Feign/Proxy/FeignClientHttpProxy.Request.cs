@@ -206,7 +206,6 @@ namespace Feign.Proxy
             }
         }
 
-
         /// <summary>
         /// 发送请求
         /// </summary>
@@ -227,7 +226,7 @@ namespace Feign.Proxy
                         httpRequestMessage.Content = httpContent;
                     }
                 }
-                return await HttpClient.SendAsync(httpRequestMessage)
+                return await HttpClient.SendAsync(httpRequestMessage, request.CompletionOption)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif

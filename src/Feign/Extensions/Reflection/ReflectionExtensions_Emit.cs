@@ -58,6 +58,17 @@ namespace Feign
         }
 
         /// <summary>
+        ///  like  typeof(ReflectionExtensions)
+        /// </summary>
+        /// <param name="iLGenerator"></param>
+        /// <param name="value"></param>
+        public static void EmitEnumValue(this ILGenerator iLGenerator, Enum value)
+        {
+            Type enumType = value.GetType();
+            iLGenerator.Emit(OpCodes.Ldc_I4, value.GetHashCode());
+        }
+
+        /// <summary>
         /// like new string[]{"1","2","3","4"}
         /// </summary>
         /// <param name="iLGenerator"></param>

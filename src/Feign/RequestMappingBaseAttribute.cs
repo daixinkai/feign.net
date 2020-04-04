@@ -1,6 +1,7 @@
 ﻿using Feign.Internal;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 
 namespace Feign
@@ -30,6 +31,12 @@ namespace Feign
         /// 获取或设置Accept
         /// </summary>
         public string Accept { get; set; }
+
+        /// <summary>
+        /// 获取或设置HttpCompletionOption
+        /// </summary>
+        public HttpCompletionOption CompletionOption { get; set; }
+
         /// <summary>
         /// 获取请求的http方法
         /// </summary>

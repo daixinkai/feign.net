@@ -21,6 +21,7 @@ namespace Feign
         /// 获取或设置请求的http方法
         /// </summary>
         public string Method { get; set; }
+
         /// <summary>
         /// 获取请求的http方法
         /// </summary>

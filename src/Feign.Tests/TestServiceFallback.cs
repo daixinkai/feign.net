@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Feign.Reflection;
 using Feign.Request;
@@ -32,8 +33,16 @@ namespace Feign.Tests
         string ITestParentService<string>.ServiceId { get; set; }
         Type ITestParentService<string>.ServiceType { get; set; }
 
+        public HttpCompletionOption HttpCompletionOption { get; set; }
+
         public Task<string> Get()
         {
+            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(null, null, null, null, null, null, null, null, null)
+            {
+                CompletionOption = HttpCompletionOption.ResponseHeadersRead
+            };
+            var r = feignClientHttpRequest.ContentType;
+            //HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead;
             return Task.FromResult("fallback_get");
         }
 

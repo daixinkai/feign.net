@@ -55,6 +55,7 @@ namespace Feign.Proxy
         async Task<HttpResponseMessage> SendInternalAsync(FeignHttpRequestMessage request, CancellationToken cancellationToken)
         {
             var current = request.RequestUri;
+            CancellationTokenSource cts = null;
             try
             {
 
@@ -73,12 +74,18 @@ namespace Feign.Proxy
                 #endregion
                 request.RequestUri = LookupRequestUri(request);
                 #region SendingRequest
-                SendingRequestEventArgs<TService> sendingArgs = new SendingRequestEventArgs<TService>(_feignClient, request);
+                SendingRequestEventArgs<TService> sendingArgs = new SendingRequestEventArgs<TService>(_feignClient, request, cancellationToken);
                 _feignClient.OnSendingRequest(sendingArgs);
+
                 if (sendingArgs.IsTerminated)
                 {
                     //请求被终止
                     throw new TerminatedRequestException();
+                }
+                if (sendingArgs._cancellationTokenSource != null)
+                {
+                    cts = sendingArgs._cancellationTokenSource;
+                    cancellationToken = cts.Token;
                 }
                 request = sendingArgs.RequestMessage;
                 if (request == null)
@@ -94,11 +101,11 @@ namespace Feign.Proxy
                 #endregion
 
                 #region CannelRequest
-                CancelRequestEventArgs<TService> cancelArgs = new CancelRequestEventArgs<TService>(_feignClient, cancellationToken);
+                CancelRequestEventArgs<TService> cancelArgs = new CancelRequestEventArgs<TService>(_feignClient, request, cancellationToken);
                 _feignClient.OnCancelRequest(cancelArgs);
                 #endregion
 
-                return await base.SendAsync(request, cancellationToken)
+                return await base.SendAsync(request, cancelArgs.CancellationToken)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
@@ -121,6 +128,10 @@ namespace Feign.Proxy
             finally
             {
                 request.RequestUri = current;
+                if (cts != null)
+                {
+                    cts.Dispose();
+                }
             }
         }
 

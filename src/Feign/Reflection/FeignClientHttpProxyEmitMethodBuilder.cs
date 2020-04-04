@@ -379,6 +379,7 @@ namespace Feign.Reflection
             }
             #endregion
 
+
             Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
 
             #region if (base.FeignOptions.IncludeMethodMetadata) set the call method
@@ -397,9 +398,17 @@ namespace Feign.Reflection
             #endregion
             //处理下 if GOTO
             iLGenerator.MarkLabel(newFeingClientRequestLabel);
+
             iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
             iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetConstructors()[0]);
+            #region HttpCompletionOption
+            //CompletionOption=requestMapping.CompletionOption.Value;
+            iLGenerator.Emit(OpCodes.Dup);
+            iLGenerator.EmitEnumValue(requestMapping.CompletionOption);
+            iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetProperty("CompletionOption").SetMethod);
+            #endregion
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
+
             return localBuilder;
             #endregion
         }

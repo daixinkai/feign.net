@@ -30,6 +30,19 @@ namespace Feign.Tests
             {
                 //e.Terminate();
             };
+            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().SendingRequest += (sender, e) =>
+            {
+                //e.CancellationTokenSource.Cancel();
+                //e.Terminate();
+            };
+            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().CancelRequest += (sender, e) =>
+            {
+                e.CancellationToken.Register(obj =>
+                {
+                    ICancelRequestEventArgs<ITestControllerService> ee = obj as ICancelRequestEventArgs<ITestControllerService>;
+                    string s = ee.RequestMessage.ToString();
+                }, e);
+            };
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
             {
                 var types = feignBuilder.Options.Types;
@@ -73,7 +86,7 @@ namespace Feign.Tests
             };
             feignBuilder.Options.FeignClientPipeline.Disposing += (sender, e) =>
             {
-
+                var ee = e;
             };
             //            feignBuilder.Options.FeignClientPipeline.Authorization(proxy =>
             //            {
