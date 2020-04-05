@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -72,7 +73,7 @@ namespace Feign.Reflection
             LocalBuilder local_OldValue = iLGenerator.DeclareLocal(typeof(string)); // 定义temp,用来拼接请求的真实uri
             iLGenerator.Emit(OpCodes.Ldstr, uri);
             iLGenerator.Emit(OpCodes.Stloc, local_Uri);
-            List<EmitRequestContent> emitRequestContents = EmitParameter(typeBuilder, iLGenerator, method, local_Uri, local_OldValue);
+            List<EmitRequestContent> emitRequestContents = EmitParameter(typeBuilder, requestMapping, iLGenerator, method, local_Uri, local_OldValue);
             EmitCallMethod(typeBuilder, methodBuilder, iLGenerator, serviceType, feignClientMethodInfo, requestMapping, local_Uri, emitRequestContents);
             methodBuilder.CopyCustomAttributes(method);
             return feignClientMethodInfo;
@@ -136,6 +137,7 @@ namespace Feign.Reflection
             }
             return httpClientMethod;
         }
+
         /// <summary>
         /// 是否支持RequestContent
         /// </summary>
@@ -144,12 +146,10 @@ namespace Feign.Reflection
         /// <returns></returns>
         protected bool SupportRequestContent(MethodInfo method, RequestMappingBaseAttribute requestMappingBaseAttribute)
         {
-
             return
-                "POST".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase)
-                || "PUT".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase)
-                || "DELETE".Equals(requestMappingBaseAttribute.GetMethod(), StringComparison.OrdinalIgnoreCase)
-                ;
+                requestMappingBaseAttribute.IsHttpMethod(HttpMethod.Post) ||
+                requestMappingBaseAttribute.IsHttpMethod(HttpMethod.Put) ||
+                requestMappingBaseAttribute.IsHttpMethod(HttpMethod.Delete);
         }
 
         protected RequestMappingBaseAttribute GetRequestMappingAttribute(MethodInfo method)
@@ -341,7 +341,7 @@ namespace Feign.Reflection
                 }
                 else if (emitRequestContents.Any(s => !s.SupportMultipart))
                 {
-                    throw new NotSupportedException("最多只支持一个RequestContent");
+                    throw new NotSupportedException("最多只支持一个RequestContent \r\n " + feignClientMethodInfo.ToString());
                 }
                 else
                 {
@@ -498,12 +498,13 @@ namespace Feign.Reflection
         /// 处理参数
         /// </summary>
         /// <param name="typeBuilder"></param>
+        /// <param name="requestMapping"></param>
         /// <param name="iLGenerator"></param>
         /// <param name="method"></param>
         /// <param name="uri"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        protected List<EmitRequestContent> EmitParameter(TypeBuilder typeBuilder, ILGenerator iLGenerator, MethodInfo method, LocalBuilder uri, LocalBuilder value)
+        protected List<EmitRequestContent> EmitParameter(TypeBuilder typeBuilder, RequestMappingBaseAttribute requestMapping, ILGenerator iLGenerator, MethodInfo method, LocalBuilder uri, LocalBuilder value)
         {
             int index = 0;
             List<EmitRequestContent> emitRequestContents = new List<EmitRequestContent>();
@@ -558,9 +559,24 @@ namespace Feign.Reflection
                 string name;
                 if (parameterInfo.IsDefined(typeof(RequestParamAttribute)))
                 {
-                    name = parameterInfo.GetCustomAttribute<RequestParamAttribute>().Name ?? parameterInfo.Name;
-                    //replaceValueMethod = ReplaceRequestParamMethod;
-                    replaceValueMethod = GetReplaceRequestParamMethod(typeBuilder);
+                    //如果是 HttpGet , 拼接到url上
+                    if (requestMapping.IsHttpMethod(HttpMethod.Get) || requestMapping.IsHttpMethod(HttpMethod.Head))
+                    {
+                        name = parameterInfo.GetCustomAttribute<RequestParamAttribute>().Name ?? parameterInfo.Name;
+                        //replaceValueMethod = ReplaceRequestParamMethod;
+                        replaceValueMethod = GetReplaceRequestParamMethod(typeBuilder);
+                    }
+                    else
+                    {
+                        emitRequestContents.Add(new EmitRequestContent
+                        {
+                            MediaType = Constants.MediaTypes.APPLICATION_FORM_URLENCODED,
+                            Parameter = parameterInfo,
+                            SupportMultipart = true,
+                            ParameterIndex = index
+                        });
+                        continue;
+                    }
                 }
                 else if (parameterInfo.IsDefined(typeof(RequestQueryAttribute)))
                 {

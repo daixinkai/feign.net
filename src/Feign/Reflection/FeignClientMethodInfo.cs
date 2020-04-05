@@ -31,5 +31,19 @@ namespace Feign.Reflection
 
         public MethodInfo MethodMetadata { get; set; }
 
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("Type: ");
+            sb.Append(MethodMetadata.DeclaringType?.GetFullName());
+
+            sb.Append(", MethodId: '");
+            sb.Append(MethodId);
+
+            return sb.ToString();
+        }
+
     }
 }

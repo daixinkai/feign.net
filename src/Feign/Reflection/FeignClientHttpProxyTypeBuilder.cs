@@ -92,7 +92,7 @@ namespace Feign.Reflection
             TypeBuilder typeBuilder = _dynamicAssembly.DefineType(GetTypeFullName(serviceType), typeAttributes, parentType, new Type[] { serviceType });
 
             //写入构造函数
-            BuildConstructor(typeBuilder, parentType);
+            typeBuilder.BuildFirstConstructor(parentType);
 
             //写入serviceId
             typeBuilder.DefineReadOnlyProperty(serviceType, "ServiceId", feignClientAttribute.Name);
@@ -137,16 +137,6 @@ namespace Feign.Reflection
             return parentType;
         }
 
-        protected virtual ConstructorInfo GetConstructor(Type parentType)
-        {
-            return parentType.GetConstructors()[0];
-        }
-
-        void BuildConstructor(TypeBuilder typeBuilder, Type parentType)
-        {
-            ConstructorInfo baseConstructorInfo = GetConstructor(parentType);
-            typeBuilder.BuildCallBaseTypeConstructor(baseConstructorInfo);
-        }
 
         string GetTypeFullName(Type serviceType)
         {

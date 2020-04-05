@@ -19,8 +19,8 @@ namespace Feign.Proxy
     {
         public FeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null)
         {
-            _feignOptions = feignOptions;
-            _globalFeignClientPipeline = _feignOptions?.FeignClientPipeline as GlobalFeignClientPipeline;
+            FeignOptions = feignOptions;
+            _globalFeignClientPipeline = FeignOptions?.FeignClientPipeline as GlobalFeignClientPipeline;
             _serviceIdFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline(ServiceId);
             _serviceFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline<TService>();
             _logger = loggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
@@ -81,9 +81,7 @@ namespace Feign.Proxy
 
         ILogger _logger;
 
-        IFeignOptions _feignOptions;
-
-        protected internal IFeignOptions FeignOptions => _feignOptions;
+        protected internal IFeignOptions FeignOptions { get; private set; }
 
         TService IFeignClient<TService>.Service { get { return this as TService; } }
 
@@ -125,7 +123,6 @@ namespace Feign.Proxy
                     // TODO: 释放托管状态(托管对象)。
                     HttpClient.Dispose();
                 }
-
                 // TODO: 释放未托管的资源(未托管的对象)并在以下内容中替代终结器。
                 // TODO: 将大型字段设置为 null。
                 disposedValue = true;
@@ -133,14 +130,16 @@ namespace Feign.Proxy
         }
 
         // TODO: 仅当以上 Dispose(bool disposing) 拥有用于释放未托管资源的代码时才替代终结器。
-        //~FeignClientServiceBase()
+        //~FeignClientHttpProxy()
         //{
         //    // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
         //    Dispose(false);
         //}
 
         // 添加此代码以正确实现可处置模式。
+#pragma warning disable CA1063 // Implement IDisposable Correctly
         void IDisposable.Dispose()
+#pragma warning restore CA1063 // Implement IDisposable Correctly
         {
             // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
             Dispose(true);
@@ -152,19 +151,19 @@ namespace Feign.Proxy
         #region PathVariable
         protected string ReplacePathVariable<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplacePathVariable<T>(_feignOptions.Converters, uri, name, value);
+            return FeignClientUtils.ReplacePathVariable<T>(FeignOptions.Converters, uri, name, value);
         }
         #endregion
         #region RequestParam
         protected string ReplaceRequestParam<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplaceRequestParam<T>(_feignOptions.Converters, uri, name, value);
+            return FeignClientUtils.ReplaceRequestParam<T>(FeignOptions.Converters, uri, name, value);
         }
         #endregion
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplaceRequestQuery<T>(_feignOptions.Converters, uri, name, value);
+            return FeignClientUtils.ReplaceRequestQuery<T>(FeignOptions.Converters, uri, name, value);
         }
         #endregion
 

@@ -85,7 +85,7 @@ namespace Feign.Proxy
             {
                 return default(TResult);
             }
-            IMediaTypeFormatter mediaTypeFormatter = _feignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
+            IMediaTypeFormatter mediaTypeFormatter = FeignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
             if (mediaTypeFormatter == null)
             {
                 throw new FeignHttpRequestException(this,
@@ -129,7 +129,7 @@ namespace Feign.Proxy
             {
                 return default(TResult);
             }
-            IMediaTypeFormatter mediaTypeFormatter = _feignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
+            IMediaTypeFormatter mediaTypeFormatter = FeignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
             if (mediaTypeFormatter == null)
             {
                 throw new FeignHttpRequestException(this,

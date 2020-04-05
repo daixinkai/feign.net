@@ -21,16 +21,18 @@ namespace Feign.TestWeb.NETCORE30.Pages
 
         public async Task<IActionResult> OnGet([FromServices]ITestService testService, [FromServices] ITestControllerService testControllerService)
         {
+            string name = testService.Name;
+            string serviceId = testService.ServiceId;
+            Type serviceType = testService.ServiceType;
 
             var t = await testControllerService.GetQueryResultValueAsync("1", new TestServiceParam
             {
                 Age = 11,
                 Name = "OnGet"
             });
+            return new JsonResult(t);
 
-            string name = testService.Name;
-            string serviceId = testService.ServiceId;
-            Type serviceType = testService.ServiceType;
+
             //var r = await testService.Get();
 
 
@@ -39,7 +41,7 @@ namespace Feign.TestWeb.NETCORE30.Pages
             ////await testService.PostValueAsync();
             //HttpContext.Response.ContentType = "text/html;charset=utf-8";
             //await HttpContext.Response.WriteAsync(r);
-            return new JsonResult(t);
+            //return new OkResult();
         }
     }
 }
