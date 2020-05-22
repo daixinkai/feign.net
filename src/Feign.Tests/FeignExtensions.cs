@@ -23,7 +23,7 @@ namespace Feign.Tests
         public static IFeignBuilder AddTestFeignClients(this IFeignBuilder feignBuilder)
         {
             Feign.FeignBuilderExtensions.AddConverter<TestServiceParam, string>(feignBuilder, new TestServiceParamStringConverter());
-            //feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
+            feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
             Feign.FeignBuilderExtensions.AddFeignClients<IFeignBuilder>(feignBuilder, Assembly.GetExecutingAssembly(), FeignClientLifetime.Transient);
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>

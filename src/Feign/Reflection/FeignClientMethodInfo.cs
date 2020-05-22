@@ -37,7 +37,7 @@ namespace Feign.Reflection
             StringBuilder sb = new StringBuilder();
 
             sb.Append("Type: ");
-            sb.Append(MethodMetadata.DeclaringType?.GetFullName());
+            sb.Append(MethodMetadata?.DeclaringType?.GetFullName() ?? "<null>");
 
             sb.Append(", MethodId: '");
             sb.Append(MethodId);

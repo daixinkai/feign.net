@@ -3,6 +3,7 @@ using Feign.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,12 @@ namespace Feign
         /// 获取或设置一个值,指示是否需要包含声明服务的方法元数据 默认 : false
         /// </summary>
         bool IncludeMethodMetadata { get; set; }
+
+        /// <summary>
+        /// 获取或设置处理程序用于自动解压缩内容响应的解压缩方法类型。默认 : null
+        /// </summary>
+        DecompressionMethods? AutomaticDecompression { get; set; }
+
         /// <summary>
         /// 获取生成的类型
         /// </summary>

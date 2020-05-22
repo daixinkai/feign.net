@@ -20,11 +20,15 @@ namespace Feign.Proxy
         public FeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null)
         {
             FeignOptions = feignOptions;
-            _globalFeignClientPipeline = FeignOptions?.FeignClientPipeline as GlobalFeignClientPipeline;
+            _globalFeignClientPipeline = FeignOptions.FeignClientPipeline as GlobalFeignClientPipeline;
             _serviceIdFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline(ServiceId);
             _serviceFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline<TService>();
             _logger = loggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
             ServiceDiscoveryHttpClientHandler<TService> serviceDiscoveryHttpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, serviceDiscovery, cacheProvider, _logger);
+            if (FeignOptions.AutomaticDecompression.HasValue)
+            {
+                serviceDiscoveryHttpClientHandler.AutomaticDecompression = feignOptions.AutomaticDecompression.Value;
+            }
             //serviceDiscoveryHttpClientHandler.ShouldResolveService = string.IsNullOrWhiteSpace(Url);
             serviceDiscoveryHttpClientHandler.ShouldResolveService = Url == null;
             serviceDiscoveryHttpClientHandler.AllowAutoRedirect = false;

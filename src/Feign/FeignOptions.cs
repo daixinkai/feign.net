@@ -3,6 +3,7 @@ using Feign.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,8 @@ namespace Feign
         public IGlobalFeignClientPipeline FeignClientPipeline { get; }
         public FeignClientLifetime Lifetime { get; set; }
         public bool IncludeMethodMetadata { get; set; }
+
+        public DecompressionMethods? AutomaticDecompression { get; set; }
 
         public IList<FeignClientTypeInfo> Types { get; }
         public TimeSpan? DiscoverServiceCacheTime { get; set; }

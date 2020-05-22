@@ -34,7 +34,20 @@ namespace Feign.Discovery
                 resolvedUri = services[_random.Next(services.Count)].Uri;
             }
             _logger?.LogWarning($"Attempted to resolve service for {uri.Host} but found 0 instances");
-            return new Uri(resolvedUri, uri.PathAndQuery);
+
+            //return new Uri(resolvedUri, uri.PathAndQuery);
+
+            // http://xx.xx.com/child    <== ?
+
+            if (resolvedUri.AbsolutePath == "/" || string.IsNullOrWhiteSpace(resolvedUri.AbsolutePath))
+            {
+                return new Uri(resolvedUri, uri.PathAndQuery);
+            }
+            if (string.IsNullOrWhiteSpace(uri.PathAndQuery))
+            {
+                return resolvedUri;
+            }
+            return new Uri(resolvedUri.ToString().TrimEnd('/') + "/" + uri.PathAndQuery.TrimStart('/'));
         }
     }
 }

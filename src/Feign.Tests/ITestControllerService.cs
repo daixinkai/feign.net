@@ -8,7 +8,7 @@ namespace Feign.Tests
 {
     [CustomFeignClient("yun-platform-service-provider"
 , Fallback = typeof(TestControllerServiceFallback)
-, Url = "http://localhost:55298/"
+//, Url = "http://localhost:55298/"
 )]
     [RequestMapping("/api/test")]
     [Headers("Cache-Control:max-age=0", "Accept-Encoding: gzip, deflate, br", "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8")]
