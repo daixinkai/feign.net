@@ -146,10 +146,7 @@ namespace Feign.Reflection
         /// <returns></returns>
         protected bool SupportRequestContent(MethodInfo method, RequestMappingBaseAttribute requestMappingBaseAttribute)
         {
-            return
-                requestMappingBaseAttribute.IsHttpMethod(HttpMethod.Post) ||
-                requestMappingBaseAttribute.IsHttpMethod(HttpMethod.Put) ||
-                requestMappingBaseAttribute.IsHttpMethod(HttpMethod.Delete);
+            return requestMappingBaseAttribute.IsSupportRequestContent();
         }
 
         protected RequestMappingBaseAttribute GetRequestMappingAttribute(MethodInfo method)

@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Feign.AngleSharp\Feign.AngleSharp.csproj" />
     <ProjectReference Include="..\Feign.DependencyInjection\Feign.DependencyInjection.csproj" />
+    <ProjectReference Include="..\Feign.Steeltoe\Feign.Steeltoe.csproj" />
     <ProjectReference Include="..\Feign.Tests\Feign.Tests.csproj" />
     <ProjectReference Include="..\Feign\Feign.csproj" />
   </ItemGroup>

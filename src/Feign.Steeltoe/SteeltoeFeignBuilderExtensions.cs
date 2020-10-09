@@ -1,7 +1,6 @@
 ﻿using Feign;
 using Feign.Discovery;
 using Feign.Formatting;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -236,11 +236,7 @@ namespace Feign.Proxy
 
         bool IsSupportContent(HttpMethod httpMethod)
         {
-            return
-                httpMethod == HttpMethod.Post
-                || httpMethod == HttpMethod.Put
-                || httpMethod == HttpMethod.Delete
-                ;
+            return httpMethod.IsSupportContent();
         }
 
         private HttpMethod GetHttpMethod(string method)
