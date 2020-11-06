@@ -19,12 +19,14 @@ namespace Feign.Tests
         [RequestMapping("/{id}", Method = "GET", Accept = "text/html"
             , CompletionOption = System.Net.Http.HttpCompletionOption.ResponseHeadersRead
             )]
-        Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")]string id, [RequestQuery] TestServiceParam param);
+        Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] TestServiceParam param);
+
+        Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] int? value);
 
         [ResultType(typeof(QueryResult<>))]
         [Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
         [RequestMapping("/{id}", Method = "GET", Accept = "text/html")]
-        IQueryResult<TestServiceParam> GetQueryResultValue([PathVariable("id")]string id, [RequestQuery] TestServiceParam param);
+        IQueryResult<TestServiceParam> GetQueryResultValue([PathVariable("id")] string id, [RequestQuery] TestServiceParam param);
 
     }
 }

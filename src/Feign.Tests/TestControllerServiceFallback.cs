@@ -25,5 +25,10 @@ namespace Feign.Tests
                 StatusCode = System.Net.HttpStatusCode.BadRequest
             });
         }
+
+        public Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] int? value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

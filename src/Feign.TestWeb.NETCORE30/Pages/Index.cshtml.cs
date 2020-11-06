@@ -19,7 +19,7 @@ namespace Feign.TestWeb.NETCORE30.Pages
             _logger = logger;
         }
 
-        public async Task<IActionResult> OnGet([FromServices]ITestService testService, [FromServices] ITestControllerService testControllerService)
+        public async Task<IActionResult> OnGet([FromServices] ITestService testService, [FromServices] ITestControllerService testControllerService)
         {
             string name = testService.Name;
             string serviceId = testService.ServiceId;
@@ -30,6 +30,8 @@ namespace Feign.TestWeb.NETCORE30.Pages
                 Age = 11,
                 Name = "OnGet"
             });
+
+            //var t = await testControllerService.GetQueryResultValueAsync("1", 1);
             return new JsonResult(t);
 
 

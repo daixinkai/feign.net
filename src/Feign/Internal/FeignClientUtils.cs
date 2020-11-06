@@ -109,6 +109,11 @@ namespace Feign.Internal
             var typeCode = Type.GetTypeCode(typeof(T));
             if (typeCode == TypeCode.Object)
             {
+                //Nullable<>
+                if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    return ReplaceRequestQuery(uri, name, converters.ConvertValue<T, string>(value, true));
+                }
                 if (value == null)
                 {
                     return uri;
