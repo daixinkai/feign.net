@@ -25,13 +25,13 @@ namespace Feign.TestWeb.NETCORE30.Pages
             string serviceId = testService.ServiceId;
             Type serviceType = testService.ServiceType;
 
-            var t = await testControllerService.GetQueryResultValueAsync("1", new TestServiceParam
-            {
-                Age = 11,
-                Name = "OnGet"
-            });
+            //var t = await testControllerService.GetQueryResultValueAsync("1", new TestServiceParam
+            //{
+            //    Age = 11,
+            //    Name = "OnGet"
+            //});
 
-            //var t = await testControllerService.GetQueryResultValueAsync("1", 1);
+            var t = await testControllerService.GetQueryResultValueAsync("1", 1);
             return new JsonResult(t);
 
 
