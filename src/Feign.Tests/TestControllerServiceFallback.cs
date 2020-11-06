@@ -30,5 +30,10 @@ namespace Feign.Tests
         {
             throw new NotImplementedException();
         }
+
+        public Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] int[] values)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

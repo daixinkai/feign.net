@@ -31,7 +31,9 @@ namespace Feign.TestWeb.NETCORE30.Pages
             //    Name = "OnGet"
             //});
 
-            var t = await testControllerService.GetQueryResultValueAsync("1", 1);
+            //var t = await testControllerService.GetQueryResultValueAsync("1", 1);
+
+            var t = await testControllerService.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });
             return new JsonResult(t);
 
 

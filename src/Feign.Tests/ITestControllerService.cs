@@ -23,6 +23,8 @@ namespace Feign.Tests
 
         Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] int? value);
 
+        Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] int[] values);
+
         [ResultType(typeof(QueryResult<>))]
         [Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
         [RequestMapping("/{id}", Method = "GET", Accept = "text/html")]

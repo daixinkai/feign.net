@@ -118,6 +118,20 @@ namespace Feign.Internal
                 {
                     return ReplaceRequestQuery(uri, name, converters.ConvertValue<T, string>(value, true));
                 }
+
+                if (typeof(IEnumerable).IsAssignableFrom(typeof(T)))
+                {
+                    foreach (var item in value as IEnumerable)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        uri = ReplaceRequestQuery(uri, name, converters.ConvertValue<string>(item, true));
+                    }
+                    return uri;
+                }
+
                 //TODO: ReplaceRequestQuery
                 //foreach (var property in value.GetType().GetProperties())
                 //{
