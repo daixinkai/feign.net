@@ -10,16 +10,6 @@ namespace Feign.Discovery
     [Serializable]
     public class SerializableServiceInstance : IServiceInstance
     {
-        public SerializableServiceInstance(IServiceInstance instance)
-        {
-            ServiceId = instance.ServiceId;
-            Host = instance.Host;
-            Port = instance.Port;
-            //IsSecure = instance.IsSecure;
-            Uri = instance.Uri.ToString();
-            //Metadata = instance.Metadata;
-        }
-
         public string ServiceId { get; set; }
 
         public string Host { get; set; }
@@ -36,6 +26,19 @@ namespace Feign.Discovery
             {
                 return new Uri(Uri);
             }
+        }
+
+        public static SerializableServiceInstance FromServiceInstance(IServiceInstance instance)
+        {
+            return new SerializableServiceInstance
+            {
+                ServiceId = instance.ServiceId,
+                Host = instance.Host,
+                Port = instance.Port,
+                //IsSecure = instance.IsSecure;
+                Uri = instance.Uri.ToString(),
+                //Metadata = instance.Metadata;
+            };
         }
 
         //public IDictionary<string, string> Metadata { get; set; }
