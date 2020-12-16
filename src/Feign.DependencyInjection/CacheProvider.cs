@@ -19,7 +19,58 @@ namespace Feign.Cache
 
         IDistributedCache _distributedCache;
 
+
+#if NET5_0
         public T Get<T>(string name)
+        {
+            var json = _distributedCache?.GetString(name);
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                return DeserializeFromCache<T>(json);
+            }
+            return default(T);
+        }
+
+        public async Task<T> GetAsync<T>(string name)
+        {
+            var json = await _distributedCache?.GetStringAsync(name);
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                return DeserializeFromCache<T>(json);
+            }
+            return default(T);
+        }
+
+        public void Set<T>(string name, T value, TimeSpan? expirationTime)
+        {
+            _distributedCache?.SetString(name, SerializeForCache(value), new DistributedCacheEntryOptions
+            {
+                //SlidingExpiration = expirationTime
+                AbsoluteExpirationRelativeToNow = expirationTime
+            });
+        }
+
+        public async Task SetAsync<T>(string name, T value, TimeSpan? expirationTime)
+        {
+            await _distributedCache?.SetStringAsync(name, SerializeForCache(value), new DistributedCacheEntryOptions
+            {
+                //SlidingExpiration = expirationTime
+                AbsoluteExpirationRelativeToNow = expirationTime
+            });
+        }
+
+
+        private static string SerializeForCache(object data)
+        {
+            return System.Text.Json.JsonSerializer.Serialize(data);
+        }
+
+        private static T DeserializeFromCache<T>(string json)
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<T>(json);
+        }
+#else
+   public T Get<T>(string name)
         {
             var instanceData = _distributedCache?.Get(name);
             if (instanceData != null && instanceData.Length > 0)
@@ -58,13 +109,6 @@ namespace Feign.Cache
         }
 
 
-
-        private static List<SerializableServiceInstance> MapToSerializable(IList<IServiceInstance> instances)
-        {
-            var inst = instances.Select(i => new SerializableServiceInstance(i));
-            return inst.ToList();
-        }
-
         private static byte[] SerializeForCache(object data)
         {
             using (var stream = new MemoryStream())
@@ -81,6 +125,9 @@ namespace Feign.Cache
                 return (T)new BinaryFormatter().Deserialize(stream);
             }
         }
+#endif
+
+
 
     }
 }

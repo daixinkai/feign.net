@@ -16,7 +16,7 @@ namespace Feign.Discovery
             Host = instance.Host;
             Port = instance.Port;
             //IsSecure = instance.IsSecure;
-            Uri = instance.Uri;
+            Uri = instance.Uri.ToString();
             //Metadata = instance.Metadata;
         }
 
@@ -28,7 +28,15 @@ namespace Feign.Discovery
 
         //public bool IsSecure { get; set; }
 
-        public Uri Uri { get; set; }
+        public string Uri { get; set; }
+
+        Uri IServiceInstance.Uri
+        {
+            get
+            {
+                return new Uri(Uri);
+            }
+        }
 
         //public IDictionary<string, string> Metadata { get; set; }
     }

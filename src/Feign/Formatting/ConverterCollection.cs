@@ -11,12 +11,10 @@ namespace Feign.Formatting
     public sealed class ConverterCollection : IEnumerable<IConverter>
     {
 
-#if NETSTANDARD
-        System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), IConverter> _map = new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), IConverter>();
-#endif
-
 #if NET45
         System.Collections.Concurrent.ConcurrentDictionary<Tuple<Type, Type>, IConverter> _map = new System.Collections.Concurrent.ConcurrentDictionary<Tuple<Type, Type>, IConverter>();
+#else
+        System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), IConverter> _map = new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), IConverter>();
 #endif
 
 
@@ -38,11 +36,10 @@ namespace Feign.Formatting
         /// <param name="converter"></param>
         public void AddConverter<TSource, TResult>(IConverter<TSource, TResult> converter)
         {
-#if NETSTANDARD
-            var key = (typeof(TSource), typeof(TResult));
-#endif
 #if NET45
             var key = Tuple.Create(typeof(TSource), typeof(TResult));
+#else
+            var key = (typeof(TSource), typeof(TResult));
 #endif
             if (_map.ContainsKey(key))
             {
@@ -72,11 +69,10 @@ namespace Feign.Formatting
         /// <returns></returns>
         public IConverter FindConverter(Type sourceType, Type resultType)
         {
-#if NETSTANDARD
-            var key = (sourceType, resultType);
-#endif
 #if NET45
             var key = Tuple.Create(sourceType, resultType);
+#else
+            var key = (sourceType, resultType);
 #endif
             IConverter converter;
             _map.TryGetValue(key, out converter);

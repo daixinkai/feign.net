@@ -51,7 +51,9 @@ namespace Feign.Discovery
                 return requestMessage.RequestUri;
             }
 
-            IList<IServiceInstance> services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ? _serviceDiscovery.GetServiceInstancesWithCache(requestMessage.RequestUri.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value) : _serviceDiscovery.GetServiceInstances(requestMessage.RequestUri.Host);
+            IList<IServiceInstance> services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ? 
+                _serviceDiscovery.GetServiceInstancesWithCache(requestMessage.RequestUri.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value) : 
+                _serviceDiscovery.GetServiceInstances(requestMessage.RequestUri.Host);
             if (services == null || services.Count == 0)
             {
                 ServiceResolveFail(requestMessage);

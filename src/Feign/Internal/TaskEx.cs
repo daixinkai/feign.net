@@ -13,11 +13,10 @@ namespace Feign.Internal
         {
             get
             {
-#if NETSTANDARD
-                return Task.CompletedTask;
-#endif
 #if NET45
                 return Task.FromResult<object>(null);
+#else
+                return Task.CompletedTask;
 #endif
             }
         }
@@ -29,10 +28,8 @@ namespace Feign.Internal
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
             tcs.SetException(exception);
             return tcs.Task;
-#endif
-
-#if NETSTANDARD
-                return Task.FromException(exception);
+#else
+            return Task.FromException(exception);
 #endif
         }
 
