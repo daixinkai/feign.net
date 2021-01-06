@@ -70,11 +70,18 @@ namespace Feign.Cache
 
         private static T DeserializeFromCache<T>(string json)
         {
+            try
+            {
 #if NETSTANDARD2_0
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
 #else
-            return System.Text.Json.JsonSerializer.Deserialize<T>(json);
+                return System.Text.Json.JsonSerializer.Deserialize<T>(json);
 #endif
+            }
+            catch
+            {
+                return default;
+            }
         }
 
 
