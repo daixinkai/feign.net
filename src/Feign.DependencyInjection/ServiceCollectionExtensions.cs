@@ -43,7 +43,8 @@ namespace Microsoft.Extensions.DependencyInjection
             feignBuilder.Options = options;
             feignBuilder.AddDefaultFeignClients()
                 .AddLoggerFactory<LoggerFactory>()
-                .AddCacheProvider<CacheProvider>()
+                //.AddCacheProvider<CacheProvider>()
+                .AddCacheProvider<JsonCacheProvider>()
                 ;
             return feignBuilder;
         }
