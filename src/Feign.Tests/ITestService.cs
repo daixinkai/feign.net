@@ -54,28 +54,31 @@ namespace Feign.Tests
         //Task<JObject> GetValueAsync([PathVariable]int id, [RequestQuery] TestServiceParam param);
         [RequestMapping("/{id}")]
         //[RequestMapping("http://www.baidu.com")]
-        void GetValueVoid([PathVariable]int id, [RequestParam] string test, [RequestParam] TestServiceParam param);
+        void GetValueVoid([PathVariable] int id, [RequestParam] string test, [RequestParam] TestServiceParam param);
 
         [RequestMapping("/{id}")]
-        Task GetValueVoidAsync([PathVariable]int id, [RequestParam] string test, [RequestQuery] TestServiceParam param);
+        Task GetValueVoidAsync([PathVariable] int id, [RequestParam] string test, [RequestQuery] TestServiceParam param);
 
         [RequestMapping("/{id}", Method = "POST")]
-        Task PostValueAsync([PathVariable]int id, [RequestQuery] string test, [RequestBody] TestServiceParam param);
+        Task PostValueAsync([PathVariable] int id, [RequestQuery] string test, [RequestBody] TestServiceParam param);
 
         [RequestMapping("/{id}", Method = "POST")]
-        Task PostValueFormAsync([PathVariable]int id, [RequestParam] string test, [RequestForm] TestServiceParam param);
+        Task PostValueFormAsync([PathVariable] int id, [RequestParam] string test, [RequestForm] TestServiceParam param);
 
         [RequestMapping("/{id}", Method = "POST")]
-        Task PostValueForm2Async([PathVariable]int id, [RequestParam] string test, [RequestForm] TestServiceParam param1, [RequestForm] TestServiceParam param2);
+        Task PostValueForm2Async([PathVariable] int id, [RequestParam] string test, [RequestForm] TestServiceParam param1, [RequestForm] TestServiceParam param2);
 
         [RequestMapping("/{id}")]
-        void GetValueVoid([PathVariable]int id, [RequestParam] TestServiceParam queryParam, [RequestQuery] TestServiceParam param);
+        void GetValueVoid([PathVariable] int id, [RequestParam] TestServiceParam queryParam, [RequestQuery] TestServiceParam param);
+
+        [RequestMapping("/{id}")]
+        void GetNullableVoid([PathVariable] int id, [RequestParam] int? appId);
 
         //[GetMapping("/{id}")]
         //Task<JObject> GetValueAsync([PathVariable]int id, [RequestParam] string test, [RequestQuery] TestServiceParam param);
 
         [DeleteMapping]
-        Task<string> DeleteAsync([RequestBody]int[] ids);
+        Task<string> DeleteAsync([RequestBody] int[] ids);
 
     }
 

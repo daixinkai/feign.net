@@ -27,7 +27,7 @@ namespace Feign.Request
             _map.Add(name, content);
         }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType)
+        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
         {
             string boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
             if (string.IsNullOrWhiteSpace(boundary))
@@ -45,7 +45,7 @@ namespace Feign.Request
                 }
                 else if (content is FeignClientHttpRequestContent)
                 {
-                    httpContentPart = ((FeignClientHttpRequestContent)content).GetHttpContent(contentType);
+                    httpContentPart = ((FeignClientHttpRequestContent)content).GetHttpContent(contentType, options);
                 }
                 if (httpContentPart != null)
                 {

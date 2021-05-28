@@ -220,7 +220,7 @@ namespace Feign.Proxy
                 // if support content
                 if (IsSupportContent(httpMethod))
                 {
-                    HttpContent httpContent = request.GetHttpContent();
+                    HttpContent httpContent = request.GetHttpContent(FeignOptions);
                     if (httpContent != null)
                     {
                         httpRequestMessage.Content = httpContent;

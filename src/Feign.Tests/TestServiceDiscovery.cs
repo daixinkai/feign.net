@@ -12,7 +12,8 @@ namespace Feign.Tests
         public IList<IServiceInstance> GetServiceInstances(string serviceId)
         {
             return new List<IServiceInstance>() {
-                new TestServiceInstance("http://www.baidu.com/childTest")
+                //new TestServiceInstance("http://www.baidu.com/childTest")
+                new TestServiceInstance("http://localhost:55298/")
             };
         }
     }

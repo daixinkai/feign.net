@@ -67,7 +67,7 @@ namespace Feign.Proxy
 
         private ReceivingResponseEventArgs<TService, TResult> InvokeReceivingResponseEvent<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
         {
-            ReceivingResponseEventArgs<TService, TResult> receivingResponseEventArgs = new ReceivingResponseEventArgs<TService, TResult>(this, responseMessage);
+            ReceivingResponseEventArgs<TService, TResult> receivingResponseEventArgs = new ReceivingResponseEventArgs<TService, TResult>(this, request, responseMessage);
             OnReceivingResponse(receivingResponseEventArgs);
             return receivingResponseEventArgs;
         }

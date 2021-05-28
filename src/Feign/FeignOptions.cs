@@ -18,8 +18,8 @@ namespace Feign
             Converters = new ConverterCollection();
             Converters.AddConverter(new ObjectStringConverter());
             MediaTypeFormatters = new MediaTypeFormatterCollection();
-            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter());
-            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(Constants.MediaTypes.TEXT_JSON));
+            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(this));
+            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(Constants.MediaTypes.TEXT_JSON, this));
             MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter());
             MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter(Constants.MediaTypes.TEXT_XML));
             MediaTypeFormatters.AddFormatter(new FormUrlEncodedMediaTypeFormatter());
@@ -28,6 +28,12 @@ namespace Feign
             Lifetime = FeignClientLifetime.Transient;
             Types = new List<FeignClientTypeInfo>();
             DiscoverServiceCacheTime = TimeSpan.FromMinutes(10);
+            PropertyNamingPolicy = NamingPolicy.CamelCase;
+#if USE_SYSTEM_TEXT_JSON
+            JsonProvider = new SystemTextJsonProvider();
+#else
+            JsonProvider = new NewtonsoftJsonProvider();
+#endif
         }
         public IList<Assembly> Assemblies { get; }
         public ConverterCollection Converters { get; }
@@ -35,6 +41,10 @@ namespace Feign
         public IGlobalFeignClientPipeline FeignClientPipeline { get; }
         public FeignClientLifetime Lifetime { get; set; }
         public bool IncludeMethodMetadata { get; set; }
+
+        public NamingPolicy PropertyNamingPolicy { get; set; }
+
+        public IJsonProvider JsonProvider { get; set; }
 
         public DecompressionMethods? AutomaticDecompression { get; set; }
 

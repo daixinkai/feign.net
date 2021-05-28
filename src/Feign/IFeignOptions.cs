@@ -38,6 +38,16 @@ namespace Feign
         bool IncludeMethodMetadata { get; set; }
 
         /// <summary>
+        /// 获取或设置属性命名规则
+        /// </summary>
+        NamingPolicy PropertyNamingPolicy { get; set; }
+
+        /// <summary>
+        /// 获取或设置JsonProvider
+        /// </summary>
+        IJsonProvider JsonProvider { get; set; }
+
+        /// <summary>
         /// 获取或设置处理程序用于自动解压缩内容响应的解压缩方法类型。默认 : null
         /// </summary>
         DecompressionMethods? AutomaticDecompression { get; set; }

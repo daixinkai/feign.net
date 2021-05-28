@@ -21,43 +21,33 @@ namespace Feign.Formatting
     /// </summary>
     public class JsonMediaTypeFormatter : IMediaTypeFormatter
     {
-#if USE_SYSTEM_TEXT_JSON
-        public JsonSerializerOptions JsonSerializerOptions { get; }
-#else
-        public JsonSerializerSettings JsonSerializerSettings { get; }
-#endif
 
-        public JsonMediaTypeFormatter() : this(Constants.MediaTypes.APPLICATION_JSON)
+        public JsonMediaTypeFormatter(IFeignOptions options) : this(Constants.MediaTypes.APPLICATION_JSON, options)
         {
         }
 
-        public JsonMediaTypeFormatter(string mediaType)
+        public JsonMediaTypeFormatter(string mediaType, IFeignOptions options)
         {
-#if USE_SYSTEM_TEXT_JSON
-            JsonSerializerOptions = new JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = true
-            };
-#else
-            JsonSerializerSettings = new JsonSerializerSettings();
-#endif
             MediaType = mediaType;
+            _options = options;
         }
         public string MediaType { get; }
 
+        private IFeignOptions _options;
+
         public TResult GetResult<TResult>(byte[] buffer, Encoding encoding)
         {
-            return JsonHelper.DeserializeObject<TResult>(buffer, encoding);
+            return _options.JsonProvider.DeserializeObject<TResult>(buffer, encoding);
         }
 
         public TResult GetResult<TResult>(Stream stream, Encoding encoding)
         {
-            return JsonHelper.DeserializeObject<TResult>(stream, encoding);
+            return _options.JsonProvider.DeserializeObject<TResult>(stream, encoding);
         }
 
         public object GetResult(Type type, Stream stream, Encoding encoding)
         {
-            return JsonHelper.DeserializeObject(stream, type, encoding);
+            return _options.JsonProvider.DeserializeObject(stream, type, encoding);
         }
     }
 }

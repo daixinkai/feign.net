@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Internal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -22,7 +23,7 @@ namespace Feign.Request
         }
         public IHttpRequestFileForm RequestFileForm { get; }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType)
+        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
         {
             if (RequestFileForm == null)
             {
@@ -63,7 +64,7 @@ namespace Feign.Request
                     continue;
                 }
                 HttpContent httpContent = new StringContent(value.ToString());
-                multipartFormDataContent.Add(httpContent, property.Name);
+                multipartFormDataContent.Add(httpContent, FeignClientUtils.GetName(property, options.PropertyNamingPolicy));
             }
             return multipartFormDataContent;
         }

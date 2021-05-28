@@ -89,9 +89,9 @@ namespace Feign.Request
         /// 获取随请求一起发送的HttpContent
         /// </summary>
         /// <returns></returns>
-        public HttpContent GetHttpContent()
+        public HttpContent GetHttpContent(IFeignOptions options)
         {
-            return RequestContent?.GetHttpContent(ContentType);
+            return RequestContent?.GetHttpContent(ContentType, options);
         }
 
     }

@@ -26,7 +26,7 @@ namespace Feign.Request
         public string Name { get; }
         public T Content { get; }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType)
+        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
         {
             Type type = typeof(T);
             if (type == typeof(byte[]) || typeof(Stream).IsAssignableFrom(type))
@@ -36,7 +36,7 @@ namespace Feign.Request
             }
             Encoding encoding = FeignClientUtils.GetEncoding(contentType);
             //return new ObjectContent(Content, encoding ?? Encoding.UTF8, contentType);
-            return new ObjectStringContent(Content, encoding ?? Encoding.UTF8, contentType.MediaType);
+            return new ObjectStringContent(Content, encoding ?? Encoding.UTF8, contentType.MediaType, options.JsonProvider);
         }
     }
 }

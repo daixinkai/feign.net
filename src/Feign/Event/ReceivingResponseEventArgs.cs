@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Request;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -11,15 +12,22 @@ namespace Feign
     /// <typeparam name="TService"></typeparam>
     public class ReceivingResponseEventArgs<TService> : FeignClientEventArgs<TService>, IReceivingResponseEventArgs<TService>
     {
-        internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, HttpResponseMessage responseMessage, Type resultType) : base(feignClient)
+        internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, FeignClientHttpRequest request, HttpResponseMessage responseMessage, Type resultType) : base(feignClient)
         {
+            Request = request;
             ResponseMessage = responseMessage;
             ResultType = resultType;
         }
+
+        /// <summary>
+        /// 获取请求
+        /// </summary>
+        public FeignClientHttpRequest Request { get; }
+
         /// <summary>
         /// 获取响应信息
         /// </summary>
-        public HttpResponseMessage ResponseMessage { get; }        
+        public HttpResponseMessage ResponseMessage { get; }
 
         /// <summary>
         /// 获取返回的类型
@@ -58,7 +66,7 @@ namespace Feign
     /// <typeparam name="TResult"></typeparam>
     public sealed class ReceivingResponseEventArgs<TService, TResult> : ReceivingResponseEventArgs<TService>
     {
-        internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, HttpResponseMessage responseMessage) : base(feignClient, responseMessage, typeof(TResult))
+        internal ReceivingResponseEventArgs(IFeignClient<TService> feignClient, FeignClientHttpRequest request, HttpResponseMessage responseMessage) : base(feignClient, request, responseMessage, typeof(TResult))
         {
         }
 

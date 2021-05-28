@@ -29,7 +29,7 @@ namespace Feign.Request
         public string Name { get; private set; }
         public T Content { get; }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType)
+        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
         {
             Type type = typeof(T);
             if (!type.IsValueType && Content == null)
@@ -52,52 +52,9 @@ namespace Feign.Request
                 return new StringContent(Content.ToString());
             }
 
-            List<KeyValuePair<string, string>> nameValueCollection = new List<KeyValuePair<string, string>>();
-            if (typeof(IDictionary).IsAssignableFrom(type))
-            {
-                IDictionary map = ((IDictionary)Content);
-                foreach (var item in map.Keys)
-                {
-                    if (item != null)
-                    {
-                        nameValueCollection.Add(new KeyValuePair<string, string>(item.ToString(), SafeToString(map[item])));
-                    }
-                }
-            }
-            else if (typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string))
-            {
-                IEnumerable enumerable = ((IEnumerable)Content);
-                foreach (var item in enumerable)
-                {
-                    if (item != null)
-                    {
-                        nameValueCollection.Add(new KeyValuePair<string, string>(Name, item.ToString()));
-                    }
-                }
-            }
-            else if (Type.GetTypeCode(type) == TypeCode.Object)
-            {
-                foreach (var item in type.GetProperties())
-                {
-                    if (item.GetMethod == null)
-                    {
-                        continue;
-                    }
-                    nameValueCollection.Add(new KeyValuePair<string, string>(item.Name, SafeToString(item.GetValue(Content))));
-                }
-            }
+            List<KeyValuePair<string, string>> nameValueCollection = FeignClientUtils.GetObjectStringParameters(Name, Content, options.Converters, options.PropertyNamingPolicy).ToList();
             FormUrlEncodedContent formUrlEncodedContent = new FormUrlEncodedContent(nameValueCollection);
             return formUrlEncodedContent;
-        }
-
-
-        string SafeToString(object content)
-        {
-            if (content == null)
-            {
-                return null;
-            }
-            return content.ToString();
         }
 
     }

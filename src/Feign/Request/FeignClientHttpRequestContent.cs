@@ -17,7 +17,8 @@ namespace Feign.Request
         /// 根据指定的媒体类型获取对应的HttpContent
         /// </summary>
         /// <param name="contentType"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public abstract HttpContent GetHttpContent(MediaTypeHeaderValue contentType);
+        public abstract HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options);
     }
 }

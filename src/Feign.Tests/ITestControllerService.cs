@@ -20,9 +20,9 @@ namespace Feign.Tests
             , CompletionOption = System.Net.Http.HttpCompletionOption.ResponseHeadersRead
             )]
         Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] TestServiceParam param);
-
+        [ResultType(typeof(QueryResult<>))]
         Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] int? value);
-
+        [ResultType(typeof(QueryResult<>))]
         Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] int[] values);
 
         [ResultType(typeof(QueryResult<>))]

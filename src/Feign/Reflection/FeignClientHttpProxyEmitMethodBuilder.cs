@@ -16,7 +16,7 @@ namespace Feign.Reflection
     /// <summary>
     /// 默认的方法生成器
     /// </summary>
-    class FeignClientHttpProxyEmitMethodBuilder : IMethodBuilder
+    internal class FeignClientHttpProxyEmitMethodBuilder : IMethodBuilder
     {
         #region define
         //protected static readonly MethodInfo ReplacePathVariableMethod = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(o => o.IsGenericMethod && o.Name == "ReplacePathVariable");
@@ -30,6 +30,7 @@ namespace Feign.Reflection
             return typeBuilder.BaseType.GetMethod("ReplacePathVariable", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
+        [Obsolete("", true)]
         protected static MethodInfo GetReplaceRequestParamMethod(TypeBuilder typeBuilder)
         {
             return typeBuilder.BaseType.GetMethod("ReplaceRequestParam", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -561,7 +562,7 @@ namespace Feign.Reflection
                     {
                         name = parameterInfo.GetCustomAttribute<RequestParamAttribute>().Name ?? parameterInfo.Name;
                         //replaceValueMethod = ReplaceRequestParamMethod;
-                        replaceValueMethod = GetReplaceRequestParamMethod(typeBuilder);
+                        replaceValueMethod = GetReplaceRequestQueryMethod(typeBuilder);
                     }
                     else
                     {

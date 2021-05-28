@@ -204,5 +204,10 @@ namespace Feign.Tests
         {
             throw new NotImplementedException();
         }
+
+        public void GetNullableVoid([PathVariable] int id, [RequestParam] int? appId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Request;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -11,6 +12,10 @@ namespace Feign
     /// <typeparam name="TService"></typeparam>
     public interface IReceivingResponseEventArgs<out TService> : IFeignClientEventArgs<TService>
     {
+        /// <summary>
+        /// 获取请求
+        /// </summary>
+        FeignClientHttpRequest Request { get; }
         /// <summary>
         /// 获取响应信息
         /// </summary>

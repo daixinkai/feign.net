@@ -27,7 +27,10 @@ namespace Feign.TestWeb.NETCORE30
         {
             //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            services.AddRazorPages();
+            services.AddRazorPages().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
 
             var builder = services.AddFeignClients(options =>
             {

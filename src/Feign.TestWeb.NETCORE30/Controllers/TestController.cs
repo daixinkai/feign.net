@@ -12,6 +12,7 @@ namespace Feign.TestWeb.NETCORE30.Controllers
     public class TestController : ControllerBase
     {
         [HttpGet("{id}")]
+        [HttpGet]
         public Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync(string id, [FromQuery] TestServiceParam param)
         {
             return Task.FromResult<IQueryResult<TestServiceParam>>(new QueryResult<TestServiceParam>()

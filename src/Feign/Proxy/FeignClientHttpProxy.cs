@@ -34,6 +34,22 @@ namespace Feign.Proxy
             serviceDiscoveryHttpClientHandler.AllowAutoRedirect = false;
             HttpClient = new FeignHttpClient(new FeignDelegatingHandler(serviceDiscoveryHttpClientHandler));
             string baseUrl = serviceDiscoveryHttpClientHandler.ShouldResolveService ? ServiceId ?? "" : Url;
+
+            BaseUrl = BuildBaseUrl(baseUrl);
+
+            InitializingEventArgs<TService> initializingEventArgs = new InitializingEventArgs<TService>(this);
+            initializingEventArgs.HttpClient = HttpClient;
+            OnInitializing(initializingEventArgs);
+            HttpClient = initializingEventArgs.HttpClient;
+            if (HttpClient == null)
+            {
+                throw new ArgumentNullException(nameof(HttpClient));
+            }
+        }
+
+
+        private string BuildBaseUrl(string baseUrl)
+        {
             if (!baseUrl.StartsWith("http") && baseUrl != "")
             {
                 baseUrl = $"http://{baseUrl}";
@@ -57,16 +73,7 @@ namespace Feign.Proxy
             {
                 baseUrl = baseUrl.TrimEnd('/');
             }
-            BaseUrl = baseUrl;
-
-            InitializingEventArgs<TService> initializingEventArgs = new InitializingEventArgs<TService>(this);
-            initializingEventArgs.HttpClient = HttpClient;
-            OnInitializing(initializingEventArgs);
-            HttpClient = initializingEventArgs.HttpClient;
-            if (HttpClient == null)
-            {
-                throw new ArgumentNullException(nameof(HttpClient));
-            }
+            return baseUrl;
         }
 
 
@@ -158,16 +165,10 @@ namespace Feign.Proxy
             return FeignClientUtils.ReplacePathVariable<T>(FeignOptions.Converters, uri, name, value);
         }
         #endregion
-        #region RequestParam
-        protected string ReplaceRequestParam<T>(string uri, string name, T value)
-        {
-            return FeignClientUtils.ReplaceRequestParam<T>(FeignOptions.Converters, uri, name, value);
-        }
-        #endregion
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplaceRequestQuery<T>(FeignOptions.Converters, uri, name, value);
+            return FeignClientUtils.ReplaceRequestQuery<T>(FeignOptions.Converters, FeignOptions.PropertyNamingPolicy, uri, name, value);
         }
         #endregion
 

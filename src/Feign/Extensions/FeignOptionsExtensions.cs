@@ -2,6 +2,7 @@
 using System.Text.Json;
 using JsonSerializerSettings = System.Text.Json.JsonSerializerOptions;
 #else
+using Feign.Formatting;
 using Newtonsoft.Json;
 #endif
 using System;
@@ -10,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Feign.Formatting;
 
 namespace Feign
 {
@@ -25,10 +27,20 @@ namespace Feign
         {
 
 #if USE_SYSTEM_TEXT_JSON
-            configure?.Invoke(Internal.JsonHelper._jsonSerializerOptions);
+
+            var setting = feignOptions.JsonProvider as SystemTextJsonProvider;
+            if (setting != null)
+            {
+                configure?.Invoke(setting._jsonSerializerOptions);
+            }
 #else
-            configure?.Invoke(Internal.JsonHelper._jsonSerializerSettings);
+            var setting = feignOptions.JsonProvider as NewtonsoftJsonProvider;
+            if (setting != null)
+            {
+                configure?.Invoke(setting._jsonSerializerSettings);
+            }
 #endif
+
 
         }
     }
