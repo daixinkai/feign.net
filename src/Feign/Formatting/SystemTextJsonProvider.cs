@@ -50,6 +50,24 @@ namespace Feign.Formatting
             return DeserializeObject(buffer, type, encoding);
         }
 
+        public Task<TResult> DeserializeObjectAsync<TResult>(Stream stream, Encoding encoding)
+        {
+            if (encoding == Encoding.UTF8)
+            {
+                return JsonSerializer.DeserializeAsync<TResult>(stream, _jsonSerializerOptions).AsTask();
+            }
+            return Task.FromResult(DeserializeObject<TResult>(stream, encoding));
+        }
+
+        public Task<object> DeserializeObjectAsync(Stream stream, Type type, Encoding encoding)
+        {
+            if (encoding == Encoding.UTF8)
+            {
+                return JsonSerializer.DeserializeAsync(stream, type, _jsonSerializerOptions).AsTask();
+            }
+            return Task.FromResult(DeserializeObject(stream, type, encoding));
+        }
+
         public string SerializeObject(object value)
         {
             return JsonSerializer.Serialize(value, value.GetType(), _jsonSerializerOptions);
@@ -78,6 +96,7 @@ namespace Feign.Formatting
                 JsonSerializer.Serialize(utf8JsonWriter, value, _jsonSerializerOptions);
             }
         }
+
 
     }
 }

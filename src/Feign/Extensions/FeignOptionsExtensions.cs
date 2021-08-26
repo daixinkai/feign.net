@@ -2,7 +2,6 @@
 using System.Text.Json;
 using JsonSerializerSettings = System.Text.Json.JsonSerializerOptions;
 #else
-using Feign.Formatting;
 using Newtonsoft.Json;
 #endif
 using System;

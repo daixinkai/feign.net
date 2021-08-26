@@ -119,6 +119,15 @@ namespace Feign.Formatting
             return jsonSerializer;
         }
 
+        public Task<TResult> DeserializeObjectAsync<TResult>(Stream stream, Encoding encoding)
+        {
+            return Task.FromResult(DeserializeObject<TResult>(stream, encoding));
+        }
+
+        public Task<object> DeserializeObjectAsync(Stream stream, Type type, Encoding encoding)
+        {
+            return Task.FromResult(DeserializeObject(stream, type, encoding));
+        }
     }
 }
 

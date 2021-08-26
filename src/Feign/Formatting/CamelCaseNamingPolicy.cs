@@ -15,24 +15,25 @@ namespace Feign.Formatting
                 return name;
             }
 
-#if NETSTANDARD2_1            
+#if NET45 || NETSTANDARD2_0
+            char[] chars = name.ToCharArray();
+            FixCasing(chars);
+            return new string(chars);
+#else
             return string.Create(name.Length, name, (chars, name) =>
             {
                 name.AsSpan().CopyTo(chars);
                 FixCasing(chars);
             });
-#else
-            char[] chars = name.ToCharArray();
-            FixCasing(chars);
-            return new string(chars);
 #endif
         }
 
         private static void FixCasing(
-#if NETSTANDARD2_1
-Span<char> chars
-#else
+#if NET45 || NETSTANDARD2_0
 char[] chars
+#else
+ Span<char> chars
+
 #endif
             )
         {

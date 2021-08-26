@@ -51,20 +51,6 @@ namespace Feign.Formatting
 
         }
 
-        public TResult GetResult<TResult>(byte[] buffer, Encoding encoding)
-        {
-            using (MemoryStream memory = new MemoryStream())
-            {
-                memory.Write(buffer, 0, buffer.Length);
-                memory.Position = 0;
-                using (StreamReader sr = new StreamReader(memory, encoding))
-                {
-                    XmlSerializer xz = new XmlSerializer(typeof(TResult));
-                    return (TResult)xz.Deserialize(sr);
-                }
-            }
-        }
-
         public TResult GetResult<TResult>(Stream stream, Encoding encoding)
         {
             return (TResult)GetResult(typeof(TResult), stream, encoding);
@@ -79,5 +65,14 @@ namespace Feign.Formatting
             }
         }
 
+        public Task<TResult> GetResultAsync<TResult>(Stream stream, Encoding encoding)
+        {
+            return Task.FromResult(GetResult<TResult>(stream, encoding));
+        }
+
+        public Task<object> GetResultAsync(Type type, Stream stream, Encoding encoding)
+        {
+            return Task.FromResult(GetResult(type, stream, encoding));
+        }
     }
 }

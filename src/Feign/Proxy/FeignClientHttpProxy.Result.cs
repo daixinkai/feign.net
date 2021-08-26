@@ -145,7 +145,11 @@ namespace Feign.Proxy
             {
                 if (stream.CanSeek)
                 {
-                    return GetResultInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method.ResultType);
+                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method.ResultType)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+                        ;
                 }
                 using (Stream seekStream = new MemoryStream())
                 {
@@ -155,7 +159,11 @@ namespace Feign.Proxy
 #endif
                         ;
                     seekStream.Position = 0;
-                    return GetResultInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType);
+                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType)
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+           ;
                 }
             }
 
@@ -169,6 +177,23 @@ namespace Feign.Proxy
                 return (TResult)mediaTypeFormatter.GetResult(resultType, stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue));
             }
             return mediaTypeFormatter.GetResult<TResult>(stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue));
+        }
+
+        private async Task<TResult> GetResultAsyncInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, System.Net.Http.Headers.MediaTypeHeaderValue mediaTypeHeaderValue, Type resultType)
+        {
+            if (resultType != null)
+            {
+                return (TResult)await mediaTypeFormatter.GetResultAsync(resultType, stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue))
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+           ;
+            }
+            return await mediaTypeFormatter.GetResultAsync<TResult>(stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue))
+#if CONFIGUREAWAIT_FALSE
+           .ConfigureAwait(false)
+#endif
+           ;
         }
 
     }

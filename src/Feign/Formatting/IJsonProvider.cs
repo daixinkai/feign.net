@@ -9,14 +9,10 @@ namespace Feign.Formatting
 {
     public interface IJsonProvider
     {
-        TResult DeserializeObject<TResult>(byte[] buffer, Encoding encoding);
-        object DeserializeObject(byte[] buffer, Type type, Encoding encoding);
+        string SerializeObject(object value, Encoding encoding);
         TResult DeserializeObject<TResult>(Stream stream, Encoding encoding);
         object DeserializeObject(Stream stream, Type type, Encoding encoding);
-        string SerializeObject(object value);
-        string SerializeObject(object value, Encoding encoding);
-        TResult DeserializeObject<TResult>(string value);
-        object DeserializeObject(string value, Type type);
-        void Serialize(Stream stream, object value, Type type, Encoding encoding);
+        Task<TResult> DeserializeObjectAsync<TResult>(Stream stream, Encoding encoding);
+        Task<object> DeserializeObjectAsync(Stream stream, Type type, Encoding encoding);
     }
 }
