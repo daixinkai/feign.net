@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Feign.Discovery
+namespace Feign.Cache
 {
-    class DictionaryCacheProvider : ICacheProvider
+    public class DictionaryCacheProvider : ICacheProvider
     {
         class CacheEntry
         {

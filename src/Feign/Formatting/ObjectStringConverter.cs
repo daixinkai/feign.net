@@ -14,4 +14,21 @@ namespace Feign.Formatting
             return value?.ToString();
         }
     }
+
+    internal class ClassToStringConverter<T> : IConverter<T, string> where T : class
+    {
+        public string Convert(T value)
+        {
+            return value?.ToString();
+        }
+    }
+
+    internal class StructToStringConverter<T> : IConverter<T, string> where T : struct
+    {
+        public string Convert(T value)
+        {
+            return value.ToString();
+        }
+    }
+
 }

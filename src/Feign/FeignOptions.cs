@@ -50,5 +50,11 @@ namespace Feign
 
         public IList<FeignClientTypeInfo> Types { get; }
         public TimeSpan? DiscoverServiceCacheTime { get; set; }
+
+        /// <summary>
+        /// 默认HttpClientHandler的UseCookies值
+        /// </summary>
+        public bool? UseCookies { get; set; }
+
     }
 }

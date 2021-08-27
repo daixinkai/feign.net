@@ -10,7 +10,17 @@ using System.Threading.Tasks;
 namespace Feign
 {
     static partial class ReflectionExtensions
-    {        
+    {
+
+        public static ConstructorInfo GetEmptyConstructor(this Type type)
+        {
+            return type.GetConstructor(Type.EmptyTypes);
+        }
+
+        public static ConstructorInfo GetFirstConstructor(this Type type)
+        {
+            return type.GetConstructors()[0];
+        }
 
         public static string GetFullName(this Type type)
         {
@@ -52,10 +62,8 @@ namespace Feign
             return type.IsDefined(typeof(T)) || type.GetInterfaces().Any(s => IsDefinedIncludingBaseInterfaces<T>(s));
         }
 
-        static ConstructorInfo GetFirstConstructor(Type parentType)
-        {
-            return parentType.GetConstructors()[0];
-        }
+
+
 
         public static void BuildFirstConstructor(this TypeBuilder typeBuilder, Type parentType)
         {

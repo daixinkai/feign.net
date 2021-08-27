@@ -62,5 +62,9 @@ namespace Feign
         /// </summary>
         TimeSpan? DiscoverServiceCacheTime { get; set; }
 
+        /// <summary>
+        /// 默认HttpClientHandler的UseCookies值
+        /// </summary>
+        bool? UseCookies { get; set; }
     }
 }

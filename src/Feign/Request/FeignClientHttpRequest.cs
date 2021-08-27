@@ -1,5 +1,6 @@
 ﻿using Feign.Internal;
 using Feign.Reflection;
+using Feign.Request.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +85,11 @@ namespace Feign.Request
         //public MethodInfo Method { get; }
 
         public FeignClientMethodInfo Method { get; set; }
+
+        /// <summary>
+        /// 处理请求头
+        /// </summary>
+        public List<IRequestHeaderHandler> RequestHeaderHandlers { get; set; }
 
         /// <summary>
         /// 获取随请求一起发送的HttpContent

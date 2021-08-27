@@ -290,6 +290,13 @@ namespace Feign.Proxy
                     }
                 }
             }
+            if (request.RequestHeaderHandlers != null && request.RequestHeaderHandlers.Count > 0)
+            {
+                foreach (var handler in request.RequestHeaderHandlers)
+                {
+                    handler.SetHeader(requestMessage);
+                }
+            }
             return requestMessage;
         }
 

@@ -1,6 +1,7 @@
 ﻿using Feign.Internal;
 using Feign.Proxy;
 using Feign.Request;
+using Feign.Request.Headers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,21 +20,9 @@ namespace Feign.Reflection
     internal class FeignClientHttpProxyEmitMethodBuilder : IMethodBuilder
     {
         #region define
-        //protected static readonly MethodInfo ReplacePathVariableMethod = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(o => o.IsGenericMethod && o.Name == "ReplacePathVariable");
-
-        //protected static readonly MethodInfo ReplaceRequestParamMethod = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(o => o.IsGenericMethod && o.Name == "ReplaceRequestParam");
-
-        //protected static readonly MethodInfo ReplaceRequestQueryMethod = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(o => o.IsGenericMethod && o.Name == "ReplaceRequestQuery");
-
         protected static MethodInfo GetReplacePathVariableMethod(TypeBuilder typeBuilder)
         {
             return typeBuilder.BaseType.GetMethod("ReplacePathVariable", BindingFlags.Instance | BindingFlags.NonPublic);
-        }
-
-        [Obsolete("", true)]
-        protected static MethodInfo GetReplaceRequestParamMethod(TypeBuilder typeBuilder)
-        {
-            return typeBuilder.BaseType.GetMethod("ReplaceRequestParam", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         protected static MethodInfo GetReplaceRequestQueryMethod(TypeBuilder typeBuilder)
@@ -204,8 +193,7 @@ namespace Feign.Reflection
             {
                 methodAttributes = MethodAttributes.Public;
             }
-            var arguments = method.GetParameters().Select(a => a.ParameterType).ToArray();
-            MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, methodAttributes, CallingConventions.Standard, method.ReturnType, arguments);
+            MethodBuilder methodBuilder = typeBuilder.DefineMethodBuilder(method, methodAttributes, true);
             typeBuilder.DefineMethodOverride(methodBuilder, method);
             return methodBuilder;
         }
@@ -297,13 +285,13 @@ namespace Feign.Reflection
             }
 
             //headers
-            List<string> headers = new List<string>();
+            List<IEmitValue<string>> headers = new List<IEmitValue<string>>();
             if (serviceType.IsDefined(typeof(HeadersAttribute), true))
             {
                 var serviceHeaders = serviceType.GetCustomAttribute<HeadersAttribute>().Headers;
                 if (serviceHeaders != null)
                 {
-                    headers.AddRange(serviceHeaders);
+                    headers.AddRange(serviceHeaders.Select(s => new EmitConstantStringValue(s)));
                 }
             }
             if (feignClientMethodInfo.MethodMetadata.IsDefined(typeof(HeadersAttribute), true))
@@ -311,7 +299,7 @@ namespace Feign.Reflection
                 var methodHeaders = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<HeadersAttribute>().Headers;
                 if (methodHeaders != null)
                 {
-                    headers.AddRange(methodHeaders);
+                    headers.AddRange(methodHeaders.Select(s => new EmitConstantStringValue(s)));
                 }
             }
             if (headers.Count == 0)
@@ -355,7 +343,7 @@ namespace Feign.Reflection
             //feignClientMethodInfo
             //feignClientMethodInfo=null
             LocalBuilder feignClientMethodInfoLocalBuilder = iLGenerator.DeclareLocal(typeof(FeignClientMethodInfo));
-            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientMethodInfo).GetConstructors()[0]);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientMethodInfo).GetEmptyConstructor());
             iLGenerator.Emit(OpCodes.Stloc, feignClientMethodInfoLocalBuilder);
             iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
             iLGenerator.Emit(OpCodes.Ldstr, feignClientMethodInfo.MethodId);
@@ -398,7 +386,7 @@ namespace Feign.Reflection
             iLGenerator.MarkLabel(newFeingClientRequestLabel);
 
             iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
-            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetConstructors()[0]);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpRequest).GetFirstConstructor());
             #region HttpCompletionOption
             //CompletionOption=requestMapping.CompletionOption.Value;
             iLGenerator.Emit(OpCodes.Dup);
@@ -406,6 +394,53 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetProperty("CompletionOption").SetMethod);
             #endregion
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
+
+
+            //#region request headers
+            //// request headers
+            //List<Tuple<int, ParameterInfo, RequestHeaderBaseAttribute>> headerBaseAttributes = new List<Tuple<int, ParameterInfo, RequestHeaderBaseAttribute>>();
+            //int parameterIndex = -1;
+            //foreach (var item in feignClientMethodInfo.MethodMetadata.GetParameters())
+            //{
+            //    parameterIndex++;
+            //    if (!item.IsDefined(typeof(RequestHeaderBaseAttribute)))
+            //    {
+            //        continue;
+            //    }
+            //    headerBaseAttributes.Add(Tuple.Create(parameterIndex, item, item.GetCustomAttribute<RequestHeaderBaseAttribute>()));
+            //}
+            //if (headerBaseAttributes.Count > 0)
+            //{
+            //    //feignClientHttpRequest.RequestHeaderHandlers = new List<IRequestHeaderHandler>();
+            //    iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+            //    iLGenerator.Emit(OpCodes.Newobj, typeof(List<IRequestHeaderHandler>).GetEmptyConstructor());
+            //    iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetProperty("RequestHeaderHandlers").SetMethod);
+
+            //    MethodInfo listAddItemMethodInfo = typeof(List<IRequestHeaderHandler>).GetMethod("Add");
+            //    foreach (var headerBaseAttribute in headerBaseAttributes)
+            //    {
+            //        //string text2 = "xxx";
+            //        //feignClientHttpRequest.RequestHeaderHandlers.Add(new RequestHeaderHandler("xxx", text2));
+            //        var valueBuilder = iLGenerator.DeclareLocal(typeof(string));
+            //        if (headerBaseAttribute.Item2.ParameterType == typeof(string))
+            //        {
+            //            iLGenerator.Emit(OpCodes.Ldarg_S, headerBaseAttribute.Item1 + 1);
+            //        }
+            //        else
+            //        {
+            //            iLGenerator.Emit(OpCodes.Ldstr, "test");
+            //        }
+            //        iLGenerator.Emit(OpCodes.Stloc, valueBuilder);
+            //        var handlerLocalBuilder = headerBaseAttribute.Item3.EmitNewRequestHeaderHandler(iLGenerator, valueBuilder);
+            //        if (handlerLocalBuilder!=null)
+            //        {
+            //            iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+            //            iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetProperty("RequestHeaderHandlers").GetMethod);
+            //            iLGenerator.Emit(OpCodes.Callvirt, listAddItemMethodInfo);
+            //        }
+            //    }
+            //}
+            //#endregion
 
             return localBuilder;
             #endregion
@@ -426,7 +461,7 @@ namespace Feign.Reflection
             {
                 //iLGenerator.Emit(OpCodes.Ldstr, emitRequestContent.Parameter.Name);
                 iLGenerator.Emit(OpCodes.Ldarg_S, emitRequestContent.ParameterIndex);
-                iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpFileFormRequestContent).GetConstructors()[0]);
+                iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpFileFormRequestContent).GetFirstConstructor());
                 if (localBuilder != null)
                 {
                     iLGenerator.Emit(OpCodes.Stloc, localBuilder);
@@ -437,7 +472,7 @@ namespace Feign.Reflection
             {
                 iLGenerator.Emit(OpCodes.Ldstr, emitRequestContent.Parameter.Name);
                 iLGenerator.Emit(OpCodes.Ldarg_S, emitRequestContent.ParameterIndex);
-                iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpFileRequestContent).GetConstructors()[0]);
+                iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpFileRequestContent).GetFirstConstructor());
                 if (localBuilder != null)
                 {
                     iLGenerator.Emit(OpCodes.Stloc, localBuilder);
@@ -448,10 +483,10 @@ namespace Feign.Reflection
             switch (emitRequestContent.MediaType)
             {
                 case "application/json":
-                    constructorInfo = typeof(FeignClientHttpJsonRequestContent<>).MakeGenericType(emitRequestContent.Parameter.ParameterType).GetConstructors()[0];
+                    constructorInfo = typeof(FeignClientHttpJsonRequestContent<>).MakeGenericType(emitRequestContent.Parameter.ParameterType).GetFirstConstructor();
                     break;
                 case "application/x-www-form-urlencoded":
-                    constructorInfo = typeof(FeignClientHttpFormRequestContent<>).MakeGenericType(emitRequestContent.Parameter.ParameterType).GetConstructors()[0];
+                    constructorInfo = typeof(FeignClientHttpFormRequestContent<>).MakeGenericType(emitRequestContent.Parameter.ParameterType).GetFirstConstructor();
                     break;
                 default:
                     throw new NotSupportedException("不支持的content type");
@@ -471,7 +506,7 @@ namespace Feign.Reflection
         {
             LocalBuilder requestContent = iLGenerator.DeclareLocal(typeof(FeignClientHttpMultipartFormRequestContent));
             MethodInfo methodAddContent = typeof(FeignClientHttpMultipartFormRequestContent).GetMethod("AddContent");
-            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpMultipartFormRequestContent).GetConstructors()[0]);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientHttpMultipartFormRequestContent).GetFirstConstructor());
             iLGenerator.Emit(OpCodes.Stloc, requestContent);
             for (int i = 0; i < emitRequestContents.Count; i++)
             {
@@ -509,6 +544,10 @@ namespace Feign.Reflection
             foreach (var parameterInfo in method.GetParameters())
             {
                 index++;
+                if (parameterInfo.GetCustomAttributes().Any(s => s is INotRequestParameter))
+                {
+                    continue;
+                }
                 if (typeof(IHttpRequestFileForm).IsAssignableFrom(parameterInfo.ParameterType))
                 {
                     emitRequestContents.Add(new EmitRequestContent

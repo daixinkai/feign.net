@@ -8,7 +8,7 @@ namespace Feign.Tests
 {
     public class TestControllerServiceFallback : ITestControllerService
     {
-        public IQueryResult<TestServiceParam> GetQueryResultValue([PathVariable("id")] string id, [RequestQuery] TestServiceParam param)
+        public IQueryResult<TestServiceParam> GetQueryResultValue([PathVariable("id")] string id, [RequestQuery] TestServiceParam param, [RequestHeader] string header, [RequestAuthorization] string authorization)
         {
             return new QueryResult<TestServiceParam>()
             {
@@ -16,6 +16,7 @@ namespace Feign.Tests
                 StatusCode = System.Net.HttpStatusCode.BadRequest
             };
         }
+
 
         public Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([PathVariable("id")] string id, [RequestQuery] TestServiceParam param)
         {

@@ -29,6 +29,10 @@ namespace Feign.Proxy
             {
                 serviceDiscoveryHttpClientHandler.AutomaticDecompression = feignOptions.AutomaticDecompression.Value;
             }
+            if (FeignOptions.UseCookies.HasValue)
+            {
+                serviceDiscoveryHttpClientHandler.UseCookies = FeignOptions.UseCookies.Value;
+            }
             //serviceDiscoveryHttpClientHandler.ShouldResolveService = string.IsNullOrWhiteSpace(Url);
             serviceDiscoveryHttpClientHandler.ShouldResolveService = Url == null;
             serviceDiscoveryHttpClientHandler.AllowAutoRedirect = false;

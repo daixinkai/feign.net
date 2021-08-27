@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Reflection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +17,22 @@ namespace Feign
 
         static readonly MethodInfo GetTypeFromHandleMethodInfo = typeof(Type).GetMethod("GetTypeFromHandle");
 
+        public static MethodBuilder DefineMethodBuilder(this TypeBuilder typeBuilder, MethodInfo method, MethodAttributes methodAttributes, bool copyCustomAttributes)
+        {
+
+            var arguments = method.GetParameters().Select(a => a.ParameterType).ToArray();
+            MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, methodAttributes, CallingConventions.Standard, method.ReturnType, arguments);
+            int position = 1;
+            foreach (var parameter in method.GetParameters())
+            {
+                var parameterBuilder = methodBuilder.DefineParameter(position, ParameterAttributes.None, parameter.Name);
+                parameterBuilder.CopyCustomAttributes(parameter);
+                position++;
+            }
+            return methodBuilder;
+        }
+
+
         public static LocalBuilder DefineEmitMethodInfo(this ILGenerator iLGenerator, MethodInfo method)
         {
             LocalBuilder methodLocalBuilder = iLGenerator.DeclareLocal(typeof(MethodInfo));
@@ -23,6 +40,17 @@ namespace Feign
             iLGenerator.Emit(OpCodes.Stloc, methodLocalBuilder);
             return methodLocalBuilder;
         }
+
+
+
+        public static LocalBuilder DeclareLocalEx(this ILGenerator iLGenerator, Type localType, string name)
+        {
+            LocalBuilder localBuilder = iLGenerator.DeclareLocal(localType);
+            return localBuilder;
+        }
+
+
+
         /// <summary>
         ///  like  methodof(ReflectionExtensions.EmitMethodInfo(ILGenerator,MethodInfo))
         /// </summary>
@@ -73,7 +101,7 @@ namespace Feign
         /// </summary>
         /// <param name="iLGenerator"></param>
         /// <param name="list"></param>
-        public static void EmitStringArray(this ILGenerator iLGenerator, IEnumerable<string> list)
+        public static void EmitStringArray(this ILGenerator iLGenerator, IEnumerable<IEmitValue<string>> list)
         {
             iLGenerator.Emit(OpCodes.Ldc_I4, list.Count());
             iLGenerator.Emit(OpCodes.Newarr, typeof(string));
@@ -82,7 +110,7 @@ namespace Feign
             {
                 iLGenerator.Emit(OpCodes.Dup);
                 iLGenerator.Emit(OpCodes.Ldc_I4, index);
-                iLGenerator.Emit(OpCodes.Ldstr, item);
+                item.Emit(iLGenerator);
                 iLGenerator.Emit(OpCodes.Stelem_Ref);
                 index++;
             }
