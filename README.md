@@ -4,6 +4,7 @@
 
 ## feign.net是一个spring cloud feign组件的c#移植版
 
+*使用Emit生成代理类,非反射调用,提高性能*
 
 ### 定义服务 : 
 
