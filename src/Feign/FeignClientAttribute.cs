@@ -16,6 +16,17 @@ namespace Feign
             }
             Name = name;
         }
+
+        public FeignClientAttribute(string name, FeignClientLifetime lifetime)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            Name = name;
+            Lifetime = lifetime;
+        }
+
         /// <summary>
         /// gets the serviceId
         /// </summary>
