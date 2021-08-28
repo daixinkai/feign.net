@@ -44,6 +44,7 @@ namespace Feign
         protected internal override LocalBuilder EmitNewRequestHeaderHandler(ILGenerator iLGenerator, LocalBuilder valueBuilder)
         {
             LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(IRequestHeaderHandler));
+            var method = typeof(RequestHeaderAttribute).GetMethod("GetHeader", BindingFlags.Public | BindingFlags.Static);
             //iLGenerator.Emit(OpCodes.Pop);
             //iLGenerator.Emit(OpCodes.Ldnull);
             if (!string.IsNullOrWhiteSpace(Name))
@@ -55,7 +56,8 @@ namespace Feign
                 iLGenerator.Emit(OpCodes.Ldnull);
             }
             iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetFirstConstructor());
+            iLGenerator.Emit(OpCodes.Call, method);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) }));
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
             return localBuilder;
         }
