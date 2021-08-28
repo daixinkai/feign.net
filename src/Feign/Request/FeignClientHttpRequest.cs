@@ -47,17 +47,27 @@ namespace Feign.Request
             MappingUri = mappingUri;
             Uri = uri;
             HttpMethod = httpMethod;
-            if (string.IsNullOrWhiteSpace(contentType))
+            if (!string.IsNullOrWhiteSpace(contentType))
             {
-                contentType = "application/json; charset=utf-8";
+                MediaTypeHeaderValue mediaTypeHeaderValue;
+                if (!MediaTypeHeaderValue.TryParse(contentType, out mediaTypeHeaderValue))
+                {
+                    throw new ArgumentException("ContentType error");
+                }
+                MediaType = mediaTypeHeaderValue.MediaType;
+                ContentType = mediaTypeHeaderValue;
             }
-            MediaTypeHeaderValue mediaTypeHeaderValue;
-            if (!MediaTypeHeaderValue.TryParse(contentType, out mediaTypeHeaderValue))
-            {
-                throw new ArgumentException("ContentType error");
-            }
-            MediaType = mediaTypeHeaderValue.MediaType;
-            ContentType = mediaTypeHeaderValue;
+            //if (string.IsNullOrWhiteSpace(contentType))
+            //{
+            //    contentType = "application/json; charset=utf-8";
+            //}
+            //MediaTypeHeaderValue mediaTypeHeaderValue;
+            //if (!MediaTypeHeaderValue.TryParse(contentType, out mediaTypeHeaderValue))
+            //{
+            //    throw new ArgumentException("ContentType error");
+            //}
+            //MediaType = mediaTypeHeaderValue.MediaType;
+            //ContentType = mediaTypeHeaderValue;
         }
         /// <summary>
         /// 获取BaseUrl

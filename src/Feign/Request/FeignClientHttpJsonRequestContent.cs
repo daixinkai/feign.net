@@ -34,9 +34,13 @@ namespace Feign.Request
                 //throw new NotSupportedException($"不支持{type.FullName}类型的参数");
                 return null;
             }
-            Encoding encoding = FeignClientUtils.GetEncoding(contentType);
-            //return new ObjectContent(Content, encoding ?? Encoding.UTF8, contentType);
-            return new ObjectStringContent(Content, encoding ?? Encoding.UTF8, contentType.MediaType, options.JsonProvider);
+            if (contentType == null)
+            {
+                return new ObjectStringContent(Content, Encoding.UTF8, "application/json", options.JsonProvider);
+            }
+            ObjectStringContent content = new ObjectStringContent(Content, options.JsonProvider);
+            content.Headers.ContentType = contentType;
+            return content;
         }
     }
 }
