@@ -6,6 +6,7 @@ using Feign.Tests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Feign.TestWeb.NETCORE30.Pages
@@ -21,6 +22,13 @@ namespace Feign.TestWeb.NETCORE30.Pages
 
         public async Task<IActionResult> OnGet([FromServices] ITestService testService, [FromServices] ITestControllerService testControllerService)
         {
+
+            var noBaseUrlTestService = HttpContext.RequestServices.GetRequiredService<INoBaseUrlTestService>();
+
+            var baiduHtml = await noBaseUrlTestService.GetBaidu();
+
+            //return Content(baiduHtml);
+
             string name = testService.Name;
             string serviceId = testService.ServiceId;
             Type serviceType = testService.ServiceType;

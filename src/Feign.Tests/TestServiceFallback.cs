@@ -37,7 +37,7 @@ namespace Feign.Tests
 
         public Task<string> Get()
         {
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(null, null, null, null, null, null, null, null, null)
+            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(null, null, null, null, null)
             {
                 CompletionOption = HttpCompletionOption.ResponseHeadersRead
             };
@@ -110,10 +110,7 @@ namespace Feign.Tests
             {
                 feignClientMethodInfo.MethodMetadata = typeof(FeignClientMethodInfo).GetMethod("");
             }
-            FeignClientHttpRequest request = new FeignClientHttpRequest("", "", "", "", "", "", new string[] {
-                "1","2"
-            },
-            null, feignClientMethodInfo);
+            FeignClientHttpRequest request = new FeignClientHttpRequest("", "", "", "", "");
             throw new NotImplementedException();
         }
 

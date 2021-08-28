@@ -24,7 +24,7 @@ namespace Feign.Tests.NET45
         [TestMethod]
         public void TestMethod1()
         {
-            FeignClientHttpRequest request = new FeignClientHttpRequest(null, null, null, null, null, null, null, null, null);
+            FeignClientHttpRequest request = new FeignClientHttpRequest(null, null, null, null, null);
             request.RequestHeaderHandlers = new List<Request.Headers.IRequestHeaderHandler>();
             Request.Headers.IRequestHeaderHandler requestHeaderHandler = null;
             request.RequestHeaderHandlers.Add(requestHeaderHandler);

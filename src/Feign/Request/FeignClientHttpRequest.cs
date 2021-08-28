@@ -17,16 +17,36 @@ namespace Feign.Request
     /// </summary>
     public class FeignClientHttpRequest
     {
-        public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType, string accept, string[] headers, FeignClientHttpRequestContent requestContent, FeignClientMethodInfo method)
+
+        //public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType, string accept, string[] headers, FeignClientHttpRequestContent requestContent, FeignClientMethodInfo method)
+        //{
+        //    BaseUrl = baseUrl;
+        //    MappingUri = mappingUri;
+        //    Uri = uri;
+        //    HttpMethod = httpMethod;
+        //    RequestContent = requestContent;
+        //    Method = method;
+        //    Accept = accept;
+        //    Headers = headers;
+        //    if (string.IsNullOrWhiteSpace(contentType))
+        //    {
+        //        contentType = "application/json; charset=utf-8";
+        //    }
+        //    MediaTypeHeaderValue mediaTypeHeaderValue;
+        //    if (!MediaTypeHeaderValue.TryParse(contentType, out mediaTypeHeaderValue))
+        //    {
+        //        throw new ArgumentException("ContentType error");
+        //    }
+        //    MediaType = mediaTypeHeaderValue.MediaType;
+        //    ContentType = mediaTypeHeaderValue;
+        //}
+
+        public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType)
         {
             BaseUrl = baseUrl;
             MappingUri = mappingUri;
             Uri = uri;
             HttpMethod = httpMethod;
-            RequestContent = requestContent;
-            Method = method;
-            Accept = accept;
-            Headers = headers;
             if (string.IsNullOrWhiteSpace(contentType))
             {
                 contentType = "application/json; charset=utf-8";
@@ -52,13 +72,9 @@ namespace Feign.Request
         /// </summary>
         public string Uri { get; }
         /// <summary>
-        /// 获取Headers
+        /// 获取或设置HttpMethod
         /// </summary>
-        public string[] Headers { get; }
-        /// <summary>
-        /// 获取HttpMethod
-        /// </summary>
-        public string HttpMethod { get; }
+        public string HttpMethod { get; set; }
         /// <summary>
         /// 获取媒体类型
         /// </summary>
@@ -68,26 +84,29 @@ namespace Feign.Request
         /// </summary>
         public string MediaType { get; }
         /// <summary>
-        /// 获取Accept
+        /// 获取或设置Headers
         /// </summary>
-        public string Accept { get; }
+        public string[] Headers { get; set; }
+        /// <summary>
+        /// 获取或设置Accept
+        /// </summary>
+        public string Accept { get; set; }
         /// <summary>
         /// 获取或设置HttpCompletionOption
         /// </summary>
         public HttpCompletionOption CompletionOption { get; set; }
         /// <summary>
-        /// 获取RequestContent
+        /// 获取或设置RequestContent
         /// </summary>
-        public FeignClientHttpRequestContent RequestContent { get; }
-        ///// <summary>
-        ///// 获取方法元数据
-        ///// </summary>
-        //public MethodInfo Method { get; }
+        public FeignClientHttpRequestContent RequestContent { get; set; }
 
+        /// <summary>
+        /// 获取或设置方法元数据
+        /// </summary>
         public FeignClientMethodInfo Method { get; set; }
 
         /// <summary>
-        /// 处理请求头
+        /// 获取或设置处理请求头
         /// </summary>
         public List<IRequestHeaderHandler> RequestHeaderHandlers { get; set; }
 

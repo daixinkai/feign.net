@@ -163,16 +163,47 @@ namespace Feign.Proxy
         }
         #endregion
 
+        #region ConvertToStringValue
+        protected virtual string ConvertToStringValue<T>(T value)
+        {
+            return FeignOptions.Converters.ConvertValue<T, string>(value, true);
+        }
+        #endregion
+
         #region PathVariable
         protected string ReplacePathVariable<T>(string uri, string name, T value)
         {
             return FeignClientUtils.ReplacePathVariable<T>(FeignOptions.Converters, uri, name, value);
+        }
+        protected string ReplaceStringPathVariable(string uri, string name, string value)
+        {
+            return FeignClientUtils.ReplacePathVariable(uri, name, value);
+        }
+        protected string ReplaceToStringPathVariable<T>(string uri, string name, T value) where T : struct
+        {
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString());
+        }
+        protected string ReplaceNullablePathVariable<T>(string uri, string name, T? value) where T : struct
+        {
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString());
         }
         #endregion
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
             return FeignClientUtils.ReplaceRequestQuery<T>(FeignOptions.Converters, FeignOptions.PropertyNamingPolicy, uri, name, value);
+        }
+        protected string ReplaceStringRequestQuery(string uri, string name, string value)
+        {
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value);
+        }
+        protected string ReplaceToStringRequestQuery<T>(string uri, string name, T value) where T : struct
+        {
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString());
+        }
+        protected string ReplaceNullableRequestQuery<T>(string uri, string name, T? value) where T : struct
+        {
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString());
         }
         #endregion
 

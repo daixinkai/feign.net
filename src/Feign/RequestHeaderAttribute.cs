@@ -44,29 +44,19 @@ namespace Feign
         protected internal override LocalBuilder EmitNewRequestHeaderHandler(ILGenerator iLGenerator, LocalBuilder valueBuilder)
         {
             LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(IRequestHeaderHandler));
-            iLGenerator.Emit(OpCodes.Pop);
-            iLGenerator.Emit(OpCodes.Ldnull);
+            //iLGenerator.Emit(OpCodes.Pop);
+            //iLGenerator.Emit(OpCodes.Ldnull);
+            if (!string.IsNullOrWhiteSpace(Name))
+            {
+                iLGenerator.Emit(OpCodes.Ldstr, Name);
+            }
+            else
+            {
+                iLGenerator.Emit(OpCodes.Ldnull);
+            }
+            iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetFirstConstructor());
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
-            //if (!string.IsNullOrWhiteSpace(Name))
-            //{
-            //    iLGenerator.Emit(OpCodes.Ldstr, Name);
-            //    iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            //    iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetFirstConstructor());
-            //    iLGenerator.Emit(OpCodes.Stloc, localBuilder);
-            //}
-            //else
-            //{
-            //    iLGenerator.Emit(OpCodes.Ldstr, "Name");
-            //    iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            //    iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetFirstConstructor());
-            //    iLGenerator.Emit(OpCodes.Stloc, localBuilder);
-            //    //string[] values = value?.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            //    //if (values.Length != 2)
-            //    //{
-            //    //    throw new ArgumentException("value must be (key:value) when Name is empty", nameof(value));
-            //    //}
-            //    //return new DefaultRequestHeaderHandler(values[0], values[1]);
-            //}
             return localBuilder;
         }
 

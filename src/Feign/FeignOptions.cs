@@ -16,6 +16,9 @@ namespace Feign
         {
             Assemblies = new List<Assembly>();
             Converters = new ConverterCollection();
+            //Converters.AddConverter(new ClassToStringConverter<string>());
+            //Converters.AddConverter(new StructToStringConverter<int>());
+            //Converters.AddConverter(new StructToStringConverter<long>());
             Converters.AddConverter(new ObjectStringConverter());
             MediaTypeFormatters = new MediaTypeFormatterCollection();
             MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(this));

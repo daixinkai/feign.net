@@ -45,9 +45,10 @@ namespace Feign
 
         protected internal override LocalBuilder EmitNewRequestHeaderHandler(ILGenerator iLGenerator, LocalBuilder valueBuilder)
         {
-            return null;
+            LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(IRequestHeaderHandler));
             var method = typeof(RequestAuthorizationAttribute).GetMethod("GetHeader", BindingFlags.Public | BindingFlags.Static);
-
+            //iLGenerator.Emit(OpCodes.Pop);
+            //iLGenerator.Emit(OpCodes.Ldnull);
             if (!string.IsNullOrWhiteSpace(Scheme))
             {
                 iLGenerator.Emit(OpCodes.Ldstr, Scheme);
@@ -55,32 +56,12 @@ namespace Feign
             else
             {
                 iLGenerator.Emit(OpCodes.Ldnull);
-            }            
+            }
             iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            iLGenerator.Emit(OpCodes.Callvirt, method);
-            iLGenerator.Emit(OpCodes.Pop);
-            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetFirstConstructor());
-            //if (!string.IsNullOrWhiteSpace(Scheme))
-            //{
-            //    iLGenerator.Emit(OpCodes.Ldstr, Scheme);
-            //    iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            //    iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetFirstConstructor());
-            //    //return new DefaultRequestHeaderHandler("Authorization", scheme + " " + value);
-            //}
-            //else
-            //{
-            //    iLGenerator.Emit(OpCodes.Ldstr, "Authorization");
-            //    iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            //    iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetFirstConstructor());
-            //    //return new DefaultRequestHeaderHandler("Authorization", value);
-            //    //string[] values = value?.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            //    //if (values.Length != 2)
-            //    //{
-            //    //    throw new ArgumentException("value must be (scheme value) when Name is empty", nameof(value));
-            //    //}
-            //    //return new DefaultRequestHeaderHandler("Authorization", values[0] + " " + values[1]);
-            //}
-            return null;
+            iLGenerator.Emit(OpCodes.Call, method);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) }));
+            iLGenerator.Emit(OpCodes.Stloc, localBuilder);
+            return localBuilder;
         }
 
     }

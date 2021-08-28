@@ -22,6 +22,11 @@ namespace Feign
             return type.GetConstructors()[0];
         }
 
+        public static bool IsNullableType(this Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
         public static string GetFullName(this Type type)
         {
             try
