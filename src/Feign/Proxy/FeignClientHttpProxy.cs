@@ -195,6 +195,10 @@ namespace Feign.Proxy
         }
         protected string ReplaceStringRequestQuery(string uri, string name, string value)
         {
+            if (value == null)
+            {
+                return uri;
+            }
             return FeignClientUtils.ReplaceRequestQuery(uri, name, value);
         }
         protected string ReplaceToStringRequestQuery<T>(string uri, string name, T value) where T : struct
@@ -203,7 +207,11 @@ namespace Feign.Proxy
         }
         protected string ReplaceNullableRequestQuery<T>(string uri, string name, T? value) where T : struct
         {
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString());
+            if (!value.HasValue)
+            {
+                return uri;
+            }
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.Value.ToString());
         }
         #endregion
 

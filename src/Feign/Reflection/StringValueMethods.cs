@@ -53,7 +53,11 @@ namespace Feign.Reflection
         }
         public static string NullableToString<T>(T? value) where T : struct
         {
-            return value.ToString();
+            if (!value.HasValue)
+            {
+                return null;
+            }
+            return value.Value.ToString();
         }
 
     }
