@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0;netstandard2.1;</TargetFrameworks>
-    <Version>1.2.5.5-preview5</Version>
+    <Version>1.2.5.5-preview6</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
     <Authors>daixinkai</Authors>
@@ -36,6 +36,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
     <PackageReference Include="Newtonsoft.Json" Version="6.0.4" />
     <Reference Include="System.Net.Http" />
+	<Reference Include="System.Web" />
   </ItemGroup>
 
 

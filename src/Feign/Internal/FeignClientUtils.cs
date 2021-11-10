@@ -11,21 +11,33 @@ namespace Feign.Internal
     static class FeignClientUtils
     {
         #region PathVariable
-        public static string ReplacePathVariable(string uri, string name, string value)
+        public static string ReplacePathVariable(string uri, string name, string value, bool urlEncode)
         {
+            if (urlEncode && !string.IsNullOrEmpty(value))
+            {
+                value = System.Web.HttpUtility.UrlEncode(value);
+            }
             name = "{" + name + "}";
             return uri.Replace(name, value);
         }
 
-        public static string ReplacePathVariable<T>(ConverterCollection converters, string uri, string name, T value)
+        public static string ReplacePathVariable<T>(ConverterCollection converters, string uri, string name, T value, bool urlEncode)
         {
-            return ReplacePathVariable(uri, name, converters.ConvertValue<T, string>(value, true));
+            return ReplacePathVariable(uri, name, converters.ConvertValue<T, string>(value, true), urlEncode);
         }
         #endregion
 
         #region RequestQuery
-        public static string ReplaceRequestQuery(string uri, string name, string value)
+        public static string ReplaceRequestQuery(string uri, string name, string value, bool urlEncode)
         {
+            if (value == null)
+            {
+                return uri;
+            }
+            if (urlEncode && value.Length > 0)
+            {
+                value = System.Web.HttpUtility.UrlEncode(value);
+            }
             if (uri.IndexOf("?") >= 0)
             {
                 return uri + $"&{name}={value}";
@@ -35,20 +47,20 @@ namespace Feign.Internal
                 return uri + $"?{name}={value}";
             }
         }
-        public static string ReplaceRequestQuery<T>(ConverterCollection converters, NamingPolicy namingPolicy, string uri, string name, T value)
+        public static string ReplaceRequestQuery<T>(ConverterCollection converters, NamingPolicy namingPolicy, string uri, string name, T value, bool urlEncode)
         {
             var typeCode = Type.GetTypeCode(typeof(T));
             if (typeCode == TypeCode.Object)
             {
                 foreach (var item in GetObjectStringParameters(name, value, converters, namingPolicy))
                 {
-                    uri = ReplaceRequestQuery(uri, item.Key, item.Value);
+                    uri = ReplaceRequestQuery(uri, item.Key, item.Value, urlEncode);
                 }
                 return uri;
             }
             else
             {
-                return ReplaceRequestQuery(uri, name, converters.ConvertValue<T, string>(value, true));
+                return ReplaceRequestQuery(uri, name, converters.ConvertValue<T, string>(value, true), urlEncode);
             }
         }
         #endregion

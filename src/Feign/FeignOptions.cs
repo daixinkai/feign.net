@@ -59,5 +59,10 @@ namespace Feign
         /// </summary>
         public bool? UseCookies { get; set; }
 
+        /// <summary>
+        /// 是否启用编码Url (如 : RequestQuery,PathVariable)
+        /// </summary>
+        public bool UseUrlEncode { get; set; }
+
     }
 }

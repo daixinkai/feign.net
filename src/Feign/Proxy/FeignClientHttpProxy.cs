@@ -173,25 +173,25 @@ namespace Feign.Proxy
         #region PathVariable
         protected string ReplacePathVariable<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplacePathVariable<T>(FeignOptions.Converters, uri, name, value);
+            return FeignClientUtils.ReplacePathVariable<T>(FeignOptions.Converters, uri, name, value, FeignOptions.UseUrlEncode);
         }
         protected string ReplaceStringPathVariable(string uri, string name, string value)
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value);
+            return FeignClientUtils.ReplacePathVariable(uri, name, value, FeignOptions.UseUrlEncode);
         }
         protected string ReplaceToStringPathVariable<T>(string uri, string name, T value) where T : struct
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString());
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.UseUrlEncode);
         }
         protected string ReplaceNullablePathVariable<T>(string uri, string name, T? value) where T : struct
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString());
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.UseUrlEncode);
         }
         #endregion
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplaceRequestQuery<T>(FeignOptions.Converters, FeignOptions.PropertyNamingPolicy, uri, name, value);
+            return FeignClientUtils.ReplaceRequestQuery<T>(FeignOptions.Converters, FeignOptions.PropertyNamingPolicy, uri, name, value, FeignOptions.UseUrlEncode);
         }
         protected string ReplaceStringRequestQuery(string uri, string name, string value)
         {
@@ -199,11 +199,11 @@ namespace Feign.Proxy
             {
                 return uri;
             }
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, FeignOptions.UseUrlEncode);
         }
         protected string ReplaceToStringRequestQuery<T>(string uri, string name, T value) where T : struct
         {
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString());
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString(), FeignOptions.UseUrlEncode);
         }
         protected string ReplaceNullableRequestQuery<T>(string uri, string name, T? value) where T : struct
         {
@@ -211,7 +211,7 @@ namespace Feign.Proxy
             {
                 return uri;
             }
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.Value.ToString());
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.Value.ToString(), FeignOptions.UseUrlEncode);
         }
         #endregion
 

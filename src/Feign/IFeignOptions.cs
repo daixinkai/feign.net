@@ -66,5 +66,9 @@ namespace Feign
         /// 默认HttpClientHandler的UseCookies值
         /// </summary>
         bool? UseCookies { get; set; }
+        /// <summary>
+        /// 是否启用编码Url (如 : RequestQuery,PathVariable)
+        /// </summary>
+        bool UseUrlEncode { get; set; }
     }
 }
