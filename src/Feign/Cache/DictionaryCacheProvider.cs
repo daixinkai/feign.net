@@ -44,7 +44,7 @@ namespace Feign.Cache
             {
                 Key = name,
                 Value = value,
-                ExpirationTime = expirationTime.HasValue ? (long?)GetCurrentTimeMillis() : null
+                ExpirationTime = expirationTime.HasValue ? (long?)GetCurrentTimeMillis(expirationTime.Value) : null
             };
             _map.AddOrUpdate(name, cacheEntry, (key, oldValue) => cacheEntry);
         }
@@ -59,9 +59,20 @@ namespace Feign.Cache
         {
 #if NET45
             TimeSpan ts = DateTimeOffset.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return Convert.ToInt64(ts.TotalSeconds);
+            return Convert.ToInt64(ts.TotalMilliseconds);
 #else
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+#endif
+        }
+
+        private static long GetCurrentTimeMillis(TimeSpan timeSpan)
+        {
+#if NET45
+            TimeSpan ts = DateTimeOffset.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            ts.Add(timeSpan);
+            return Convert.ToInt64(ts.TotalMilliseconds);
+#else
+            return DateTimeOffset.UtcNow.Add(timeSpan).ToUnixTimeMilliseconds();
 #endif
         }
 
