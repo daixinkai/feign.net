@@ -13,6 +13,9 @@ using System.Text;
 
 namespace Feign
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class PollyFeignBuilderExtensions
     {
@@ -29,12 +32,12 @@ namespace Feign
             {
                 options = new FeignPollyOptions();
             }
-            feignBuilder.Options.FeignClientPipeline.Initializing += (sender, e) =>
+            feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
             {
-                IAsyncPolicy asyncPolicy = options.GetAsyncPolicy(e.FeignClient);
-                PollyDelegatingHandler pollyDelegatingHandler = new PollyDelegatingHandler(asyncPolicy, e.HttpClient.Handler.InnerHandler);
-                e.HttpClient.Handler.InnerHandler = pollyDelegatingHandler;
-            };
+                IAsyncPolicy asyncPolicy = options.GetAsyncPolicy(context.FeignClient);
+                PollyDelegatingHandler pollyDelegatingHandler = new PollyDelegatingHandler(asyncPolicy, context.HttpClient.Handler.InnerHandler);
+                context.HttpClient.Handler.InnerHandler = pollyDelegatingHandler;
+            });
             return feignBuilder;
         }
         /// <summary>

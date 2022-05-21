@@ -1,5 +1,6 @@
 ﻿using Feign.Formatting;
 using Feign.Internal;
+using Feign.Pipeline.Internal;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
@@ -84,55 +85,11 @@ namespace Feign.Proxy
             }
 
         }
+        
         protected virtual void Send(FeignClientHttpRequest request)
-        {
-            HttpResponseMessage response = GetResponseMessage(request);
-            using (response)
-            {
-                //GetResult<string>(request, response);
-                EnsureSuccess(request, response);
-            }
-        }
+            => SendAsync(request).WaitEx();
         protected virtual TResult Send<TResult>(FeignClientHttpRequest request)
-        {
-            HttpResponseMessage response = GetResponseMessage(request);
-            using (response)
-            {
-                return GetResult<TResult>(request, response);
-            }
-        }
-
-        private HttpResponseMessage GetResponseMessage(FeignClientHttpRequest request)
-        {
-            try
-            {
-                return SendAsyncInternal(request).GetResult();
-            }
-            catch (TerminatedRequestException)
-            {
-                if (IsResponseTerminatedRequest)
-                {
-                    return null;
-                }
-                throw;
-            }
-            catch (ServiceResolveFailException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                #region ErrorRequest
-                ErrorRequestEventArgs<TService> errorArgs = new ErrorRequestEventArgs<TService>(this, ex);
-                OnErrorRequest(errorArgs);
-                if (errorArgs.ExceptionHandled)
-                {
-                    return null;
-                }
-                #endregion
-                throw;
-            }
-        }
+            => SendAsync<TResult>(request).GetResult();
 
         private async Task<HttpResponseMessage> GetResponseMessageAsync(FeignClientHttpRequest request)
         {
@@ -159,9 +116,13 @@ namespace Feign.Proxy
             catch (Exception ex)
             {
                 #region ErrorRequest
-                ErrorRequestEventArgs<TService> errorArgs = new ErrorRequestEventArgs<TService>(this, ex);
-                OnErrorRequest(errorArgs);
-                if (errorArgs.ExceptionHandled)
+                ErrorRequestPipelineContext<TService> errorContext = new ErrorRequestPipelineContext<TService>(this, ex);
+                await OnErrorRequestAsync(errorContext)
+#if CONFIGUREAWAIT_FALSE
+                        .ConfigureAwait(false)
+#endif
+                        ;
+                if (errorContext.ExceptionHandled)
                 {
                     return null;
                 }
@@ -169,22 +130,7 @@ namespace Feign.Proxy
                 throw;
             }
         }
-        /// <summary>
-        /// 确保响应状态正确
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="responseMessage"></param>
-        private void EnsureSuccess(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
-        {
-            if (!responseMessage.IsSuccessStatusCode)
-            {
-                string content = responseMessage.Content.ReadAsStringAsync().GetResult();
-                _logger?.LogError($"request on \"{responseMessage.RequestMessage.RequestUri.ToString()}\" status code : " + responseMessage.StatusCode.GetHashCode() + " content : " + content);
-                throw new FeignHttpRequestException(this,
-                    responseMessage.RequestMessage as FeignHttpRequestMessage,
-                    new HttpRequestException($"Response status code does not indicate success: {responseMessage.StatusCode.GetHashCode()} ({responseMessage.ReasonPhrase}).\r\nContent : {content}"));
-            }
-        }
+
         /// <summary>
         /// 确保响应状态正确
         /// </summary>
@@ -234,7 +180,7 @@ namespace Feign.Proxy
             }
         }
 
-        bool IsSupportContent(HttpMethod httpMethod)
+        private bool IsSupportContent(HttpMethod httpMethod)
         {
             return httpMethod.IsSupportContent();
         }
@@ -313,7 +259,7 @@ namespace Feign.Proxy
             {
                 return BaseUrl + uri;
             }
-            return BaseUrl + "/" + uri;
+            return uri.StartsWith("?") ? $"{BaseUrl}{uri}" : $"{BaseUrl}/{uri}";
         }
 
 

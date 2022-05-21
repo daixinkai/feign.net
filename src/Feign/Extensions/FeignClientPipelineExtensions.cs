@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Feign.Internal;
+using Feign.Pipeline;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -55,14 +57,14 @@ namespace Feign
             {
                 throw new ArgumentNullException(nameof(authenticationHeaderValue));
             }
-            feignClientPipeline.BuildingRequest += (sender, e) =>
+            return feignClientPipeline.UseBuildingRequest(context =>
             {
-                if (!e.Headers.ContainsKey("Authorization"))
+                if (!context.Headers.ContainsKey("Authorization"))
                 {
-                    e.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
+                    context.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
                 }
-            };
-            return feignClientPipeline;
+                return TaskEx.CompletedTask;
+            });
         }
         /// <summary>
         /// 添加授权
@@ -77,15 +79,15 @@ namespace Feign
             {
                 throw new ArgumentNullException(nameof(authenticationHeaderValueAction));
             }
-            feignClientPipeline.BuildingRequest += (sender, e) =>
+            return feignClientPipeline.UseBuildingRequest(context =>
             {
-                if (!e.Headers.ContainsKey("Authorization"))
+                if (!context.Headers.ContainsKey("Authorization"))
                 {
-                    var authenticationHeaderValue = authenticationHeaderValueAction.Invoke(e.FeignClient);
-                    e.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
+                    var authenticationHeaderValue = authenticationHeaderValueAction.Invoke(context.FeignClient);
+                    context.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
                 }
-            };
-            return feignClientPipeline;
+                return TaskEx.CompletedTask;
+            });
         }
         /// <summary>
         /// 添加授权
@@ -105,17 +107,17 @@ namespace Feign
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            feignClientPipeline.BuildingRequest += (sender, e) =>
+            return feignClientPipeline.UseBuildingRequest(context =>
             {
-                if (!e.Headers.ContainsKey("Authorization"))
+                if (!context.Headers.ContainsKey("Authorization"))
                 {
-                    e.Headers["Authorization"] = scheme + " " + parameter;
+                    context.Headers["Authorization"] = scheme + " " + parameter;
                 }
-            };
-            return feignClientPipeline;
+                return TaskEx.CompletedTask;
+            });
         }
 
-#if NETSTANDARD
+#if !NET45
         /// <summary>
         /// 添加授权
         /// </summary>
@@ -129,15 +131,15 @@ namespace Feign
             {
                 throw new ArgumentNullException(nameof(schemeAndParameterFactory));
             }
-            feignClientPipeline.BuildingRequest += (sender, e) =>
+            return feignClientPipeline.UseBuildingRequest(context =>
             {
-                if (!e.Headers.ContainsKey("Authorization"))
+                if (!context.Headers.ContainsKey("Authorization"))
                 {
-                    var schemeAndParameter = schemeAndParameterFactory.Invoke(e.FeignClient);
-                    e.Headers["Authorization"] = schemeAndParameter.Item1 + " " + schemeAndParameter.Item2;
+                    var schemeAndParameter = schemeAndParameterFactory.Invoke(context.FeignClient);
+                    context.Headers["Authorization"] = schemeAndParameter.Item1 + " " + schemeAndParameter.Item2;
                 }
-            };
-            return feignClientPipeline;
+                return TaskEx.CompletedTask;
+            });
         }
 #endif
 

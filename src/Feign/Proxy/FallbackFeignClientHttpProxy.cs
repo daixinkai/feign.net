@@ -3,6 +3,8 @@ using Feign.Discovery;
 using Feign.Fallback;
 using Feign.Internal;
 using Feign.Logging;
+using Feign.Pipeline;
+using Feign.Pipeline.Internal;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
@@ -85,7 +87,12 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException)
+#if CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
+                if (invokeFallbackRequestResult)
                 {
                     throw;
                 }
@@ -116,7 +123,12 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException)
+#if CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
+                if (invokeFallbackRequestResult)
                 {
                     throw;
                 }
@@ -143,7 +155,7 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
+                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).GetResult())
                 {
                     throw;
                 }
@@ -166,7 +178,7 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException))
+                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).GetResult())
                 {
                     throw;
                 }
@@ -175,11 +187,32 @@ namespace Feign.Proxy
         }
         #endregion
 
-        protected internal virtual void OnFallbackRequest(FallbackRequestEventArgs<TService> e)
+        protected internal virtual async Task OnFallbackRequest(IFallbackRequestPipelineContext<TService> context)
         {
-            _serviceFeignClientPipeline?.OnFallbackRequest(this, e);
-            _serviceIdFeignClientPipeline?.OnFallbackRequest(this, e);
-            _globalFeignClientPipeline?.OnFallbackRequest(this, e);
+            if (_serviceFeignClientPipeline != null)
+            {
+                await _serviceFeignClientPipeline.FallbackRequestAsync(context)
+#if CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
+            }
+            if (_serviceIdFeignClientPipeline != null)
+            {
+                await _serviceIdFeignClientPipeline.FallbackRequestAsync(context)
+#if CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
+            }
+            if (_globalFeignClientPipeline != null)
+            {
+                await _globalFeignClientPipeline.FallbackRequestAsync(context)
+#if CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
+            }
         }
         /// <summary>
         /// 触发服务降级事件
@@ -188,21 +221,25 @@ namespace Feign.Proxy
         /// <param name="delegate"></param>
         /// <param name="serviceResolveFailException"></param>
         /// <returns></returns>
-        bool InvokeFallbackRequestPipeline(FeignClientHttpRequest request, Delegate @delegate, ServiceResolveFailException serviceResolveFailException)
+        private async Task<bool> InvokeFallbackRequestPipeline(FeignClientHttpRequest request, Delegate @delegate, ServiceResolveFailException serviceResolveFailException)
         {
             IFallbackProxy fallbackProxy = @delegate.Target as IFallbackProxy;
-            FallbackRequestEventArgs<TService> eventArgs;
+            FallbackRequestPipelineContext<TService> context;
             if (fallbackProxy == null)
             {
                 //可能因为method parameters length=0 , 故没有生成匿名调用类
-                eventArgs = new FallbackRequestEventArgs<TService>(this, request, Fallback, null, @delegate.Method);
+                context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, null, @delegate.Method);
             }
             else
             {
-                eventArgs = new FallbackRequestEventArgs<TService>(this, request, Fallback, fallbackProxy, null);
+                context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, fallbackProxy, null);
             }
-            OnFallbackRequest(eventArgs);
-            return eventArgs.IsTerminated;
+            await OnFallbackRequest(context)
+#if CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                  ;
+            return context.IsTerminated;
         }
 
     }

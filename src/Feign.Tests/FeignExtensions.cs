@@ -3,6 +3,7 @@ using Feign.Cache;
 using Feign.Discovery;
 using Feign.Fallback;
 using Feign.Logging;
+using Feign.Pipeline;
 using Feign.Tests;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Feign.Tests
 {
@@ -26,29 +28,33 @@ namespace Feign.Tests
             feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
             Feign.FeignBuilderExtensions.AddFeignClients<IFeignBuilder>(feignBuilder, Assembly.GetExecutingAssembly(), FeignClientLifetime.Transient);
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseSendingRequest(context =>
             {
-                //e.Terminate();
-            };
-            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().SendingRequest += (sender, e) =>
+                //context.Terminate();
+                return TaskEx.CompletedTask;
+            });
+            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().UseSendingRequest(context =>
             {
                 //e.CancellationTokenSource.Cancel();
                 //e.Terminate();
-            };
-            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().CancelRequest += (sender, e) =>
+                return TaskEx.CompletedTask;
+            });
+
+            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().UseCancelRequest(context =>
             {
-                e.CancellationToken.Register(obj =>
+                context.CancellationToken.Register(obj =>
                 {
-                    ICancelRequestEventArgs<ITestControllerService> ee = obj as ICancelRequestEventArgs<ITestControllerService>;
+                    ICancelRequestPipelineContext<ITestControllerService> ee = obj as ICancelRequestPipelineContext<ITestControllerService>;
                     string s = ee.RequestMessage.ToString();
-                }, e);
-            };
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().SendingRequest += (sender, e) =>
+                }, context);
+                return TaskEx.CompletedTask;
+            });
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseSendingRequest(context =>
             {
                 var types = feignBuilder.Options.Types;
-                if (e.RequestMessage.Content != null)
+                if (context.RequestMessage.Content != null)
                 {
-                    MultipartFormDataContent multipartFormDataContent = e.RequestMessage.Content as MultipartFormDataContent;
+                    MultipartFormDataContent multipartFormDataContent = context.RequestMessage.Content as MultipartFormDataContent;
                     if (multipartFormDataContent != null)
                     {
                         string boundary = multipartFormDataContent.Headers.ContentType.Parameters.FirstOrDefault(s => s.Name == "boundary").Value;
@@ -57,37 +63,40 @@ namespace Feign.Tests
                         multipartFormDataContent.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
                     }
                 }
-            };
-            feignBuilder.Options.FeignClientPipeline.FallbackRequest += (sender, e) =>
+                return TaskEx.CompletedTask;
+            });
+            feignBuilder.Options.FeignClientPipeline.UseFallbackRequest(context =>
             {
-                var parameters = e.GetParameters();
-                object fallback = e.Fallback;
-                IFallbackProxy fallbackProxy = e.FallbackProxy;
+                var parameters = context.GetParameters();
+                object fallback = context.Fallback;
+                IFallbackProxy fallbackProxy = context.FallbackProxy;
                 if (fallbackProxy == null)
                 {
                     string s = "";
                 }
-                MethodInfo method = e.Method;
-                e.Terminate();
-            };
-            feignBuilder.Options.FeignClientPipeline.Initializing += (sender, e) =>
+                MethodInfo method = context.Method;
+                context.Terminate();
+                return TaskEx.CompletedTask;
+            });
+            feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
             {
-                ((HttpClientHandler)e.HttpClient.Handler.InnerHandler).AutomaticDecompression = DecompressionMethods.None | DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            };
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().Initializing += (sender, e) =>
+                ((HttpClientHandler)context.HttpClient.Handler.InnerHandler).AutomaticDecompression =
+                DecompressionMethods.None | DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            });
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseInitializing(context =>
             {
-                e.FeignClient.Service.Name = "Initializing set";
-                e.FeignClient.Service.ServiceId = e.FeignClient.ServiceId;
-                e.FeignClient.Service.ServiceType = e.FeignClient.ServiceType;
-            };
-            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").Initializing += (sender, e) =>
+                context.FeignClient.Service.Name = "Initializing set";
+                context.FeignClient.Service.ServiceId = context.FeignClient.ServiceId;
+                context.FeignClient.Service.ServiceType = context.FeignClient.ServiceType;
+            });
+            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseInitializing(context =>
             {
 
-            };
-            feignBuilder.Options.FeignClientPipeline.Disposing += (sender, e) =>
+            });
+            feignBuilder.Options.FeignClientPipeline.UseDisposing(context =>
             {
-                var ee = e;
-            };
+                var ee = context;
+            });
             //            feignBuilder.Options.FeignClientPipeline.Authorization(proxy =>
             //            {
             //#if NETSTANDARD
@@ -96,34 +105,35 @@ namespace Feign.Tests
             //                return new AuthenticationHeaderValue("global", "asdasd");
             //#endif
             //            });
-            feignBuilder.Options.FeignClientPipeline.BuildingRequest += FeignClientPipeline_BuildingRequest;
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().BuildingRequest += (sender, e) =>
+            feignBuilder.Options.FeignClientPipeline.UseBuildingRequest(FeignClientPipeline_BuildingRequest);
+            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseBuildingRequest(context =>
             {
-                IFeignClient<ITestService> feignClient = e.FeignClient as IFeignClient<ITestService>;
+                IFeignClient<ITestService> feignClient = context.FeignClient as IFeignClient<ITestService>;
                 ITestService service = feignClient.Service;
-            };
-            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").BuildingRequest += (sender, e) =>
+                return TaskEx.CompletedTask;
+            });
+            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseBuildingRequest(context =>
             {
-                var fallbackFeignClient = e.FeignClient.AsFallback<object>();
-                fallbackFeignClient = e.FeignClient.AsFallback<object>();
-                fallbackFeignClient = e.FeignClient.AsFallback<ITestService>();
+                var fallbackFeignClient = context.FeignClient.AsFallback<object>();
+                fallbackFeignClient = context.FeignClient.AsFallback<object>();
+                fallbackFeignClient = context.FeignClient.AsFallback<ITestService>();
 
                 var fallback = fallbackFeignClient?.Fallback;
 
-                fallback = e.FeignClient.GetFallback<object>();
-                fallback = e.FeignClient.GetFallback<object>();
+                fallback = context.FeignClient.GetFallback<object>();
+                fallback = context.FeignClient.GetFallback<object>();
                 //     fallback = e.FeignClient.GetFallback<ITestService>();
 
-                if (!e.Headers.ContainsKey("Authorization"))
+                if (!context.Headers.ContainsKey("Authorization"))
                 {
-                    e.Headers["Authorization"] = "service asdasd";
+                    context.Headers["Authorization"] = "service asdasd";
                 }
-                e.Headers["Accept-Encoding"] = "gzip, deflate, br";
+                context.Headers["Accept-Encoding"] = "gzip, deflate, br";
 
                 //add session
-                e.Headers.Add("cookie", "csrftoken=EGxYkyZeT3DxEsvYsdR5ncmzpi9pmnQx; _bl_uid=nLjRstOyqOejLv2s0xtzqs74Xsmg; courseId=1; versionId=522; textbookId=2598; Hm_lvt_f0984c42ef98965e03c60661581cd219=1559783251,1559818390,1560213044,1560396804; uuid=6a30ff68-2b7c-4cde-a355-2e332b74e31d##1; Hm_lpvt_f0984c42ef98965e03c60661581cd219=1560413345; SESSION=5ee4854d-34b7-423a-9cca-76ddc8a0f111; sid=5ee4854d-34b7-423a-9cca-76ddc8a0f111");
-
-            };
+                context.Headers.Add("cookie", "csrftoken=EGxYkyZeT3DxEsvYsdR5ncmzpi9pmnQx; _bl_uid=nLjRstOyqOejLv2s0xtzqs74Xsmg; courseId=1; versionId=522; textbookId=2598; Hm_lvt_f0984c42ef98965e03c60661581cd219=1559783251,1559818390,1560213044,1560396804; uuid=6a30ff68-2b7c-4cde-a355-2e332b74e31d##1; Hm_lpvt_f0984c42ef98965e03c60661581cd219=1560413345; SESSION=5ee4854d-34b7-423a-9cca-76ddc8a0f111; sid=5ee4854d-34b7-423a-9cca-76ddc8a0f111");
+                return TaskEx.CompletedTask;
+            });
             //            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().Authorization(proxy =>
             //            {
             //#if NETSTANDARD
@@ -132,72 +142,76 @@ namespace Feign.Tests
             //                return new AuthenticationHeaderValue("service", "asdasd");
             //#endif
             //            });
-            feignBuilder.Options.FeignClientPipeline.SendingRequest += FeignClientPipeline_SendingRequest;
-            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").ReceivingResponse += (sender, e) =>
+            feignBuilder.Options.FeignClientPipeline.UseSendingRequest(FeignClientPipeline_SendingRequest);
+            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseReceivingResponse(context =>
             {
-
-            };
+                return TaskEx.CompletedTask;
+            });
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().ReceivingQueryResult();
-            feignBuilder.Options.FeignClientPipeline.CancelRequest += (sender, e) =>
+            feignBuilder.Options.FeignClientPipeline.UseCancelRequest(context =>
             {
-                e.CancellationToken.Register((state) =>
+                context.CancellationToken.Register((state) =>
                 {
 
-                }, sender);
-            };
-            feignBuilder.Options.FeignClientPipeline.ErrorRequest += (sender, e) =>
+                }, context.FeignClient);
+                return TaskEx.CompletedTask;
+            });
+            feignBuilder.Options.FeignClientPipeline.UseErrorRequest(context =>
             {
-                Exception exception = e.Exception;
+                Exception exception = context.Exception;
                 //e.ExceptionHandled = true;
-            };
+                return TaskEx.CompletedTask;
+            });
             return feignBuilder;
         }
 
-        private static void FeignClientPipeline_BuildingRequest(object sender, IBuildingRequestEventArgs<object> e)
+        private static Task FeignClientPipeline_BuildingRequest(IBuildingRequestPipelineContext<object> context)
         {
+            return TaskEx.CompletedTask;
         }
 
-        private static void FeignClientPipeline_SendingRequest(object sender, ISendingRequestEventArgs<object> e)
+        private static Task FeignClientPipeline_SendingRequest(ISendingRequestPipelineContext<object> context)
         {
-            //e.Terminate();
+            //context.Terminate();
+            return TaskEx.CompletedTask;
         }
 
 
         public static void ReceivingQueryResult<T>(this IFeignClientPipeline<T> globalFeignClient)
         {
-            globalFeignClient.ReceivingResponse += (sender, e) =>
+            globalFeignClient.UseReceivingResponse(async context =>
             {
-                if (!typeof(IQueryResult).IsAssignableFrom(e.ResultType))
+                if (!typeof(IQueryResult).IsAssignableFrom(context.ResultType))
                 {
                     return;
                 }
-                if (e.ResultType == typeof(IQueryResult))
+                if (context.ResultType == typeof(IQueryResult))
                 {
-                    e.Result = new QueryResult()
+                    context.Result = new QueryResult()
                     {
-                        StatusCode = e.ResponseMessage.StatusCode
+                        StatusCode = context.ResponseMessage.StatusCode
                     };
                     return;
                 }
 
-                Feign.Request.FeignHttpRequestMessage feignHttpRequestMessage = e.ResponseMessage.RequestMessage as Feign.Request.FeignHttpRequestMessage;
+                var feignHttpRequestMessage = context.ResponseMessage.RequestMessage as Feign.Request.FeignHttpRequestMessage;
 
                 var resultType = feignHttpRequestMessage.FeignClientRequest.Method.ResultType;
 
 
-                if (e.ResultType.IsGenericType && e.ResultType.GetGenericTypeDefinition() == typeof(IQueryResult<>))
+                if (context.ResultType.IsGenericType && context.ResultType.GetGenericTypeDefinition() == typeof(IQueryResult<>))
                 {
                     QueryResult queryResult;
-                    if (e.ResponseMessage.IsSuccessStatusCode)
+                    if (context.ResponseMessage.IsSuccessStatusCode)
                     {
-                        var content = e.ResponseMessage.Content;
-                        var buffer = content.ReadAsByteArrayAsync().Result;
+                        var content = context.ResponseMessage.Content;
+                        var buffer = await content.ReadAsByteArrayAsync();
                         var json1 = Encoding.GetEncoding("iso-8859-1").GetString(buffer);
                         string json = content.ReadAsStringAsync().Result;
-                        object data = Newtonsoft.Json.JsonConvert.DeserializeObject(json, e.ResultType.GetGenericArguments()[0]);
+                        object data = Newtonsoft.Json.JsonConvert.DeserializeObject(json, context.ResultType.GetGenericArguments()[0]);
                         if (data == null)
                         {
-                            queryResult = InvokeQueryResultConstructor(e.ResultType.GetGenericArguments()[0]);
+                            queryResult = InvokeQueryResultConstructor(context.ResultType.GetGenericArguments()[0]);
                         }
                         else
                         {
@@ -206,25 +220,25 @@ namespace Feign.Tests
                     }
                     else
                     {
-                        queryResult = InvokeQueryResultConstructor(e.ResultType.GetGenericArguments()[0]);
+                        queryResult = InvokeQueryResultConstructor(context.ResultType.GetGenericArguments()[0]);
                     }
-                    queryResult.StatusCode = e.ResponseMessage.StatusCode;
-                    e.Result = queryResult;
+                    queryResult.StatusCode = context.ResponseMessage.StatusCode;
+                    context.Result = queryResult;
                 }
 
-                else if (e.ResultType.IsGenericType && e.ResultType.GetGenericTypeDefinition() == typeof(QueryResult<>))
+                else if (context.ResultType.IsGenericType && context.ResultType.GetGenericTypeDefinition() == typeof(QueryResult<>))
                 {
                     QueryResult queryResult;
-                    if (e.ResponseMessage.IsSuccessStatusCode)
+                    if (context.ResponseMessage.IsSuccessStatusCode)
                     {
-                        var content = e.ResponseMessage.Content;
-                        var buffer = content.ReadAsByteArrayAsync().Result;
+                        var content = context.ResponseMessage.Content;
+                        var buffer = await content.ReadAsByteArrayAsync();
                         var json1 = Encoding.GetEncoding("iso-8859-1").GetString(buffer);
                         string json = content.ReadAsStringAsync().Result;
-                        object data = Newtonsoft.Json.JsonConvert.DeserializeObject(json, e.ResultType.GetGenericArguments()[0]);
+                        object data = Newtonsoft.Json.JsonConvert.DeserializeObject(json, context.ResultType.GetGenericArguments()[0]);
                         if (data == null)
                         {
-                            queryResult = InvokeQueryResultConstructor(e.ResultType.GetGenericArguments()[0]);
+                            queryResult = InvokeQueryResultConstructor(context.ResultType.GetGenericArguments()[0]);
                         }
                         else
                         {
@@ -233,20 +247,19 @@ namespace Feign.Tests
                     }
                     else
                     {
-                        queryResult = InvokeQueryResultConstructor(e.ResultType.GetGenericArguments()[0]);
+                        queryResult = InvokeQueryResultConstructor(context.ResultType.GetGenericArguments()[0]);
                     }
-                    queryResult.StatusCode = e.ResponseMessage.StatusCode;
-                    e.Result = queryResult;
+                    queryResult.StatusCode = context.ResponseMessage.StatusCode;
+                    context.Result = queryResult;
                 }
-
-            };
+            });
         }
 
-        static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, Func<object, QueryResult>> _newQueryResultMap = new System.Collections.Concurrent.ConcurrentDictionary<Type, Func<object, QueryResult>>();
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, Func<object, QueryResult>> _newQueryResultMap = new System.Collections.Concurrent.ConcurrentDictionary<Type, Func<object, QueryResult>>();
 
-        static Func<QueryResult> _queryResultFunc;
+        private static Func<QueryResult> _queryResultFunc;
 
-        static QueryResult InvokeQueryResultConstructor(Type type, object value)
+        private static QueryResult InvokeQueryResultConstructor(Type type, object value)
         {
             Func<object, QueryResult> func = _newQueryResultMap.GetOrAdd(type, key =>
             {
@@ -259,7 +272,7 @@ namespace Feign.Tests
             return func.Invoke(value);
         }
 
-        static QueryResult InvokeQueryResultConstructor(Type type)
+        private static QueryResult InvokeQueryResultConstructor(Type type)
         {
             if (_queryResultFunc == null)
             {

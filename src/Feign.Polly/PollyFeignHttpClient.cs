@@ -13,9 +13,10 @@ namespace Feign.Polly
     {
         public PollyFeignHttpClient(FeignHttpClient feignHttpClient, IAsyncPolicy asyncPolicy) : base(feignHttpClient.Handler)
         {
+            _asyncPolicy = asyncPolicy;
         }
 
-        readonly IAsyncPolicy _asyncPolicy;
+        private readonly IAsyncPolicy _asyncPolicy;
 
         public override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

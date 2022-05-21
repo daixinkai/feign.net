@@ -2,6 +2,7 @@
 using Feign.Discovery;
 using Feign.Internal;
 using Feign.Logging;
+using Feign.Pipeline.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +18,19 @@ namespace Feign.Proxy
     /// <typeparam name="TService"></typeparam>
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
     {
-        public FeignClientHttpProxy(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null)
+        public FeignClientHttpProxy(
+            IFeignOptions feignOptions, 
+            IServiceDiscovery serviceDiscovery,
+            ICacheProvider cacheProvider = null,
+            ILoggerFactory loggerFactory = null
+            )
         {
             FeignOptions = feignOptions;
             _globalFeignClientPipeline = FeignOptions.FeignClientPipeline as GlobalFeignClientPipeline;
             _serviceIdFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline(ServiceId);
             _serviceFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline<TService>();
             _logger = loggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
-            ServiceDiscoveryHttpClientHandler<TService> serviceDiscoveryHttpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, serviceDiscovery, cacheProvider, _logger);
+            var serviceDiscoveryHttpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, serviceDiscovery, cacheProvider, _logger);
             if (FeignOptions.AutomaticDecompression.HasValue)
             {
                 serviceDiscoveryHttpClientHandler.AutomaticDecompression = feignOptions.AutomaticDecompression.Value;
@@ -41,10 +47,10 @@ namespace Feign.Proxy
 
             BaseUrl = BuildBaseUrl(baseUrl);
 
-            InitializingEventArgs<TService> initializingEventArgs = new InitializingEventArgs<TService>(this);
-            initializingEventArgs.HttpClient = HttpClient;
-            OnInitializing(initializingEventArgs);
-            HttpClient = initializingEventArgs.HttpClient;
+            var initializingContext = new InitializingPipelineContext<TService>(this);
+            initializingContext.HttpClient = HttpClient;
+            OnInitializing(initializingContext);
+            HttpClient = initializingContext.HttpClient;
             if (HttpClient == null)
             {
                 throw new ArgumentNullException(nameof(HttpClient));
@@ -131,8 +137,8 @@ namespace Feign.Proxy
         {
             if (!disposedValue)
             {
-                DisposingEventArgs<TService> disposingEventArgs = new DisposingEventArgs<TService>(this, disposing);
-                OnDisposing(disposingEventArgs);
+                var disposingContext = new DisposingPipelineContext<TService>(this, disposing);
+                OnDisposing(disposingContext);
                 if (disposing)
                 {
                     // TODO: 释放托管状态(托管对象)。

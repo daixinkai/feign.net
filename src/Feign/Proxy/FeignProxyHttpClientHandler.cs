@@ -1,5 +1,6 @@
 ﻿using Feign.Internal;
 using Feign.Logging;
+using Feign.Pipeline.Internal;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,7 @@ namespace Feign.Proxy
         }
 
 
-        async Task<HttpResponseMessage> SendInternalAsync(FeignHttpRequestMessage request, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> SendInternalAsync(FeignHttpRequestMessage request, CancellationToken cancellationToken)
         {
             var current = request.RequestUri;
             CancellationTokenSource cts = null;
@@ -60,13 +61,17 @@ namespace Feign.Proxy
             {
 
                 #region BuildingRequest
-                BuildingRequestEventArgs<TService> buildingArgs = new BuildingRequestEventArgs<TService>(_feignClient, request.Method.ToString(), request.RequestUri, new Dictionary<string, string>(), request.FeignClientRequest);
-                _feignClient.OnBuildingRequest(buildingArgs);
+                var buildingContext = new BuildingRequestPipelineContext<TService>(_feignClient, request.Method.ToString(), request.RequestUri, new Dictionary<string, string>(), request.FeignClientRequest);
+                await _feignClient.OnBuildingRequestAsync(buildingContext)
+#if CONFIGUREAWAIT_FALSE
+                        .ConfigureAwait(false)
+#endif
+                      ;
                 //request.Method = new HttpMethod(buildingArgs.Method);
-                request.RequestUri = buildingArgs.RequestUri;
-                if (buildingArgs.Headers != null && buildingArgs.Headers.Count > 0)
+                request.RequestUri = buildingContext.RequestUri;
+                if (buildingContext.Headers != null && buildingContext.Headers.Count > 0)
                 {
-                    foreach (var item in buildingArgs.Headers)
+                    foreach (var item in buildingContext.Headers)
                     {
                         request.Headers.TryAddWithoutValidation(item.Key, item.Value);
                     }
@@ -74,20 +79,24 @@ namespace Feign.Proxy
                 #endregion
                 request.RequestUri = LookupRequestUri(request);
                 #region SendingRequest
-                SendingRequestEventArgs<TService> sendingArgs = new SendingRequestEventArgs<TService>(_feignClient, request, cancellationToken);
-                _feignClient.OnSendingRequest(sendingArgs);
+                var sendingContext = new SendingRequestPipelineContext<TService>(_feignClient, request, cancellationToken);
+                await _feignClient.OnSendingRequestAsync(sendingContext)
+#if CONFIGUREAWAIT_FALSE
+                            .ConfigureAwait(false)
+#endif
+                        ;
 
-                if (sendingArgs.IsTerminated)
+                if (sendingContext.IsTerminated)
                 {
                     //请求被终止
                     throw new TerminatedRequestException();
                 }
-                if (sendingArgs._cancellationTokenSource != null)
+                if (sendingContext._cancellationTokenSource != null)
                 {
-                    cts = sendingArgs._cancellationTokenSource;
+                    cts = sendingContext._cancellationTokenSource;
                     cancellationToken = cts.Token;
                 }
-                request = sendingArgs.RequestMessage;
+                request = sendingContext.RequestMessage;
                 if (request == null)
                 {
                     _logger?.LogError($"SendingRequest is null;");
@@ -101,11 +110,15 @@ namespace Feign.Proxy
                 #endregion
 
                 #region CannelRequest
-                CancelRequestEventArgs<TService> cancelArgs = new CancelRequestEventArgs<TService>(_feignClient, request, cancellationToken);
-                _feignClient.OnCancelRequest(cancelArgs);
+                var cancelContext = new CancelRequestPipelineContext<TService>(_feignClient, request, cancellationToken);
+                await _feignClient.OnCancelRequestAsync(cancelContext)
+#if CONFIGUREAWAIT_FALSE
+                      .ConfigureAwait(false)
+#endif
+                      ;
                 #endregion
 
-                return await base.SendAsync(request, cancelArgs.CancellationToken)
+                return await base.SendAsync(request, cancelContext.CancellationToken)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif

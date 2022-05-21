@@ -40,47 +40,53 @@ namespace Feign.TestWeb.NETCORE30
                 options.IgnoreNullValues = true;
                 options.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             })
-              .AddTestFeignClients()
+             .AddTestFeignClients()
             //.AddServiceDiscovery<TestServiceDiscovery>()
             //.AddSteeltoe()
             ;
             builder.Options.FeignClientPipeline.Service<IAngleSharpTestService>().AddAngleSharp();
-            builder.AddPolly(options =>
+            //builder.AddPolly(options =>
+            //{
+            //    options.Configure(asyncPolicy =>
+            //    {
+            //        return Policy.WrapAsync(
+            //           asyncPolicy,
+            //           Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+            //        );
+            //    });
+            //    options.ConfigureAsync(async asyncPolicy =>
+            //    {
+            //        await Task.FromResult(0);
+            //        return Policy.WrapAsync(
+            //                  asyncPolicy,
+            //                  Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+            //             );
+            //    });
+            //    options.Configure("serviceId", asyncPolicy =>
+            //    {
+            //        return Policy.WrapAsync(
+            //           asyncPolicy,
+            //           Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+            //        );
+            //    });
+            //    options.Configure<ITestService>(asyncPolicy =>
+            //    {
+            //        return Policy.WrapAsync(
+            //           asyncPolicy,
+            //           Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
+            //        );
+            //    });
+            //});
+            builder.Options.FeignClientPipeline.UseInitializing(context =>
             {
-                options.Configure(asyncPolicy =>
-                {
-                    return Policy.WrapAsync(
-                       asyncPolicy,
-                       Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
-                    );
-                });
-                options.ConfigureAsync(async asyncPolicy =>
-                {
-                    await Task.FromResult(0);
-                    return Policy.WrapAsync(
-                              asyncPolicy,
-                              Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
-                         );
-                });
-                options.Configure("serviceId", asyncPolicy =>
-                {
-                    return Policy.WrapAsync(
-                       asyncPolicy,
-                       Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
-                    );
-                });
-                options.Configure<ITestService>(asyncPolicy =>
-                {
-                    return Policy.WrapAsync(
-                       asyncPolicy,
-                       Policy.Handle<Exception>().CircuitBreakerAsync(5, TimeSpan.FromSeconds(5))
-                    );
-                });
+                context.HttpClient.DefaultRequestVersion = new Version(2, 0);
             });
-            builder.Options.FeignClientPipeline.Initializing += (sender, e) =>
+
+            builder.Options.FeignClientPipeline.UseReceivedResponse(context =>
             {
-                e.HttpClient.DefaultRequestVersion = new Version(2, 0);
-            };
+                var result = context.Result;
+                return Task.CompletedTask;
+            });
 
         }
 

@@ -28,5 +28,19 @@ namespace Feign
             return configuredTaskAwaitable.GetAwaiter().GetResult();
         }
 
+
+        public static void WaitEx(this Task task)
+        {
+            if (task.IsCompleted && !task.IsFaulted && !task.IsCanceled)
+            {
+                return;
+            }
+            task
+#if CONFIGUREAWAIT_FALSE
+             .ConfigureAwait(false)
+#endif
+              .GetAwaiter().GetResult();
+        }
+
     }
 }
