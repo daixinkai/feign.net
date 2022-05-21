@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Feign.Pipeline
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
     public interface IFeignClientPipeline<TService>
     {
         bool Enabled { get; set; }

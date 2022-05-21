@@ -413,20 +413,21 @@
 
 ```csharp
     /// <summary>
-    /// 工作Pipeline
+    /// 
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface IFeignClientPipeline<TService>
     {
         bool Enabled { get; set; }
-        event EventHandler<IBuildingRequestEventArgs<TService>> BuildingRequest;
-        event EventHandler<ISendingRequestEventArgs<TService>> SendingRequest;
-        event EventHandler<ICancelRequestEventArgs<TService>> CancelRequest;
-        event EventHandler<IErrorRequestEventArgs<TService>> ErrorRequest;
-        event EventHandler<IReceivingResponseEventArgs<TService>> ReceivingResponse;
-        event EventHandler<IInitializingEventArgs<TService>> Initializing;
-        event EventHandler<IDisposingEventArgs<TService>> Disposing;
-        event EventHandler<IFallbackRequestEventArgs<TService>> FallbackRequest;
+        IFeignClientPipeline<TService> UseBuildingRequest(BuildingRequestDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseCancelRequest(CancelRequestDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseDisposing(DisposingDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseErrorRequest(ErrorRequestDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseFallbackRequest(FallbackRequestDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseInitializing(InitializingDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseReceivingResponse(ReceivingResponseDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseReceivedResponse(ReceivedResponseDelegate<TService> middleware);
+        IFeignClientPipeline<TService> UseSendingRequest(SendingRequestDelegate<TService> middleware);
     }
 ```
 
