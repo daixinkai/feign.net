@@ -1,5 +1,4 @@
 ﻿using Feign.Internal;
-using Feign.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

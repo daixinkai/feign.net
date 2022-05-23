@@ -14,11 +14,11 @@ namespace Feign.Pipeline.Internal
     /// </summary>
     /// <typeparam name="TService"></typeparam>
 
-#if NET5_0_OR_GREATER
-    internal record FallbackRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IFallbackRequestPipelineContext<TService>
-#else
+//#if NET5_0_OR_GREATER
+//    internal record FallbackRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IFallbackRequestPipelineContext<TService>
+//#else
     internal class FallbackRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IFallbackRequestPipelineContext<TService>
-#endif
+//#endif
     {
         internal FallbackRequestPipelineContext(IFeignClient<TService> feignClient, FeignClientHttpRequest request, TService fallback, IFallbackProxy fallbackProxy, MethodInfo method) : base(feignClient)
         {

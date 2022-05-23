@@ -10,11 +10,11 @@ namespace Feign.Pipeline.Internal
     /// 表示发生错误时提供的参数
     /// </summary>
     /// <typeparam name="TService"></typeparam>
-#if NET5_0_OR_GREATER
-    internal record ErrorRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IErrorRequestPipelineContext<TService>
-#else
+//#if NET5_0_OR_GREATER
+//    internal record ErrorRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IErrorRequestPipelineContext<TService>
+//#else
     internal class ErrorRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IErrorRequestPipelineContext<TService>
-#endif
+//#endif
     {
         internal ErrorRequestPipelineContext(IFeignClient<TService> feignClient, Exception exception) : base(feignClient)
         {

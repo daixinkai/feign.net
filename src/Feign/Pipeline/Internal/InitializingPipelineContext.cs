@@ -13,11 +13,11 @@ namespace Feign.Pipeline.Internal
     /// 表示初始化时提供的参数
     /// </summary>
     /// <typeparam name="TService"></typeparam>
-#if NET5_0_OR_GREATER
-    internal record InitializingPipelineContext<TService> : FeignClientPipelineContext<TService>, IInitializingPipelineContext<TService>
-#else
+//#if NET5_0_OR_GREATER
+//    internal record InitializingPipelineContext<TService> : FeignClientPipelineContext<TService>, IInitializingPipelineContext<TService>
+//#else
     internal class InitializingPipelineContext<TService> : FeignClientPipelineContext<TService>, IInitializingPipelineContext<TService>
-#endif
+//#endif
     {
         internal InitializingPipelineContext(IFeignClient<TService> feignClient) : base(feignClient)
         {

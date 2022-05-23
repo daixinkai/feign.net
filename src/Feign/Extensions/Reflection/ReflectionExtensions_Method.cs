@@ -20,12 +20,12 @@ namespace Feign
             return method.ReturnType == typeof(Task) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task<>);
         }
 
-#if NETSTANDARD2_1
-        public static bool IsValueTaskMethod(this MethodInfo method)
-        {
-            return method.ReturnType == typeof(ValueTask) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>);
-        }
-#endif
+//#if NETSTANDARD2_1 || NETCOREAPP3_1_OR_GREATER
+//        public static bool IsValueTaskMethod(this MethodInfo method)
+//        {
+//            return method.ReturnType == typeof(ValueTask) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>);
+//        }
+//#endif
 
         public static MethodInfo[] GetMethodsIncludingBaseInterfaces(this Type type)
         {
@@ -34,7 +34,7 @@ namespace Feign
             return methods.ToArray();
         }
 
-        static void GetMethodsFromBaseInterfaces(this Type type, List<MethodInfo> methods)
+        private static void GetMethodsFromBaseInterfaces(this Type type, List<MethodInfo> methods)
         {
             foreach (var item in type.GetInterfaces())
             {

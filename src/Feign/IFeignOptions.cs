@@ -1,5 +1,4 @@
 ﻿using Feign.Formatting;
-using Feign.Pipeline;
 using Feign.Reflection;
 using System;
 using System.Collections.Generic;

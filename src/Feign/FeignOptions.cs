@@ -1,5 +1,4 @@
 ﻿using Feign.Formatting;
-using Feign.Pipeline;
 using Feign.Pipeline.Internal;
 using Feign.Reflection;
 using System;

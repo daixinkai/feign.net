@@ -77,7 +77,8 @@ namespace Feign.Proxy
 
             using (response)
             {
-                return await GetResultAsync<TResult>(request, response)
+                var responseContext = new ResponsePipelineContext<TService, TResult>(this, request, response);
+                return await GetResultAsync(responseContext)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
@@ -85,7 +86,7 @@ namespace Feign.Proxy
             }
 
         }
-        
+
         protected virtual void Send(FeignClientHttpRequest request)
             => SendAsync(request).WaitEx();
         protected virtual TResult Send<TResult>(FeignClientHttpRequest request)
@@ -160,7 +161,7 @@ namespace Feign.Proxy
         private async Task<HttpResponseMessage> SendAsyncInternal(FeignClientHttpRequest request)
         {
             HttpMethod httpMethod = GetHttpMethod(request.HttpMethod);
-            HttpRequestMessage httpRequestMessage = CreateRequestMessage(request, httpMethod, CreateUri(BuildUri(request.Uri)));
+            HttpRequestMessage httpRequestMessage = CreateRequestMessage(request, httpMethod, CreateUri(request));
             using (httpRequestMessage)
             {
                 // if support content
@@ -246,11 +247,16 @@ namespace Feign.Proxy
             return requestMessage;
         }
 
-        private Uri CreateUri(string uri) =>
-            string.IsNullOrEmpty(uri) ? null : new Uri(uri, UriKind.RelativeOrAbsolute);
-
-        private string BuildUri(string uri)
+        private Uri CreateUri(FeignClientHttpRequest request)
         {
+            string uri = BuildUri(request);
+            return string.IsNullOrEmpty(uri) ? null : new Uri(uri, UriKind.RelativeOrAbsolute);
+        }
+
+
+        private string BuildUri(FeignClientHttpRequest request)
+        {
+            string uri = request.Uri;
             if (BaseUrl == "")
             {
                 return uri;

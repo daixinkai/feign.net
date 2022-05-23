@@ -10,11 +10,11 @@ namespace Feign.Pipeline.Internal
     /// 表示Disposing事件提供的参数
     /// </summary>
     /// <typeparam name="TService"></typeparam>
-#if NET5_0_OR_GREATER
-    internal record DisposingPipelineContext<TService> : FeignClientPipelineContext<TService>, IDisposingPipelineContext<TService>
-#else
+//#if NET5_0_OR_GREATER
+//    internal record DisposingPipelineContext<TService> : FeignClientPipelineContext<TService>, IDisposingPipelineContext<TService>
+//#else
     internal class DisposingPipelineContext<TService> : FeignClientPipelineContext<TService>, IDisposingPipelineContext<TService>
-#endif
+//#endif
     {
         internal DisposingPipelineContext(IFeignClient<TService> feignClient, bool disposing) : base(feignClient)
         {

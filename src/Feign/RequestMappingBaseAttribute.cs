@@ -37,6 +37,11 @@ namespace Feign
         /// </summary>
         public HttpCompletionOption CompletionOption { get; set; }
 
+        ///// <summary>
+        ///// 获取或设置UriKind
+        ///// </summary>
+        //public UriKind UriKind { get; set; }
+
         /// <summary>
         /// 获取请求的http方法
         /// </summary>

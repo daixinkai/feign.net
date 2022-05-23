@@ -19,7 +19,7 @@ namespace Feign.Proxy
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
     {
         public FeignClientHttpProxy(
-            IFeignOptions feignOptions, 
+            IFeignOptions feignOptions,
             IServiceDiscovery serviceDiscovery,
             ICacheProvider cacheProvider = null,
             ILoggerFactory loggerFactory = null
@@ -100,7 +100,7 @@ namespace Feign.Proxy
         /// </summary>
         internal ServiceFeignClientPipeline<TService> _serviceFeignClientPipeline;
 
-        ILogger _logger;
+        private ILogger _logger;
 
         protected internal IFeignOptions FeignOptions { get; private set; }
 

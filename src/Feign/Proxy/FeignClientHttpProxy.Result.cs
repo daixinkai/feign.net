@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,65 +19,45 @@ namespace Feign.Proxy
         /// 获取响应结果
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="responseMessage"></param>
+        /// <param name="responseContext"></param>
         /// <returns></returns>
-        private async Task<TResult> GetResultAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
+        private async Task<TResult> GetResultAsync<TResult>(ResponsePipelineContext<TService, TResult> responseContext)
         {
-            if (responseMessage == null)
+            if (responseContext.ResponseMessage == null)
             {
                 return default;
             }
+
             #region ReceivingResponse
-            var receivingResponseContext = await InvokeReceivingResponseAsync<TResult>(request, responseMessage)
+            await OnReceivingResponseAsync(responseContext)
 #if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
+               .ConfigureAwait(false)
 #endif
-                ;
+               ;
             //if (receivingResponseContext.Result != null)
-            if (receivingResponseContext._isSetResult)
+            if (responseContext._isSetResult)
             {
-                await InvokeReceivedResponseAsync(receivingResponseContext)
+                await OnReceivedResponseAsync(responseContext)
 #if CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
                     ;
-                return receivingResponseContext.GetResult();
+                return responseContext.GetResult();
             }
             #endregion
 
-            var result = await GetResultInternalAsync<TResult>(request, responseMessage)
+            var result = await GetResultInternalAsync<TResult>(responseContext.Request, responseContext.ResponseMessage)
 #if CONFIGUREAWAIT_FALSE
                 .ConfigureAwait(false)
 #endif
                 ;
-            receivingResponseContext.Result = result;
-            await InvokeReceivedResponseAsync(receivingResponseContext)
+            responseContext._result = result;
+            await OnReceivedResponseAsync(responseContext)
 #if CONFIGUREAWAIT_FALSE
                 .ConfigureAwait(false)
 #endif
                 ;
             return result;
-        }
-
-        private async Task<ReceivingResponsePipelineContext<TService, TResult>> InvokeReceivingResponseAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
-        {
-            var receivingResponseContext = new ReceivingResponsePipelineContext<TService, TResult>(this, request, responseMessage);
-            await OnReceivingResponseAsync(receivingResponseContext)
-#if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
-#endif
-                ;
-            return receivingResponseContext;
-        }
-
-        private async Task InvokeReceivedResponseAsync<TResult>(ReceivingResponsePipelineContext<TService, TResult> context)
-        {
-            await OnReceivedResponseAsync(context)
-#if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
-#endif
-                ;
         }
 
         private async Task<TResult> GetResultInternalAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
@@ -130,7 +111,7 @@ namespace Feign.Proxy
            .ConfigureAwait(false)
 #endif
                         ;
-                    seekStream.Position = 0;
+                    seekStream.Seek(0, SeekOrigin.Begin);
                     return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
@@ -141,22 +122,15 @@ namespace Feign.Proxy
 
         }
 
-        private async Task<TResult> GetResultAsyncInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, System.Net.Http.Headers.MediaTypeHeaderValue mediaTypeHeaderValue, Type resultType)
+        private Task<TResult> GetResultAsyncInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, MediaTypeHeaderValue mediaTypeHeaderValue, Type resultType)
         {
             if (resultType != null)
             {
-                return (TResult)await mediaTypeFormatter.GetResultAsync(resultType, stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue))
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-           ;
+                return mediaTypeFormatter.GetResultAsync<TResult>(resultType, stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue));
             }
-            return await mediaTypeFormatter.GetResultAsync<TResult>(stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue))
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-           ;
+            return mediaTypeFormatter.GetResultAsync<TResult>(stream, FeignClientUtils.GetEncoding(mediaTypeHeaderValue));
         }
+
 
     }
 }

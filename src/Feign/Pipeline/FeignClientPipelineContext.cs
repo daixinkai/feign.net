@@ -10,11 +10,11 @@ namespace Feign.Pipeline
     /// 一个接口,表示服务事件参数
     /// </summary>
     /// <typeparam name="TService"></typeparam>
-#if NET5_0_OR_GREATER
-    public record FeignClientPipelineContext<TService> : IFeignClientPipelineContext<TService>
-#else
+//#if NET5_0_OR_GREATER
+//    public record FeignClientPipelineContext<TService> : IFeignClientPipelineContext<TService>
+//#else
     public abstract class FeignClientPipelineContext<TService> : IFeignClientPipelineContext<TService>
-#endif
+//#endif
     {
         protected FeignClientPipelineContext(IFeignClient<TService> feignClient)
         {

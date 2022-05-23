@@ -1,6 +1,5 @@
 ﻿using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
-using Feign.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

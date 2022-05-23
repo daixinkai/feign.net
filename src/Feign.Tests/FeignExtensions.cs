@@ -1,5 +1,4 @@
-﻿using Feign;
-using Feign.Cache;
+﻿using Feign.Cache;
 using Feign.Discovery;
 using Feign.Fallback;
 using Feign.Logging;
@@ -172,7 +171,7 @@ namespace Feign.Tests
 
         private static Task FeignClientPipeline_SendingRequest(ISendingRequestPipelineContext<object> context)
         {
-            //context.Terminate();
+            context.Terminate();
             return TaskEx.CompletedTask;
         }
 

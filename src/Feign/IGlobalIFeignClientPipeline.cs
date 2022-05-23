@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Feign.Pipeline
+namespace Feign
 {
     /// <summary>
     /// 全局Pipeline
