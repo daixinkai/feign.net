@@ -52,6 +52,10 @@ namespace Feign.Proxy
            .ConfigureAwait(false)
 #endif
                 ;
+            if (response == null)
+            {
+                return;
+            }
             using (response)
             {
                 //            await GetResultAsync<string>(request, response)
@@ -74,7 +78,10 @@ namespace Feign.Proxy
            .ConfigureAwait(false)
 #endif
                 ;
-
+            if (response == null)
+            {
+                return default;
+            }
             using (response)
             {
                 var responseContext = new ResponsePipelineContext<TService, TResult>(this, request, response);
