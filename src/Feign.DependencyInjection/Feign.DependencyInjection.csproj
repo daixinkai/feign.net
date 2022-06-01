@@ -4,7 +4,7 @@
 		<TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;</TargetFrameworks>
 		<PackageId>Feign.DependencyInjection</PackageId>
 		<Authors>daixinkai</Authors>
-		<Version>1.3.0.1</Version>
+		<Version>1.3.1</Version>
 		<Description>feign for Microsoft.Extensions.DependencyInjection</Description>
 		<PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
