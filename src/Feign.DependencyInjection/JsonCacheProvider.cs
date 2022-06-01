@@ -10,14 +10,14 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Feign.Cache
 {
-    class JsonCacheProvider : ICacheProvider
+    internal class JsonCacheProvider : ICacheProvider
     {
         public JsonCacheProvider(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
         }
 
-        IDistributedCache _distributedCache;
+        private readonly IDistributedCache _distributedCache;
 
 
         public T Get<T>(string name)

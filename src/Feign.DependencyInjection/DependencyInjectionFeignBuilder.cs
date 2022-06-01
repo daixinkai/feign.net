@@ -79,14 +79,9 @@ namespace Feign.DependencyInjection
             AddService(service);
         }
 
-        void RemoveService(Type serviceType)
+        private void RemoveService(Type serviceType)
         {
             Services.RemoveAll(serviceType);
-            //var service = Services.FirstOrDefault(a => a.ServiceType == serviceType);
-            //if (service != null)
-            //{
-            //    Services.Remove(service);
-            //}
         }
 
     }

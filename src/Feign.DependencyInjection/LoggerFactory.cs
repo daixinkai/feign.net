@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Feign.Logging
 {
-    class LoggerFactory : Feign.Logging.ILoggerFactory
+    internal class LoggerFactory : Feign.Logging.ILoggerFactory
     {
         public LoggerFactory(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory;
         }
 
-        readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory;
+        private readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory;
 
         public Feign.Logging.ILogger CreateLogger(Type type)
         {
