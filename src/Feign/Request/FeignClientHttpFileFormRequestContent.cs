@@ -32,9 +32,10 @@ namespace Feign.Request
             string boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
             if (string.IsNullOrWhiteSpace(boundary))
             {
-                boundary = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N")));
+                boundary = Guid.NewGuid().ToString("N");
             }
             MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent(boundary);
+            multipartFormDataContent.Headers.ContentType = MediaTypeHeaderValue.Parse($"multipart/form-data; boundary={boundary}");
             if (RequestFileForm.RequestFiles != null)
             {
                 foreach (var requestFile in RequestFileForm.RequestFiles)
