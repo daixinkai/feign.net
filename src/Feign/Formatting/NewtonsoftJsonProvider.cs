@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Formatting
 {
-    internal class NewtonsoftJsonProvider : IJsonProvider
+    public class NewtonsoftJsonProvider : IJsonProvider
     {
 
         internal readonly JsonSerializerSettings _jsonSerializerSettings = CreateDefaultSerializerSettings();
