@@ -30,11 +30,7 @@ namespace Feign.Request
                 return null;
             }
             string boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
-            if (string.IsNullOrWhiteSpace(boundary))
-            {
-                boundary = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N")));
-            }
-            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent(boundary);
+            MultipartFormDataContent multipartFormDataContent = FeignClientUtils.CreateMultipartFormDataContent(boundary, RequestFileForm.QuotedBoundary);
             if (RequestFileForm.RequestFiles != null)
             {
                 foreach (var requestFile in RequestFileForm.RequestFiles)

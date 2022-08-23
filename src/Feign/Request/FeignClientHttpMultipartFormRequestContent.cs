@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Internal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -20,21 +21,23 @@ namespace Feign.Request
             _map = new Dictionary<string, object>();
         }
 
-        Dictionary<string, object> _map;
+        private Dictionary<string, object> _map;
+
+        private bool _quotedBoundary = true;
 
         public void AddContent(string name, object content)
         {
             _map.Add(name, content);
+            if (content is IMultipartFormData multipartFormData && !multipartFormData.QuotedBoundary)
+            {
+                _quotedBoundary = false;
+            }
         }
 
         public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
         {
             string boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
-            if (string.IsNullOrWhiteSpace(boundary))
-            {
-                boundary = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N")));
-            }
-            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent(boundary);
+            MultipartFormDataContent multipartFormDataContent = FeignClientUtils.CreateMultipartFormDataContent(boundary, _quotedBoundary);
             foreach (var item in _map)
             {
                 object content = item.Value;

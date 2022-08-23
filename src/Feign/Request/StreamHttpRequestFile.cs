@@ -12,7 +12,7 @@ namespace Feign.Request
     /// <summary>
     /// 文件流请求文件
     /// </summary>
-    public class StreamHttpRequestFile : IHttpRequestFile
+    public class StreamHttpRequestFile : IHttpRequestFile, IMultipartFormData
     {
         public StreamHttpRequestFile(Stream stream, string fileName)
         {
@@ -24,6 +24,13 @@ namespace Feign.Request
         public string Name { get; set; }
         public string FileName { get; }
         public string MediaType { get; set; }
+
+        /// <summary>
+        /// <para>true : Content-Type = multipart/form-data; boundary="123456789"</para> 
+        /// <para>false : Content-Type = multipart/form-data; boundary=123456789</para> 
+        /// <para>default is true</para> 
+        /// </summary>
+        public bool QuotedBoundary { get; set; } = true;
 
         HttpContent IHttpRequestFile.GetHttpContent()
         {

@@ -2,9 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Feign.Internal
 {
@@ -156,7 +159,7 @@ namespace Feign.Internal
 
 
 
-        public static Encoding GetEncoding(System.Net.Http.Headers.MediaTypeHeaderValue mediaTypeHeaderValue)
+        public static Encoding GetEncoding(MediaTypeHeaderValue mediaTypeHeaderValue)
         {
             string charset = mediaTypeHeaderValue?.CharSet;
 
@@ -190,6 +193,28 @@ namespace Feign.Internal
         public static string GetName(PropertyInfo property, NamingPolicy namingPolicy)
         {
             return namingPolicy.ConvertName(property.Name);
+        }
+
+        public static MultipartFormDataContent CreateMultipartFormDataContent(string boundary, bool quotedBoundary)
+        {
+            if (string.IsNullOrWhiteSpace(boundary))
+            {
+                //boundary = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N")));
+                boundary = Guid.NewGuid().ToString("N");
+            }
+            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent(boundary);
+            if (!quotedBoundary)
+            {
+                //multipartFormDataContent.Headers.ContentType = MediaTypeHeaderValue.Parse($"multipart/form-data; boundary={boundary}");
+                multipartFormDataContent.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data")
+                {
+                    Parameters =
+                    {
+                        new NameValueHeaderValue("boundary", boundary)
+                    }
+                };
+            }
+            return multipartFormDataContent;
         }
 
     }

@@ -9,7 +9,7 @@ namespace Feign.Request
     /// <summary>
     /// 一个接口,表示含有多个请求文件表单
     /// </summary>
-    public interface IHttpRequestFileForm
+    public interface IHttpRequestFileForm : IMultipartFormData
     {
         /// <summary>
         /// 获取请求文件
