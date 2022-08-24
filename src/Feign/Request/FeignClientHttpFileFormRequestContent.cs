@@ -43,24 +43,37 @@ namespace Feign.Request
                 }
             }
 
-            //other property
-            foreach (var property in RequestFileForm.GetType().GetProperties())
+            ////other property
+            //foreach (var property in RequestFileForm.GetType().GetProperties())
+            //{
+            //    if (property.GetMethod == null)
+            //    {
+            //        continue;
+            //    }
+            //    if (typeof(IHttpRequestFile).IsAssignableFrom(property.PropertyType) || property.PropertyType.IsGenericType && property.PropertyType.GenericTypeArguments.Any(s => typeof(IHttpRequestFile).IsAssignableFrom(s)))
+            //    {
+            //        continue;
+            //    }
+            //    object value = property.GetValue(RequestFileForm);
+            //    if (value == null)
+            //    {
+            //        continue;
+            //    }
+            //    HttpContent httpContent = new StringContent(value.ToString());
+            //    multipartFormDataContent.Add(httpContent, FeignClientUtils.GetName(property, options.PropertyNamingPolicy));
+            //}
+
+            var requestForm = RequestFileForm.GetRequestForm();
+            if (requestForm != null)
             {
-                if (property.GetMethod == null)
+                foreach (var item in requestForm)
                 {
-                    continue;
+                    if (item.Value != null)
+                    {
+                        HttpContent httpContent = new StringContent(item.Value);
+                        multipartFormDataContent.Add(httpContent, item.Key);
+                    }
                 }
-                if (typeof(IHttpRequestFile).IsAssignableFrom(property.PropertyType) || property.PropertyType.IsGenericType && property.PropertyType.GenericTypeArguments.Any(s => typeof(IHttpRequestFile).IsAssignableFrom(s)))
-                {
-                    continue;
-                }
-                object value = property.GetValue(RequestFileForm);
-                if (value == null)
-                {
-                    continue;
-                }
-                HttpContent httpContent = new StringContent(value.ToString());
-                multipartFormDataContent.Add(httpContent, FeignClientUtils.GetName(property, options.PropertyNamingPolicy));
             }
             return multipartFormDataContent;
         }

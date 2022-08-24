@@ -15,5 +15,7 @@ namespace Feign.Tests
         /// </summary>
         public bool QuotedBoundary { get; set; } = true;
         IEnumerable<IHttpRequestFile> IHttpRequestFileForm.RequestFiles => new[] { File };
+
+        public IEnumerable<KeyValuePair<string, string>> GetRequestForm() => null;
     }
 }

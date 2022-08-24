@@ -15,5 +15,8 @@ namespace Feign.Request
         /// 获取请求文件
         /// </summary>
         IEnumerable<IHttpRequestFile> RequestFiles { get; }
+
+        IEnumerable<KeyValuePair<string, string>> GetRequestForm();
+
     }
 }
