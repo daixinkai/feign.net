@@ -52,7 +52,9 @@ namespace Feign.Request
                 return new StringContent(Content.ToString());
             }
 
-            List<KeyValuePair<string, string>> nameValueCollection = FeignClientUtils.GetObjectStringParameters(Name, Content, options.Converters, options.PropertyNamingPolicy).ToList();
+            List<KeyValuePair<string, string>> nameValueCollection = Content is IHttpRequestForm httpRequestForm ?
+                httpRequestForm.GetRequestForm()?.ToList() :
+                FeignClientUtils.GetObjectStringParameters(Name, Content, options.Converters, options.PropertyNamingPolicy).ToList();
             FormUrlEncodedContent formUrlEncodedContent = new FormUrlEncodedContent(nameValueCollection);
             return formUrlEncodedContent;
         }
