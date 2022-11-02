@@ -33,17 +33,6 @@ namespace Feign.Request
                 MediaType = mediaTypeHeaderValue.MediaType;
                 ContentType = mediaTypeHeaderValue;
             }
-            //if (string.IsNullOrWhiteSpace(contentType))
-            //{
-            //    contentType = "application/json; charset=utf-8";
-            //}
-            //MediaTypeHeaderValue mediaTypeHeaderValue;
-            //if (!MediaTypeHeaderValue.TryParse(contentType, out mediaTypeHeaderValue))
-            //{
-            //    throw new ArgumentException("ContentType error");
-            //}
-            //MediaType = mediaTypeHeaderValue.MediaType;
-            //ContentType = mediaTypeHeaderValue;
         }
         /// <summary>
         /// 获取BaseUrl
@@ -81,14 +70,14 @@ namespace Feign.Request
         /// 获取或设置HttpCompletionOption
         /// </summary>
         public HttpCompletionOption CompletionOption { get; set; }
-        ///// <summary>
-        ///// 获取或设置UriKind
-        ///// </summary>
-        //public UriKind UriKind { get; set; }
         /// <summary>
         /// 获取或设置RequestContent
         /// </summary>
         public FeignClientHttpRequestContent RequestContent { get; set; }
+        /// <summary>
+        /// 是否返回 HttpResponseMessage 默认false
+        /// </summary>
+        public bool IsReturnHttpResponseMessage { get; set; }
 
         /// <summary>
         /// 获取或设置方法元数据

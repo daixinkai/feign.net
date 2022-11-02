@@ -24,9 +24,9 @@ namespace Feign.Tests
         //    _testService2 = testService2;
         //}
 
-        ITestService _testService1;
+        private ITestService _testService1 = null;
 
-        TestServiceFallback _testService2;
+        private TestServiceFallback _testService2 = null;
 
         //public string Name { get; set; }
         string ITestParentService<string>.Name { get; set; }

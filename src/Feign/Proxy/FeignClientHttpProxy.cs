@@ -47,6 +47,8 @@ namespace Feign.Proxy
 
             BaseUrl = BuildBaseUrl(baseUrl);
 
+            Origin = $"{_scheme}://{ServiceId}";
+
             var initializingContext = new InitializingPipelineContext<TService>(this);
             initializingContext.HttpClient = HttpClient;
             OnInitializing(initializingContext);
@@ -62,7 +64,7 @@ namespace Feign.Proxy
         {
             if (!baseUrl.StartsWith("http") && baseUrl != "")
             {
-                baseUrl = $"http://{baseUrl}";
+                baseUrl = $"{_scheme}://{baseUrl}";
             }
             if (!string.IsNullOrWhiteSpace(BaseUri))
             {
@@ -102,11 +104,15 @@ namespace Feign.Proxy
 
         private ILogger _logger;
 
+        private string _scheme = "http";
+
         protected internal IFeignOptions FeignOptions { get; private set; }
 
         TService IFeignClient<TService>.Service { get { return this as TService; } }
 
         Type IFeignClient<TService>.ServiceType { get { return typeof(TService); } }
+
+        protected virtual UriKind UriKind => UriKind.Relative;
 
         /// <summary>
         /// 获取服务的 serviceId
@@ -127,6 +133,8 @@ namespace Feign.Proxy
         public virtual string Url { get { return null; } }
 
         protected string BaseUrl { get; }
+
+        protected string Origin { get; }
 
         protected FeignHttpClient HttpClient { get; }
 

@@ -27,7 +27,11 @@ namespace Feign.Discovery
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceDiscoveryHttpClientHandler{TService}"/> class.
         /// </summary>
-        public ServiceDiscoveryHttpClientHandler(FeignClientHttpProxy<TService> feignClient, IServiceDiscovery serviceDiscovery, ICacheProvider serviceCacheProvider, ILogger logger) : base(feignClient, logger)
+        public ServiceDiscoveryHttpClientHandler(
+            FeignClientHttpProxy<TService> feignClient, 
+            IServiceDiscovery serviceDiscovery, 
+            ICacheProvider serviceCacheProvider, 
+            ILogger logger) : base(feignClient, logger)
         {
             _serviceResolve = new RandomServiceResolve(logger);
             _serviceDiscovery = serviceDiscovery;
@@ -51,8 +55,8 @@ namespace Feign.Discovery
                 return requestMessage.RequestUri;
             }
 
-            IList<IServiceInstance> services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ? 
-                _serviceDiscovery.GetServiceInstancesWithCache(requestMessage.RequestUri.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value) : 
+            IList<IServiceInstance> services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ?
+                _serviceDiscovery.GetServiceInstancesWithCache(requestMessage.RequestUri.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value) :
                 _serviceDiscovery.GetServiceInstances(requestMessage.RequestUri.Host);
             if (services == null || services.Count == 0)
             {
@@ -61,9 +65,9 @@ namespace Feign.Discovery
             return _serviceResolve.ResolveService(requestMessage.RequestUri, services);
         }
 
-        void ServiceResolveFail(FeignHttpRequestMessage requestMessage)
+        private void ServiceResolveFail(FeignHttpRequestMessage requestMessage)
         {
-            throw new ServiceResolveFailException($"Resolve service fail : {requestMessage.RequestUri.ToString()}");
+            throw new ServiceResolveFailException($"Resolve service fail : {requestMessage.RequestUri}");
         }
 
     }

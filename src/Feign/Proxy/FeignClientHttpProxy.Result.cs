@@ -62,12 +62,15 @@ namespace Feign.Proxy
 
         private async Task<TResult> GetResultInternalAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
         {
+            if (request.IsReturnHttpResponseMessage && typeof(TResult) == typeof(HttpResponseMessage))
+            {
+                return (TResult)(object)responseMessage;
+            }
             await EnsureSuccessAsync(request, responseMessage)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
 #endif
                 ;
-
             var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)

@@ -34,7 +34,7 @@ namespace Feign.Proxy
         }
 
 
-        static TService GetFallback(IFallbackFactory<TService> fallbackFactory)
+        private static TService GetFallback(IFallbackFactory<TService> fallbackFactory)
         {
             if (fallbackFactory != null)
             {

@@ -30,23 +30,30 @@ namespace Feign
         /// <summary>
         /// gets the serviceId
         /// </summary>
-        public virtual string Name { get; }
+        public string Name { get; }
+        /// <summary>
+        /// gets the lifetime of a service
+        /// </summary>
+        public FeignClientLifetime? Lifetime { get; }
         /// <summary>
         /// gets or sets the service url
         /// </summary>
-        public virtual string Url { get; set; }
+        public string Url { get; set; }
+        /// <summary>
+        /// <para>gets or sets the UriKind. default value is <see cref="UriKind.Relative"/></para>
+        /// <para><see cref="UriKind.Relative"/> : "api/user"+"create"="api/user/create" ; "api/user"+"/create"="api/user/create"</para>
+        /// <para><see cref="UriKind.Absolute"/> : "api/user"+"create"="create" ; "api/user"+"/create"="create"</para>
+        /// <para><see cref="UriKind.RelativeOrAbsolute"/> : "api/user"+"create"="api/user/create" ; "api/user"+"/create"="create"</para>
+        /// </summary>
+        public UriKind UriKind { get; set; } = UriKind.Relative;
         /// <summary>
         /// gets or sets the service fallback type
         /// </summary>
-        public virtual Type Fallback { get; set; }
+        public Type Fallback { get; set; }
         /// <summary>
         /// gets or sets the service fallback factory type
         /// </summary>
-        public virtual Type FallbackFactory { get; set; }
-        /// <summary>
-        /// gets or sets the lifetime of a service
-        /// </summary>
-        public FeignClientLifetime? Lifetime { get; set; }
+        public Type FallbackFactory { get; set; }
 
     }
 }

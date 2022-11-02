@@ -95,15 +95,40 @@ namespace Feign.Reflection
             typeBuilder.BuildFirstConstructor(parentType);
 
             //写入serviceId
-            typeBuilder.DefineReadOnlyProperty(serviceType, "ServiceId", feignClientAttribute.Name);
-
+            typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("ServiceId"), iLGenerator =>
+            {
+                iLGenerator.EmitStringValue(feignClientAttribute.Name);
+                iLGenerator.Emit(OpCodes.Ret);
+            }, null);
             //写入baseUri
-            typeBuilder.DefineReadOnlyProperty(serviceType, "BaseUri", serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value);
+            typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("BaseUri"), iLGenerator =>
+            {
+                string value = serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value;
+                iLGenerator.EmitStringValue(value);
+                iLGenerator.Emit(OpCodes.Ret);
+            }, null);
+            //重写UriKind
+            typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("UriKind", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
+            {
+                iLGenerator.EmitEnumValue(feignClientAttribute.UriKind);
+                iLGenerator.Emit(OpCodes.Ret);
+            }, null);
 
             // 写入url
             if (feignClientAttribute.Url != null)
             {
-                typeBuilder.DefineReadOnlyProperty(serviceType, "Url", feignClientAttribute.Url);
+                typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("Url"), iLGenerator =>
+                {
+                    if (feignClientAttribute.Url == null)
+                    {
+                        iLGenerator.Emit(OpCodes.Ldnull);
+                    }
+                    else
+                    {
+                        iLGenerator.Emit(OpCodes.Ldstr, feignClientAttribute.Url);
+                    }
+                    iLGenerator.Emit(OpCodes.Ret);
+                }, null);
             }
 
             foreach (var method in serviceType.GetMethodsIncludingBaseInterfaces())
@@ -117,7 +142,7 @@ namespace Feign.Reflection
             {
                 //写入自动属性
                 //typeBuilder.DefineAutoProperty(serviceType, property);
-                typeBuilder.DefineExplicitAutoProperty(serviceType, property);
+                typeBuilder.DefineExplicitAutoProperty(property);
             }
 
             var typeInfo = typeBuilder.CreateTypeInfo();

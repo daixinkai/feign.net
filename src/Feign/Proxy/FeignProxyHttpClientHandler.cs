@@ -24,8 +24,6 @@ namespace Feign.Proxy
 
         public FeignClientHttpProxy<TService> FeignClient => _feignClient;
 
-        //IFeignClient IFeignHttpClientHandler.FeignClient => _feignClient;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FeignProxyHttpClientHandler{T}"/> class.
         /// </summary>
@@ -68,7 +66,6 @@ namespace Feign.Proxy
                         .ConfigureAwait(false)
 #endif
                       ;
-                //request.Method = new HttpMethod(requestContext.Method);
                 request.RequestUri = requestContext.RequestUri;
                 if (requestContext.Headers != null && requestContext.Headers.Count > 0)
                 {

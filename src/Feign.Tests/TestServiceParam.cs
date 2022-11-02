@@ -5,10 +5,16 @@ using System.Threading.Tasks;
 
 namespace Feign.Tests
 {
-    public class TestServiceParam
+    public abstract class TestServiceParamBase 
+    {
+        public abstract string ServiceId { get; }
+    }
+    public class TestServiceParam : TestServiceParamBase
     {
         public string Name { get; set; }
         public int Age { get; set; }
         public int? State { get; set; }
+
+        public override string ServiceId => null;
     }
 }

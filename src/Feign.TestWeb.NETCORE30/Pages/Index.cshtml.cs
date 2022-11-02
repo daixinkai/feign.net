@@ -25,6 +25,10 @@ namespace Feign.TestWeb.NETCORE30.Pages
 
             var noBaseUrlTestService = HttpContext.RequestServices.GetRequiredService<INoBaseUrlTestService>();
 
+            var responseMessage = await testControllerService.GetHttpResponseMessage();
+
+            string ss = responseMessage.RequestMessage.RequestUri.ToString();
+
             var baiduHtml = await noBaseUrlTestService.GetBaidu();
 
             //return Content(baiduHtml);

@@ -16,12 +16,6 @@ namespace Feign.Tests
                 method = (MethodInfo)MethodBase.GetCurrentMethod();
             }
         }
-
-        string _url;
-
         bool Flag { get; }
-
-        public override string Url { get => _url; set => _url = value; }
-
     }
 }

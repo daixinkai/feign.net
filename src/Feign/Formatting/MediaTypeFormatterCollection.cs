@@ -14,7 +14,7 @@ namespace Feign.Formatting
     public sealed class MediaTypeFormatterCollection : IEnumerable<IMediaTypeFormatter>
     {
 
-        System.Collections.Concurrent.ConcurrentDictionary<string, IMediaTypeFormatter> _map = new System.Collections.Concurrent.ConcurrentDictionary<string, IMediaTypeFormatter>();
+        private System.Collections.Concurrent.ConcurrentDictionary<string, IMediaTypeFormatter> _map = new System.Collections.Concurrent.ConcurrentDictionary<string, IMediaTypeFormatter>();
 
 
         public IEnumerator<IMediaTypeFormatter> GetEnumerator()
@@ -57,8 +57,7 @@ namespace Feign.Formatting
             {
                 return null;
             }
-            IMediaTypeFormatter formatter;
-            _map.TryGetValue(mediaType, out formatter);
+            _map.TryGetValue(mediaType, out var formatter);
             return formatter;
         }
 

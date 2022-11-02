@@ -13,11 +13,13 @@ namespace Feign.Reflection
     {
         AssemblyBuilder _assemblyBuilder;
         ModuleBuilder _moduleBuilder;
-        string _guid = Guid.NewGuid().ToString("N").ToUpper();
 
-#if DEBUG&&NET45
+#if DEBUG && NET45
         public bool DEBUG_MODE = false;
         public string AssemblyName = "Feign.Debug.dll";
+        private string _guid = "E030AA0177684B6BA7FF34196874B3D7";
+#else
+        private string _guid = Guid.NewGuid().ToString("N").ToUpper();
 #endif
 
         public AssemblyBuilder AssemblyBuilder

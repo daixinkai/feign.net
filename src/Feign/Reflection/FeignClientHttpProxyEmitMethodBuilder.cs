@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -92,7 +93,7 @@ namespace Feign.Reflection
             return BuildMethod(typeBuilder, serviceType, method, feignClientAttribute, GetRequestMappingAttribute(method));
         }
 
-        FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute, RequestMappingBaseAttribute requestMapping)
+        private FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute, RequestMappingBaseAttribute requestMapping)
         {
             FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo
             {
@@ -281,6 +282,8 @@ namespace Feign.Reflection
         /// <returns></returns>
         protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent> emitRequestContents, FeignClientMethodInfo feignClientMethodInfo)
         {
+            Type returnType = GetReturnType(feignClientMethodInfo.MethodMetadata);
+            var feignClientMethodInfoLocalBuilder = DefineFeignClientMethodInfo(typeBuilder, iLGenerator, feignClientMethodInfo, returnType);
 
             LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(FeignClientHttpRequest));
 
@@ -329,62 +332,13 @@ namespace Feign.Reflection
                 iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetProperty("CompletionOption").SetMethod);
             }
             #endregion
-            #region UriKind
-            //if (requestMapping.UriKind != default)
-            //{
-            //    iLGenerator.Emit(OpCodes.Dup);
-            //    iLGenerator.EmitEnumValue(requestMapping.UriKind);
-            //    iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetProperty("UriKind").SetMethod);
-            //}
-            #endregion
-            iLGenerator.Emit(OpCodes.Stloc, localBuilder);
+
 
             #endregion
 
             #region FeignClientHttpRequest.Method
-            //feignClientMethodInfo
-            //feignClientMethodInfo=null
-            LocalBuilder feignClientMethodInfoLocalBuilder = iLGenerator.DeclareLocal(typeof(FeignClientMethodInfo));
-            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientMethodInfo).GetEmptyConstructor());
-            iLGenerator.Emit(OpCodes.Stloc, feignClientMethodInfoLocalBuilder);
-            iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
-            iLGenerator.Emit(OpCodes.Ldstr, feignClientMethodInfo.MethodId);
-            iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodId").SetMethod);
-            #region ResultType
-            //feignClientMethodInfo.ResultType=typeof(xx);
-            ResultTypeAttribute resultTypeAttribute = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<ResultTypeAttribute>();
-            Type returnType = GetReturnType(feignClientMethodInfo.MethodMetadata);
-            if (returnType != null && resultTypeAttribute != null)
-            {
-                Type resultType = resultTypeAttribute.ConvertType(returnType);
-                if (resultType != null)
-                {
-                    iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
-                    iLGenerator.EmitType(resultType);
-                    iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("ResultType").SetMethod);
-                }
-            }
-            #endregion
 
-            Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
-
-            #region if (base.FeignOptions.IncludeMethodMetadata) set the call method
-            //这里获取方法元数据
-            PropertyInfo feignOptionsProperty = typeBuilder.BaseType.GetProperty("FeignOptions", BindingFlags.Instance | BindingFlags.NonPublic);
-            PropertyInfo includeMethodMetadataProperty = feignOptionsProperty.PropertyType.GetProperty("IncludeMethodMetadata");
-            iLGenerator.Emit(OpCodes.Ldarg_0);
-            iLGenerator.Emit(OpCodes.Call, feignOptionsProperty.GetMethod);
-            iLGenerator.Emit(OpCodes.Callvirt, includeMethodMetadataProperty.GetMethod);
-            iLGenerator.Emit(OpCodes.Ldc_I4, 1);
-            iLGenerator.Emit(OpCodes.Ceq);
-            iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);
-            iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
-            iLGenerator.EmitMethodInfo(feignClientMethodInfo.MethodMetadata);
-            iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodMetadata").SetMethod);
-            #endregion
-            //处理下 if GOTO
-            iLGenerator.MarkLabel(newFeingClientRequestLabel);
-            iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+            iLGenerator.Emit(OpCodes.Dup);
             iLGenerator.Emit(OpCodes.Ldloc, feignClientMethodInfoLocalBuilder);
             iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("Method").SetMethod);
             #endregion
@@ -398,7 +352,7 @@ namespace Feign.Reflection
             }
             if (accept != null)
             {
-                iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+                iLGenerator.Emit(OpCodes.Dup);
                 iLGenerator.Emit(OpCodes.Ldstr, accept);
                 iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("Accept").SetMethod);
             }
@@ -426,11 +380,22 @@ namespace Feign.Reflection
             }
             if (headers.Count >= 0)
             {
-                iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+                iLGenerator.Emit(OpCodes.Dup);
                 iLGenerator.EmitStringArray(headers);
                 iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("Headers").SetMethod);
             }
             #endregion
+
+            #region FeignClientHttpRequest.IsReturnHttpResponseMessage
+            if (returnType == typeof(HttpResponseMessage))
+            {
+                iLGenerator.Emit(OpCodes.Dup);
+                iLGenerator.Emit(OpCodes.Ldc_I4_1);
+                iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("IsReturnHttpResponseMessage").SetMethod);
+            }
+            #endregion
+
+            iLGenerator.Emit(OpCodes.Stloc, localBuilder);
 
             #region FeignClientHttpRequest.RequestContent
             //requestContent
@@ -504,15 +469,65 @@ namespace Feign.Reflection
             }
             #endregion
 
+
             return localBuilder;
         }
 
+        private LocalBuilder DefineFeignClientMethodInfo(TypeBuilder typeBuilder, ILGenerator iLGenerator, FeignClientMethodInfo feignClientMethodInfo, Type returnType)
+        {
+            //feignClientMethodInfo
+            //feignClientMethodInfo=null
+            LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(FeignClientMethodInfo));
+            iLGenerator.Emit(OpCodes.Newobj, typeof(FeignClientMethodInfo).GetEmptyConstructor());
+            iLGenerator.Emit(OpCodes.Stloc, localBuilder);
+            iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+            iLGenerator.Emit(OpCodes.Ldstr, feignClientMethodInfo.MethodId);
+            iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodId").SetMethod);
+            #region ResultType
+            //feignClientMethodInfo.ResultType=typeof(xx);
+            ResultTypeAttribute resultTypeAttribute = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<ResultTypeAttribute>();
+            if (returnType != null && resultTypeAttribute != null)
+            {
+                Type resultType = resultTypeAttribute.ConvertType(returnType);
+                if (resultType != null)
+                {
+                    iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+                    iLGenerator.EmitType(resultType);
+                    iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("ResultType").SetMethod);
+                }
+            }
+            #endregion
+
+            Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
+
+            #region if (base.FeignOptions.IncludeMethodMetadata) set the call method
+            //这里获取方法元数据
+            PropertyInfo feignOptionsProperty = typeBuilder.BaseType.GetProperty("FeignOptions", BindingFlags.Instance | BindingFlags.NonPublic);
+            PropertyInfo includeMethodMetadataProperty = feignOptionsProperty.PropertyType.GetProperty("IncludeMethodMetadata");
+            iLGenerator.Emit(OpCodes.Ldarg_0);
+            iLGenerator.Emit(OpCodes.Call, feignOptionsProperty.GetMethod);
+            iLGenerator.Emit(OpCodes.Callvirt, includeMethodMetadataProperty.GetMethod);
+            iLGenerator.Emit(OpCodes.Ldc_I4, 1);
+            iLGenerator.Emit(OpCodes.Ceq);
+            iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);
+            iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
+            iLGenerator.EmitMethodInfo(feignClientMethodInfo.MethodMetadata);
+            iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodMetadata").SetMethod);
+            #endregion
+            //处理下 if GOTO
+            iLGenerator.MarkLabel(newFeingClientRequestLabel);
+            return localBuilder;
+        }
 
         private string GetMethodId(MethodInfo methodInfo)
         {
             if (methodInfo.IsDefined(typeof(MethodIdAttribute)))
             {
                 return methodInfo.GetCustomAttribute<MethodIdAttribute>().MethodId;
+            }
+            if (methodInfo.DeclaringType.GetMethods().Where(s => s.Name == methodInfo.Name).Count() == 1)
+            {
+                return methodInfo.Name;
             }
             return methodInfo.Name + "(" + string.Join(",", methodInfo.GetParameters().Select(s => s.ParameterType.FullName)) + ")";
         }

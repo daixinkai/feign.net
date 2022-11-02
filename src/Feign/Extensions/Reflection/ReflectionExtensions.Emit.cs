@@ -11,11 +11,10 @@ namespace Feign
 {
     partial class ReflectionExtensions
     {
-        static readonly MethodInfo GetMethodFromHandleMethodInfo = typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle) });
 
-        static readonly MethodInfo GetMethodFromHandleMethodInfoAndTypeHandle = typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) });
+        private static readonly MethodInfo GetMethodFromHandleMethodInfoAndTypeHandle = typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) });
 
-        static readonly MethodInfo GetTypeFromHandleMethodInfo = typeof(Type).GetMethod("GetTypeFromHandle");
+        private static readonly MethodInfo GetTypeFromHandleMethodInfo = typeof(Type).GetMethod("GetTypeFromHandle");
 
         public static MethodBuilder DefineMethodBuilder(this TypeBuilder typeBuilder, MethodInfo method, MethodAttributes methodAttributes, bool copyCustomAttributes)
         {
@@ -33,24 +32,6 @@ namespace Feign
         }
 
 
-        public static LocalBuilder DefineEmitMethodInfo(this ILGenerator iLGenerator, MethodInfo method)
-        {
-            LocalBuilder methodLocalBuilder = iLGenerator.DeclareLocal(typeof(MethodInfo));
-            iLGenerator.EmitMethodInfo(method);
-            iLGenerator.Emit(OpCodes.Stloc, methodLocalBuilder);
-            return methodLocalBuilder;
-        }
-
-
-
-        public static LocalBuilder DeclareLocalEx(this ILGenerator iLGenerator, Type localType, string name)
-        {
-            LocalBuilder localBuilder = iLGenerator.DeclareLocal(localType);
-            return localBuilder;
-        }
-
-
-
         /// <summary>
         ///  like  methodof(ReflectionExtensions.EmitMethodInfo(ILGenerator,MethodInfo))
         /// </summary>
@@ -65,15 +46,6 @@ namespace Feign
             iLGenerator.Emit(OpCodes.Castclass, typeof(MethodInfo));
         }
 
-        public static LocalBuilder DefineEmitType(this ILGenerator iLGenerator, Type type)
-        {
-            LocalBuilder typeLocalBuilder = iLGenerator.DeclareLocal(typeof(Type));
-            iLGenerator.Emit(OpCodes.Ldtoken, type);
-            iLGenerator.Emit(OpCodes.Stloc, typeLocalBuilder);
-            iLGenerator.Emit(OpCodes.Call, GetTypeFromHandleMethodInfo);
-            return typeLocalBuilder;
-        }
-
         /// <summary>
         ///  like  typeof(ReflectionExtensions)
         /// </summary>
@@ -86,6 +58,23 @@ namespace Feign
         }
 
         /// <summary>
+        ///  like  = string value
+        /// </summary>
+        /// <param name="iLGenerator"></param>
+        /// <param name="value"></param>
+        public static void EmitStringValue(this ILGenerator iLGenerator, string value)
+        {
+            if (value == null)
+            {
+                iLGenerator.Emit(OpCodes.Ldnull);
+            }
+            else
+            {
+                iLGenerator.Emit(OpCodes.Ldstr, value);
+            }
+        }
+
+        /// <summary>
         ///  like  = Enum value
         /// </summary>
         /// <param name="iLGenerator"></param>
@@ -93,7 +82,55 @@ namespace Feign
         public static void EmitEnumValue(this ILGenerator iLGenerator, Enum value)
         {
             //Type enumType = value.GetType();
-            iLGenerator.Emit(OpCodes.Ldc_I4, value.GetHashCode());
+            //iLGenerator.Emit(OpCodes.Ldc_I4, value.GetHashCode());
+            iLGenerator.EmitInt32Value(value.GetHashCode());
+        }
+
+        public static void EmitInt32Value(this ILGenerator iLGenerator, int value)
+        {
+            switch (value)
+            {
+                case -1:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_M1);
+                    break;
+                case 0:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_0);
+                    break;
+                case 1:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_1);
+                    break;
+                case 2:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_2);
+                    break;
+                case 3:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_3);
+                    break;
+                case 4:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_4);
+                    break;
+                case 5:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_5);
+                    break;
+                case 6:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_6);
+                    break;
+                case 7:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_7);
+                    break;
+                case 8:
+                    iLGenerator.Emit(OpCodes.Ldc_I4_8);
+                    break;
+                default:
+                    if (value > -128 && value <= 128)
+                    {
+                        iLGenerator.Emit(OpCodes.Ldc_I4_S, value);
+                    }
+                    else
+                    {
+                        iLGenerator.Emit(OpCodes.Ldc_I4, value);
+                    }
+                    break;
+            }
         }
 
         /// <summary>
@@ -115,7 +152,6 @@ namespace Feign
                 index++;
             }
         }
-
 
         public static void CallBaseTypeDefaultConstructor(this ILGenerator constructorIlGenerator, Type baseType)
         {

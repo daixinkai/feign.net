@@ -44,7 +44,7 @@ namespace Feign
             }
         }
 
-        static string GetFullName(Type type, Dictionary<Type, string> cache)
+        private static string GetFullName(Type type, Dictionary<Type, string> cache)
         {
             if (!type.IsGenericType)
             {
@@ -66,9 +66,6 @@ namespace Feign
         {
             return type.IsDefined(typeof(T)) || type.GetInterfaces().Any(s => IsDefinedIncludingBaseInterfaces<T>(s));
         }
-
-
-
 
         public static void BuildFirstConstructor(this TypeBuilder typeBuilder, Type parentType)
         {
@@ -124,29 +121,6 @@ namespace Feign
             constructorIlGenerator.CallBaseTypeConstructor(baseConstructorInfo);
             constructorIlGenerator.Emit(OpCodes.Ret);
 
-        }
-
-        static bool Equals(Type[] types1, Type[] types2)
-        {
-            if (types1.Length != types2.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < types1.Length; i++)
-            {
-                var type1 = types1[i];
-                var type2 = types2[i];
-                //if (type1.IsArray != type2.IsArray)
-                //{
-                //    return false;
-                //}
-                if (types1[i] != types2[i])
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         public static void BuildConstructor(TypeBuilder typeBuilder, ConstructorInfo baseConstructor)

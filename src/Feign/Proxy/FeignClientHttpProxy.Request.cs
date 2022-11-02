@@ -17,12 +17,6 @@ namespace Feign.Proxy
     {
         #region Define
 
-        //internal static readonly MethodInfo HTTP_SEND_GENERIC_METHOD = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => o.IsGenericMethod).FirstOrDefault(o => o.Name == "Send");
-        //internal static readonly MethodInfo HTTP_SEND_ASYNC_GENERIC_METHOD = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => o.IsGenericMethod).FirstOrDefault(o => o.Name == "SendAsync");
-
-        //internal static readonly MethodInfo HTTP_SEND_METHOD = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => !o.IsGenericMethod).FirstOrDefault(o => o.Name == "Send");
-        //internal static readonly MethodInfo HTTP_SEND_ASYNC_METHOD = typeof(FeignClientHttpProxy<>).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => !o.IsGenericMethod).FirstOrDefault(o => o.Name == "SendAsync");
-
         internal static MethodInfo GetHttpSendGenericMethod(Type serviceType)
         {
             return typeof(FeignClientHttpProxy<>).MakeGenericType(serviceType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => o.IsGenericMethod && o.Name == "Send").FirstOrDefault();
@@ -58,11 +52,6 @@ namespace Feign.Proxy
             }
             using (response)
             {
-                //            await GetResultAsync<string>(request, response)
-                //#if CONFIGUREAWAIT_FALSE
-                //           .ConfigureAwait(false)
-                //#endif
-                //                ;
                 await EnsureSuccessAsync(request, response)
 #if CONFIGUREAWAIT_FALSE
            .ConfigureAwait(false)
@@ -82,7 +71,7 @@ namespace Feign.Proxy
             {
                 return default;
             }
-            using (response)
+            try
             {
                 var responseContext = new ResponsePipelineContext<TService, TResult>(this, request, response);
                 return await GetResultAsync(responseContext)
@@ -91,7 +80,13 @@ namespace Feign.Proxy
 #endif
                 ;
             }
-
+            finally
+            {
+                if (!request.IsReturnHttpResponseMessage)
+                {
+                    response.Dispose();
+                }
+            }
         }
 
         protected virtual void Send(FeignClientHttpRequest request)
@@ -264,15 +259,16 @@ namespace Feign.Proxy
         private string BuildUri(FeignClientHttpRequest request)
         {
             string uri = request.Uri;
-            if (BaseUrl == "")
+            string baseUrl = UriKind == UriKind.Absolute ? "" : BaseUrl;
+            if (baseUrl == "")
             {
                 return uri;
             }
             if (uri.StartsWith("/"))
             {
-                return BaseUrl + uri;
+                return UriKind == UriKind.RelativeOrAbsolute ? $"{Origin}{uri}" : $"{baseUrl}{uri}";
             }
-            return uri.StartsWith("?") ? $"{BaseUrl}{uri}" : $"{BaseUrl}/{uri}";
+            return uri.StartsWith("?") ? $"{baseUrl}{uri}" : $"{baseUrl}/{uri}";
         }
 
 

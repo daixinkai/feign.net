@@ -21,9 +21,9 @@ namespace Feign
             return GetCustomAttributeFromBaseInterfaces<T>(type);
         }
 
-        static T GetCustomAttributeFromBaseInterfaces<T>(this Type type) where T : Attribute
+        private static T GetCustomAttributeFromBaseInterfaces<T>(this Type type) where T : Attribute
         {
-            T attribute = null;
+            T attribute;
             foreach (var item in type.GetInterfaces())
             {
                 attribute = item.GetCustomAttribute<T>();
@@ -89,7 +89,7 @@ namespace Feign
         }
 
 
-        static CustomAttributeBuilder GetCustomAttributeBuilder(CustomAttributeData data)
+        private static CustomAttributeBuilder GetCustomAttributeBuilder(CustomAttributeData data)
         {
             List<CustomAttributeNamedArgument> propertyArguments = data.NamedArguments.Where(s => !s.IsField).ToList();
             List<CustomAttributeNamedArgument> fieldArguments = data.NamedArguments.Where(s => s.IsField).ToList();
@@ -103,7 +103,7 @@ namespace Feign
             return customAttributeBuilder;
         }
 
-        static object GetArgumentValue(CustomAttributeTypedArgument argument)
+        private static object GetArgumentValue(CustomAttributeTypedArgument argument)
         {
             if (argument.ArgumentType.IsArray)
             {
@@ -113,7 +113,7 @@ namespace Feign
             return argument.Value;
         }
 
-        static CustomAttributeBuilder GetCustomAttributeBuilder<TAttribute>(Expression<Func<TAttribute>> expression) where TAttribute : Attribute
+        private static CustomAttributeBuilder GetCustomAttributeBuilder<TAttribute>(Expression<Func<TAttribute>> expression) where TAttribute : Attribute
         {
             if (expression.NodeType != ExpressionType.Lambda)
             {

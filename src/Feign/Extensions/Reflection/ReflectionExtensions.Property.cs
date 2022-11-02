@@ -18,7 +18,7 @@ namespace Feign
             return properties.ToArray();
         }
 
-        static void GetPropertiesFromBaseInterfaces(this Type type, List<PropertyInfo> properties)
+        private static void GetPropertiesFromBaseInterfaces(this Type type, List<PropertyInfo> properties)
         {
             foreach (var item in type.GetInterfaces())
             {
@@ -36,7 +36,7 @@ namespace Feign
             }
         }
 
-        public static void DefineAutoProperty(this TypeBuilder typeBuilder, Type type, PropertyInfo property)
+        public static void DefineAutoProperty(this TypeBuilder typeBuilder, PropertyInfo property)
         {
 
             MethodAttributes methodAttributes =
@@ -78,7 +78,7 @@ namespace Feign
             propertyBuilder.CopyCustomAttributes(property);
         }
 
-        public static void DefineExplicitAutoProperty(this TypeBuilder typeBuilder, Type type, PropertyInfo property)
+        public static void DefineExplicitAutoProperty(this TypeBuilder typeBuilder, PropertyInfo property)
         {
             if (property.DeclaringType == null || !property.DeclaringType.IsInterface)
             {
@@ -129,24 +129,43 @@ namespace Feign
             propertyBuilder.CopyCustomAttributes(property);
         }
 
-        public static void DefineReadOnlyProperty(this TypeBuilder typeBuilder, Type interfaceType, string propertyName, string propertyValue)
+        public static void OverrideProperty(this TypeBuilder typeBuilder, PropertyInfo property, Action<ILGenerator> getterInvoker, Action<ILGenerator> setterInvoker)
         {
-            PropertyBuilder propertyBuilder = typeBuilder.DefineProperty(propertyName, PropertyAttributes.None, typeof(string), Type.EmptyTypes);
-            MethodBuilder propertyGet = typeBuilder.DefineMethod("get_" + propertyName, MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual, typeof(string), Type.EmptyTypes);
-            ILGenerator iLGenerator = propertyGet.GetILGenerator();
-            if (propertyValue == null)
+            MethodAttributes methodAttributes = MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual;
+            PropertyBuilder propertyBuilder = typeBuilder.DefineProperty(property.Name, property.Attributes, property.PropertyType, Type.EmptyTypes);
+            if (property.CanRead)
             {
-                iLGenerator.Emit(OpCodes.Ldnull);
+                MethodAttributes scope = property.GetMethod.Attributes.HasFlag(MethodAttributes.Public) ? MethodAttributes.Public : MethodAttributes.Family;
+                MethodBuilder propertyGet = typeBuilder.DefineMethod("get_" + property.Name, scope | methodAttributes, property.PropertyType, Type.EmptyTypes);
+                //propertyGet.SetCustomAttribute(() => new CompilerGeneratedAttribute());
+                ILGenerator iLGenerator = propertyGet.GetILGenerator();
+                getterInvoker?.Invoke(iLGenerator);
+                if (!property.GetMethod.IsAbstract)
+                {
+                    typeBuilder.DefineMethodOverride(propertyGet, property.GetMethod);
+                }
+                propertyBuilder.SetGetMethod(propertyGet);
             }
-            else
+
+            if (property.CanWrite)
             {
-                iLGenerator.Emit(OpCodes.Ldstr, propertyValue);
+                MethodAttributes scope = property.SetMethod.Attributes.HasFlag(MethodAttributes.Public) ? MethodAttributes.Public : MethodAttributes.Family;
+                MethodBuilder propertySet = typeBuilder.DefineMethod("set_" + property.Name, scope | methodAttributes, typeof(void), new Type[] { property.PropertyType });
+                //propertySet.SetCustomAttribute(() => new CompilerGeneratedAttribute());
+                propertySet.DefineParameter(1, ParameterAttributes.None, "value");
+                ILGenerator iLGenerator = propertySet.GetILGenerator();
+                setterInvoker?.Invoke(iLGenerator);
+                iLGenerator.Emit(OpCodes.Ret);
+                if (!property.GetMethod.IsAbstract)
+                {
+                    typeBuilder.DefineMethodOverride(propertySet, property.SetMethod);
+                }
+                propertyBuilder.SetSetMethod(propertySet);
             }
-            iLGenerator.Emit(OpCodes.Ret);
-            propertyBuilder.SetGetMethod(propertyGet);
+
+            propertyBuilder.CopyCustomAttributes(property);
+
         }
-
-
 
     }
 }

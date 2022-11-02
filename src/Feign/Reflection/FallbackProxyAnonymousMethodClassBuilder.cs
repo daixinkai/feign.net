@@ -16,8 +16,6 @@ namespace Feign.Reflection
     class FallbackProxyAnonymousMethodClassBuilder : AnonymousMethodClassBuilderBase
     {
 
-        readonly System.Collections.Concurrent.ConcurrentDictionary<Comparer, Tuple<Type, ConstructorInfo, MethodInfo>> _map = new System.Collections.Concurrent.ConcurrentDictionary<Comparer, Tuple<Type, ConstructorInfo, MethodInfo>>();
-
         public Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method)
         {
             return BuildType(moduleBuilder, targetType, method, null);
@@ -31,12 +29,9 @@ namespace Feign.Reflection
                 Method = method,
                 Parameters = parameters
             };
-            return _map.GetOrAdd(comparer, key =>
-            {
-                string typeName = comparer.TargetType.Name;
-                typeName += "_" + Guid.NewGuid().ToString("N").ToUpper();
-                return BuildNewType(moduleBuilder, typeName, comparer.TargetType.Namespace + ".Anonymous", comparer);
-            });
+            string typeName = comparer.TargetType.Name;
+            typeName += "_" + Guid.NewGuid().ToString("N").ToUpper();
+            return BuildNewType(moduleBuilder, typeName, comparer.TargetType.Namespace + ".Anonymous", comparer);
         }
 
         static Tuple<Type, ConstructorInfo, MethodInfo> BuildNewType(ModuleBuilder moduleBuilder, string typeName, string nameSpace, Comparer comparer)
