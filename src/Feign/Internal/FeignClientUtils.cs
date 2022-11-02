@@ -17,7 +17,7 @@ namespace Feign.Internal
         {
             if (urlEncode && !string.IsNullOrEmpty(value))
             {
-                value = System.Web.HttpUtility.UrlEncode(value);
+                value = Uri.EscapeDataString(value);
             }
             name = "{" + name + "}";
             return uri.Replace(name, value);
@@ -38,7 +38,7 @@ namespace Feign.Internal
             }
             if (urlEncode && value.Length > 0)
             {
-                value = System.Web.HttpUtility.UrlEncode(value);
+                value = Uri.EscapeDataString(value);
             }
             if (uri.IndexOf("?") >= 0)
             {

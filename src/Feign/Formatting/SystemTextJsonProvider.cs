@@ -56,7 +56,19 @@ namespace Feign.Formatting
             {
                 return JsonSerializer.DeserializeAsync<TResult>(stream, _jsonSerializerOptions).AsTask();
             }
-            return Task.FromResult(DeserializeObject<TResult>(stream, encoding));
+            return DeserializeObjectAsyncInternal<TResult>(stream, encoding);
+        }
+
+        private async Task<TResult> DeserializeObjectAsyncInternal<TResult>(Stream stream, Encoding encoding)
+        {
+            byte[] buffer = new byte[stream.Length];
+            await stream.ReadAsync(buffer, 0, buffer.Length)
+#if CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                 ;
+            string json = (encoding ?? Encoding.Default).GetString(buffer);
+            return DeserializeObject<TResult>(json);
         }
 
         public Task<object> DeserializeObjectAsync(Stream stream, Type type, Encoding encoding)
@@ -65,7 +77,19 @@ namespace Feign.Formatting
             {
                 return JsonSerializer.DeserializeAsync(stream, type, _jsonSerializerOptions).AsTask();
             }
-            return Task.FromResult(DeserializeObject(stream, type, encoding));
+            return DeserializeObjectAsyncInternal(stream, type, encoding);
+        }
+
+        private async Task<object> DeserializeObjectAsyncInternal(Stream stream, Type type, Encoding encoding)
+        {
+            byte[] buffer = new byte[stream.Length];
+            await stream.ReadAsync(buffer, 0, buffer.Length)
+#if CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                 ;
+            string json = (encoding ?? Encoding.Default).GetString(buffer);
+            return DeserializeObject(json, type);
         }
 
         public string SerializeObject(object value)

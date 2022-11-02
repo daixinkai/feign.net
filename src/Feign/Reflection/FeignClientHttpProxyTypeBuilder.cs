@@ -32,12 +32,12 @@ namespace Feign.Reflection
             _methodBuilder = new FeignClientHttpProxyEmitMethodBuilder();
             _fallbackMethodBuilder = new FallbackFeignClientHttpProxyEmitMethodBuilder(_dynamicAssembly);
         }
-        string _guid;
-        string _suffix;
+        private readonly string _guid;
+        private readonly string _suffix;
 
-        FeignClientHttpProxyEmitMethodBuilder _methodBuilder;
-        FallbackFeignClientHttpProxyEmitMethodBuilder _fallbackMethodBuilder;
-        DynamicAssembly _dynamicAssembly;
+        private readonly FeignClientHttpProxyEmitMethodBuilder _methodBuilder;
+        private readonly FallbackFeignClientHttpProxyEmitMethodBuilder _fallbackMethodBuilder;
+        private readonly DynamicAssembly _dynamicAssembly;
 
         public FeignClientTypeInfo Build(Type serviceType)
         {
@@ -76,7 +76,7 @@ namespace Feign.Reflection
             }
             parentType = GetParentType(parentType);
 
-            FeignClientTypeInfo feignClientTypeInfo = new FeignClientTypeInfo(serviceType)
+            var feignClientTypeInfo = new FeignClientTypeInfo(serviceType)
             {
                 ParentType = parentType
             };
