@@ -13,7 +13,7 @@ namespace Feign.Tests
         {
             return new List<IServiceInstance>() {
                 //new TestServiceInstance("http://www.baidu.com/childTest")
-                new TestServiceInstance("http://localhost:55298/")
+                new TestServiceInstance("http://localhost:62488")
             };
         }
     }

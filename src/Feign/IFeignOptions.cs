@@ -29,7 +29,7 @@ namespace Feign
         /// </summary>
         IGlobalFeignClientPipeline FeignClientPipeline { get; }
         /// <summary>
-        /// 获取或设置服务的生命周期
+        /// 获取或设置服务的生命周期 默认值 <see cref="FeignClientLifetime.Singleton"/>
         /// </summary>
         FeignClientLifetime Lifetime { get; set; }
         /// <summary>

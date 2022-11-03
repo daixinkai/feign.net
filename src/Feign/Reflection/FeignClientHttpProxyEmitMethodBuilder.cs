@@ -361,29 +361,22 @@ namespace Feign.Reflection
 
             #region FeignClientHttpRequest.Headers
             //headers
-            List<IEmitValue<string>> headers = new List<IEmitValue<string>>();
-            if (serviceType.IsDefined(typeof(HeadersAttribute), true))
-            {
-                var serviceHeaders = serviceType.GetCustomAttribute<HeadersAttribute>().Headers;
-                if (serviceHeaders != null)
-                {
-                    headers.AddRange(serviceHeaders.Select(s => new EmitConstantStringValue(s)));
-                }
-            }
             if (feignClientMethodInfo.MethodMetadata.IsDefined(typeof(HeadersAttribute), true))
             {
+                List<IEmitValue<string>> headers = new List<IEmitValue<string>>();
                 var methodHeaders = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<HeadersAttribute>().Headers;
                 if (methodHeaders != null)
                 {
                     headers.AddRange(methodHeaders.Select(s => new EmitConstantStringValue(s)));
                 }
+                if (headers.Count > 0)
+                {
+                    iLGenerator.Emit(OpCodes.Dup);
+                    iLGenerator.EmitStringArray(headers);
+                    iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("Headers").SetMethod);
+                }
             }
-            if (headers.Count >= 0)
-            {
-                iLGenerator.Emit(OpCodes.Dup);
-                iLGenerator.EmitStringArray(headers);
-                iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("Headers").SetMethod);
-            }
+
             #endregion
 
             #region FeignClientHttpRequest.IsReturnHttpResponseMessage
@@ -392,6 +385,15 @@ namespace Feign.Reflection
                 iLGenerator.Emit(OpCodes.Dup);
                 iLGenerator.Emit(OpCodes.Ldc_I4_1);
                 iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("IsReturnHttpResponseMessage").SetMethod);
+            }
+            #endregion
+
+            #region FeignClientHttpRequest.IsSpecialResult
+            if (SpecialResults.IsSpecialResult(returnType))
+            {
+                iLGenerator.Emit(OpCodes.Dup);
+                iLGenerator.Emit(OpCodes.Ldc_I4_1);
+                iLGenerator.Emit(OpCodes.Call, typeof(FeignClientHttpRequest).GetProperty("IsSpecialResult").SetMethod);
             }
             #endregion
 
@@ -507,7 +509,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ldarg_0);
             iLGenerator.Emit(OpCodes.Call, feignOptionsProperty.GetMethod);
             iLGenerator.Emit(OpCodes.Callvirt, includeMethodMetadataProperty.GetMethod);
-            iLGenerator.Emit(OpCodes.Ldc_I4, 1);
+            iLGenerator.Emit(OpCodes.Ldc_I4_1);
             iLGenerator.Emit(OpCodes.Ceq);
             iLGenerator.Emit(OpCodes.Brfalse_S, nextLabel);
             iLGenerator.Emit(OpCodes.Ldloc, localBuilder);

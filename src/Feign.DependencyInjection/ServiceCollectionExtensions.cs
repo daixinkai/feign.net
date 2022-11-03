@@ -1,11 +1,7 @@
 ﻿using Feign;
 using Feign.Cache;
 using Feign.DependencyInjection;
-using Feign.Discovery;
 using Feign.Logging;
-using Feign.Proxy;
-using Feign.Reflection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,11 +37,16 @@ namespace Microsoft.Extensions.DependencyInjection
             DependencyInjectionFeignBuilder feignBuilder = new DependencyInjectionFeignBuilder();
             feignBuilder.Services = services;
             feignBuilder.Options = options;
-            feignBuilder.AddDefaultFeignClients()
-                .AddLoggerFactory<LoggerFactory>()
-                //.AddCacheProvider<CacheProvider>()
-                .AddCacheProvider<JsonCacheProvider>()
-                ;
+            feignBuilder.AddDefaultFeignClients();
+            if (services.Any(s => s.ServiceType == typeof(Microsoft.Extensions.Logging.ILoggerFactory)))
+            {
+                feignBuilder.AddLoggerFactory<LoggerFactory>();
+            }
+            if (services.Any(s => s.ServiceType == typeof(Microsoft.Extensions.Caching.Distributed.IDistributedCache)))
+            {
+                //feignBuilder.AddCacheProvider<CacheProvider>();
+                feignBuilder.AddCacheProvider<JsonCacheProvider>();
+            }
             return feignBuilder;
         }
 

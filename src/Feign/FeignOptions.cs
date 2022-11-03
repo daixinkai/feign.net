@@ -29,7 +29,7 @@ namespace Feign
             MediaTypeFormatters.AddFormatter(new FormUrlEncodedMediaTypeFormatter());
             MediaTypeFormatters.AddFormatter(new MultipartFormDataMediaTypeFormatter());
             FeignClientPipeline = new GlobalFeignClientPipeline();
-            Lifetime = FeignClientLifetime.Transient;
+            Lifetime = FeignClientLifetime.Singleton;
             Types = new List<FeignClientTypeInfo>();
             DiscoverServiceCacheTime = TimeSpan.FromMinutes(10);
             PropertyNamingPolicy = NamingPolicy.CamelCase;

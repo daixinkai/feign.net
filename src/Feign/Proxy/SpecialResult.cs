@@ -9,65 +9,68 @@ using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
-    class SpecialResults
+    static class SpecialResults
     {
-        public static SpecialResult<TResult> GetSpecialResult<TResult>(HttpResponseMessage responseMessage)
+        private static readonly IDictionary<Type, object> s_handlers = new Dictionary<Type, object>();
+        static SpecialResults()
         {
-            if (typeof(TResult) == typeof(Task))
-            {
-                return SpecialResult<TResult>.GetSpecialResult(TaskEx.CompletedTask);
-            }
-            else if (typeof(TResult) == typeof(string))
-            {
-                return SpecialResult<TResult>.GetSpecialResult(responseMessage.Content.ReadAsStringAsync());
-            }
-            else if (typeof(TResult) == typeof(Stream))
-            {
-                return SpecialResult<TResult>.GetSpecialResult(responseMessage.Content.ReadAsStreamAsync());
-            }
-            else if (typeof(TResult) == typeof(byte[]))
-            {
-                return SpecialResult<TResult>.GetSpecialResult(responseMessage.Content.ReadAsByteArrayAsync());
-            }
-            else if (typeof(TResult) == typeof(HttpResponseMessage))
-            {
-                return SpecialResult<TResult>.GetSpecialResult(responseMessage);
-            }
-            else if (typeof(TResult) == typeof(HttpContent))
-            {
-                return SpecialResult<TResult>.GetSpecialResult(responseMessage.Content);
-            }
-            SpecialResult<TResult> result = new SpecialResult<TResult>();
-            return result;
+            s_handlers.Add(typeof(Task), SpecialResultHandler<Task>.FromResult(response => TaskEx.CompletedTask));
+            s_handlers.Add(typeof(string), SpecialResultHandler<string>.FromTaskResult(response => response.Content.ReadAsStringAsync()));
+            s_handlers.Add(typeof(Stream), SpecialResultHandler<Stream>.FromTaskResult(response => response.Content.ReadAsStreamAsync()));
+            s_handlers.Add(typeof(byte[]), SpecialResultHandler<byte[]>.FromTaskResult(response => response.Content.ReadAsByteArrayAsync()));
+            s_handlers.Add(typeof(HttpResponseMessage), SpecialResultHandler<HttpResponseMessage>.FromResult(response => response));
+            s_handlers.Add(typeof(HttpContent), SpecialResultHandler<HttpContent>.FromResult(response => response.Content));
         }
+
         public static Task<SpecialResult<TResult>> GetSpecialResultAsync<TResult>(HttpResponseMessage responseMessage)
         {
-            if (typeof(TResult) == typeof(Task))
+            if (s_handlers.TryGetValue(typeof(TResult), out var handler))
             {
-                return SpecialResult<TResult>.GetSpecialResultAsync(TaskEx.CompletedTask);
-            }
-            else if (typeof(TResult) == typeof(string))
-            {
-                return SpecialResult<TResult>.GetSpecialResultAsync(responseMessage.Content.ReadAsStringAsync());
-            }
-            else if (typeof(TResult) == typeof(Stream))
-            {
-                return SpecialResult<TResult>.GetSpecialResultAsync(responseMessage.Content.ReadAsStreamAsync());
-            }
-            else if (typeof(TResult) == typeof(byte[]))
-            {
-                return SpecialResult<TResult>.GetSpecialResultAsync(responseMessage.Content.ReadAsByteArrayAsync());
-            }
-            else if (typeof(TResult) == typeof(HttpResponseMessage))
-            {
-                return SpecialResult<TResult>.GetSpecialResultAsync(responseMessage);
-            }
-            else if (typeof(TResult) == typeof(HttpContent))
-            {
-                return SpecialResult<TResult>.GetSpecialResultAsync(responseMessage.Content);
+                return ((SpecialResultHandler<TResult>)handler).GetSpecialResultAsync(responseMessage);
             }
             SpecialResult<TResult> result = new SpecialResult<TResult>();
             return Task.FromResult(result);
+        }
+
+        public static bool IsSpecialResult(Type type)
+        {
+            return s_handlers.ContainsKey(type);
+        }
+
+    }
+
+    class SpecialResultHandler<TResult>
+    {
+        public SpecialResultHandler(Func<HttpResponseMessage, Task<TResult>> asyncFunc)
+        {
+            _asyncFunc = asyncFunc;
+        }
+
+        public SpecialResultHandler(Func<HttpResponseMessage, TResult> func)
+        {
+            _func = func;
+        }
+
+        private Func<HttpResponseMessage, Task<TResult>> _asyncFunc;
+        private Func<HttpResponseMessage, TResult> _func;
+
+        public static SpecialResultHandler<TResult> FromResult(Func<HttpResponseMessage, TResult> func)
+        {
+            return new SpecialResultHandler<TResult>(func);
+        }
+
+        public static SpecialResultHandler<TResult> FromTaskResult(Func<HttpResponseMessage, Task<TResult>> asyncFunc)
+        {
+            return new SpecialResultHandler<TResult>(asyncFunc);
+        }
+
+        public Task<SpecialResult<TResult>> GetSpecialResultAsync(HttpResponseMessage responseMessage)
+        {
+            if (_asyncFunc != null)
+            {
+                return SpecialResult<TResult>.GetSpecialResultAsync(_asyncFunc(responseMessage));
+            }
+            return SpecialResult<TResult>.GetSpecialResultAsync(_func(responseMessage));
         }
     }
 
@@ -75,25 +78,6 @@ namespace Feign.Proxy
     {
         public bool IsSpecialResult { get; set; }
         public TResult Result { get; set; }
-
-        public static SpecialResult<TResult> GetSpecialResult<TSource>(Task<TSource> task)
-        {
-            SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
-            {
-                IsSpecialResult = true
-            };
-            specialResult.Result = (TResult)(object)task.GetResult();
-            return specialResult;
-        }
-        public static SpecialResult<TResult> GetSpecialResult<TSource>(TSource result)
-        {
-            SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
-            {
-                IsSpecialResult = true
-            };
-            specialResult.Result = (TResult)(object)result;
-            return specialResult;
-        }
         public static async Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource>(Task<TSource> task)
         {
             SpecialResult<TResult> specialResult = new SpecialResult<TResult>()

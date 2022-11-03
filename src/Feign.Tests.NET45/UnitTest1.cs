@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEBUG
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -241,3 +242,5 @@ namespace Feign.Tests.NET45
 
 
 }
+
+#endif

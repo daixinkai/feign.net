@@ -13,6 +13,13 @@ namespace Feign.Tests
     public class TestServiceFallback : ITestService
     {
 
+        private static readonly string[] s_headers = new string[] {
+            "Cache-Control:max-age=0",
+            "Accept-Encoding: gzip, deflate, br",
+            "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8"
+        };
+
+
         public TestServiceFallback() : base()
         {
         }

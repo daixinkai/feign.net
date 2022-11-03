@@ -140,17 +140,27 @@ namespace Feign
         /// <param name="list"></param>
         public static void EmitStringArray(this ILGenerator iLGenerator, IEnumerable<IEmitValue<string>> list)
         {
-            iLGenerator.Emit(OpCodes.Ldc_I4, list.Count());
+            int count = list.Count();
+#if !NET45
+            if (count == 0)
+            {
+                iLGenerator.Emit(OpCodes.Call, typeof(Array).GetMethod("Empty").MakeGenericMethod(typeof(string)));
+                return;
+            }
+#endif
+
+            iLGenerator.EmitInt32Value(count);
             iLGenerator.Emit(OpCodes.Newarr, typeof(string));
             int index = 0;
             foreach (var item in list)
             {
                 iLGenerator.Emit(OpCodes.Dup);
-                iLGenerator.Emit(OpCodes.Ldc_I4, index);
+                iLGenerator.EmitInt32Value(index);
                 item.Emit(iLGenerator);
                 iLGenerator.Emit(OpCodes.Stelem_Ref);
                 index++;
             }
+
         }
 
         public static void CallBaseTypeDefaultConstructor(this ILGenerator constructorIlGenerator, Type baseType)

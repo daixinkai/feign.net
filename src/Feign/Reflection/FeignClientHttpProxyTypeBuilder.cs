@@ -1,4 +1,5 @@
 ﻿using Feign.Proxy;
+using Feign.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -131,6 +132,31 @@ namespace Feign.Reflection
                 }, null);
             }
 
+            //headers
+            if (serviceType.IsDefined(typeof(HeadersAttribute), true))
+            {
+                var headersAttribute = serviceType.GetCustomAttribute<HeadersAttribute>();
+                var headersFieldBuilder = typeBuilder.DefineField("s_headers", typeof(string[]), FieldAttributes.Private | FieldAttributes.Static | FieldAttributes.InitOnly);
+                #region cctor
+                var cctor = typeBuilder.DefineConstructor(MethodAttributes.PrivateScope | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Static, CallingConventions.Standard, Type.EmptyTypes);
+                var cctorILGenerator = cctor.GetILGenerator();
+                List<EmitConstantStringValue> headers = headersAttribute.Headers?.Select(s => new EmitConstantStringValue(s)).ToList();
+                if (headers != null)
+                {
+                    cctorILGenerator.EmitStringArray(headers);
+                    cctorILGenerator.Emit(OpCodes.Stsfld, headersFieldBuilder);
+                }
+                cctorILGenerator.Emit(OpCodes.Ret);
+                #endregion
+                //重写DefaultHeaders
+                typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("DefaultHeaders", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
+                {
+                    iLGenerator.Emit(OpCodes.Ldsfld, headersFieldBuilder);
+                    iLGenerator.Emit(OpCodes.Ret);
+                }, null);
+            }
+
+
             foreach (var method in serviceType.GetMethodsIncludingBaseInterfaces())
             {
                 //生成方法
@@ -144,6 +170,8 @@ namespace Feign.Reflection
                 //typeBuilder.DefineAutoProperty(serviceType, property);
                 typeBuilder.DefineExplicitAutoProperty(property);
             }
+
+
 
             var typeInfo = typeBuilder.CreateTypeInfo();
             Type type = typeInfo.AsType();

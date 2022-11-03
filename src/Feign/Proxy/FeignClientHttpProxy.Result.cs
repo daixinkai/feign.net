@@ -51,10 +51,13 @@ namespace Feign.Proxy
                 return (TResult)(object)responseMessage;
             }
             await EnsureSuccessAsync(request, responseMessage).ConfigureAwait(false);
-            var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage).ConfigureAwait(false);
-            if (specialResult.IsSpecialResult)
+            if (request.IsSpecialResult)
             {
-                return specialResult.Result;
+                var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage).ConfigureAwait(false);
+                if (specialResult.IsSpecialResult)
+                {
+                    return specialResult.Result;
+                }
             }
 
             if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)

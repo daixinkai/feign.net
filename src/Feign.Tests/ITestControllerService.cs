@@ -9,7 +9,7 @@ namespace Feign.Tests
 {
     [CustomFeignClient("yun-platform-service-provider"
 //, Fallback = typeof(TestControllerServiceFallback)
-//, Url = "http://localhost:55298/"
+//, Url = "http://localhost:62488/"
 , UriKind = UriKind.RelativeOrAbsolute
 )]
     [RequestMapping("/api/test")]

@@ -21,10 +21,14 @@
     <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.9.2" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="Autofac" Version="6.4.0" />
+	</ItemGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+		<PackageReference Include="Autofac" Version="4.9.4" />
+	</ItemGroup>	
+	
   <ItemGroup>
     <ProjectReference Include="..\Feign\Feign.csproj" />
   </ItemGroup>

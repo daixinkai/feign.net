@@ -196,9 +196,18 @@ namespace Feign.Proxy
             {
                 requestMessage.Headers.Accept.ParseAdd(request.Accept);
             }
-            if (request.Headers != null && request.Headers.Length > 0)
+            var headers = DefaultHeaders;
+            if (headers != null || request.Headers != null)
             {
-                foreach (var header in request.Headers)
+                if (headers == null)
+                {
+                    headers = request.Headers;
+                }
+                else if (request.Headers != null)
+                {
+                    headers = headers.Concat(request.Headers).ToArray();
+                }
+                foreach (var header in headers)
                 {
                     string[] values = header.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
                     if (values.Length == 2)
@@ -227,7 +236,7 @@ namespace Feign.Proxy
         private string BuildUri(FeignClientHttpRequest request)
         {
             string uri = request.Uri;
-            string baseUrl = UriKind == UriKind.Absolute ? "" : BaseUrl;
+            string baseUrl = UriKind == UriKind.Absolute ? Origin : BaseUrl;
             if (baseUrl == "")
             {
                 return uri;

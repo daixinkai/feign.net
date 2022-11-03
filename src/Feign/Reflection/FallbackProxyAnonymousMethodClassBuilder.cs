@@ -123,7 +123,7 @@ namespace Feign.Reflection
             ILGenerator iLGenerator = methodBuilder.GetILGenerator();
 
             LocalBuilder types = iLGenerator.DeclareLocal(typeof(Type[]));
-            iLGenerator.Emit(OpCodes.Ldc_I4, parameters.Length);
+            iLGenerator.EmitInt32Value(parameters.Length);
             iLGenerator.Emit(OpCodes.Newarr, typeof(Type));
             iLGenerator.Emit(OpCodes.Stloc, types);
 
@@ -131,7 +131,7 @@ namespace Feign.Reflection
             for (int i = 0; i < parameters.Length; i++)
             {
                 iLGenerator.Emit(OpCodes.Ldloc, types);
-                iLGenerator.Emit(OpCodes.Ldc_I4, i);
+                iLGenerator.EmitInt32Value(i);
                 iLGenerator.EmitType(parameters[i].ParameterType);
                 iLGenerator.Emit(OpCodes.Stelem_Ref);
             }

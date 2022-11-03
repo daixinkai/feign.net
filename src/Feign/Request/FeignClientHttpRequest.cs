@@ -79,6 +79,8 @@ namespace Feign.Request
         /// </summary>
         public bool IsReturnHttpResponseMessage { get; set; }
 
+        public bool IsSpecialResult { get; set; }
+
         /// <summary>
         /// 获取或设置方法元数据
         /// </summary>

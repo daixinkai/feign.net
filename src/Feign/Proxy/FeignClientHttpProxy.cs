@@ -136,6 +136,8 @@ namespace Feign.Proxy
 
         protected string Origin { get; }
 
+        protected virtual string[] DefaultHeaders => null;
+
         protected FeignHttpClient HttpClient { get; }
 
         #region IDisposable Support
@@ -166,7 +168,6 @@ namespace Feign.Proxy
         //}
 
         // 添加此代码以正确实现可处置模式。
-#pragma warning disable CA1063 // Implement IDisposable Correctly
         void IDisposable.Dispose()
 #pragma warning restore CA1063 // Implement IDisposable Correctly
         {
