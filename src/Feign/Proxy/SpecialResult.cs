@@ -100,11 +100,7 @@ namespace Feign.Proxy
             {
                 IsSpecialResult = true
             };
-            specialResult.Result = (TResult)(object)await task
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+            specialResult.Result = (TResult)(object)await task.ConfigureAwait(false);
             return specialResult;
         }
         public static Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource>(TSource result)

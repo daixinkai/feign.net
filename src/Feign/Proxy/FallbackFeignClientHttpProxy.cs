@@ -65,11 +65,7 @@ namespace Feign.Proxy
         {
             try
             {
-                await SendAsync(request)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+                await SendAsync(request).ConfigureAwait(false);
             }
             catch (TerminatedRequestException)
             {
@@ -81,31 +77,19 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).ConfigureAwait(false);
                 if (invokeFallbackRequestResult)
                 {
                     throw;
                 }
-                await fallback.Invoke()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+                await fallback.Invoke().ConfigureAwait(false);
             }
         }
         protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request, Func<Task<TResult>> fallback)
         {
             try
             {
-                return await SendAsync<TResult>(request)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+                return await SendAsync<TResult>(request).ConfigureAwait(false);
             }
             catch (TerminatedRequestException)
             {
@@ -117,20 +101,12 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).ConfigureAwait(false);
                 if (invokeFallbackRequestResult)
                 {
                     throw;
                 }
-                return await fallback.Invoke()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+                return await fallback.Invoke().ConfigureAwait(false);
             }
         }
         protected virtual void Send(FeignClientHttpRequest request, Action fallback)
@@ -185,27 +161,15 @@ namespace Feign.Proxy
         {
             if (_serviceFeignClientPipeline != null)
             {
-                await _serviceFeignClientPipeline.FallbackRequestAsync(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await _serviceFeignClientPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
             }
             if (_serviceIdFeignClientPipeline != null)
             {
-                await _serviceIdFeignClientPipeline.FallbackRequestAsync(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await _serviceIdFeignClientPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
             }
             if (_globalFeignClientPipeline != null)
             {
-                await _globalFeignClientPipeline.FallbackRequestAsync(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await _globalFeignClientPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
             }
         }
         /// <summary>
@@ -228,11 +192,7 @@ namespace Feign.Proxy
             {
                 context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, fallbackProxy, null);
             }
-            await OnFallbackRequest(context)
-#if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
-#endif
-                  ;
+            await OnFallbackRequest(context).ConfigureAwait(false);
             return context.IsTerminated;
         }
 

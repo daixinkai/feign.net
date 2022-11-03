@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -86,11 +87,12 @@ namespace Feign.Internal
                 IDictionary map = ((IDictionary)value);
                 foreach (var item in map.Keys)
                 {
-                    if (map[item] == null)
+                    var mapValue = map[item];
+                    if (mapValue == null)
                     {
                         continue;
                     }
-                    yield return new KeyValuePair<string, string>(item.ToString(), converters.ConvertValue<string>(item, true));
+                    yield return new KeyValuePair<string, string>(item.ToString(), converters.ConvertValue<string>(mapValue, true));
                 }
                 yield break;
             }
@@ -108,55 +110,14 @@ namespace Feign.Internal
                 yield break;
             }
 
-            //TODO: ReplaceRequestQuery
-            //foreach (var property in value.GetType().GetProperties())
-            //{
-            //    object propertyValue = property.GetValue(value);
-            //    if (propertyValue == null)
-            //    {
-            //        continue;
-            //    }
-            //    if (propertyValue is IEnumerable&&propertyValue)
-            //    {
-
-            //    }
-            //}
-
             // get properties
 
-            foreach (var property in typeof(T).GetProperties())
+            foreach (var item in new ObjectQueryMap<T>(value, namingPolicy, converters).GetStringParameters())
             {
-                if (property.GetMethod == null)
-                {
-                    continue;
-                }
-                object propertyValue = property.GetValue(value);
-                if (propertyValue == null)
-                {
-                    continue;
-                }
-                if (propertyValue is string)
-                {
-                    yield return new KeyValuePair<string, string>(GetName(property, namingPolicy), propertyValue.ToString());
-                    continue;
-                }
-                if (propertyValue is IEnumerable)
-                {
-                    foreach (var item in propertyValue as IEnumerable)
-                    {
-                        if (item == null)
-                        {
-                            continue;
-                        }
-                        yield return new KeyValuePair<string, string>(GetName(property, namingPolicy), converters.ConvertValue<string>(item, true));
-                    }
-                    continue;
-                }
-                yield return new KeyValuePair<string, string>(GetName(property, namingPolicy), converters.ConvertValue<string>(propertyValue, true));
+                yield return item;
             }
+
         }
-
-
 
         public static Encoding GetEncoding(MediaTypeHeaderValue mediaTypeHeaderValue)
         {
@@ -189,11 +150,6 @@ namespace Feign.Internal
         }
 
 
-        public static string GetName(PropertyInfo property, NamingPolicy namingPolicy)
-        {
-            return namingPolicy.ConvertName(property.Name);
-        }
-
         public static MultipartFormDataContent CreateMultipartFormDataContent(string boundary, bool quotedBoundary)
         {
             if (string.IsNullOrWhiteSpace(boundary))
@@ -215,6 +171,7 @@ namespace Feign.Internal
             }
             return multipartFormDataContent;
         }
+
 
     }
 }

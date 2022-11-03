@@ -39,9 +39,9 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="requestMessage"></param>
         /// <returns></returns>
-        protected virtual Uri LookupRequestUri(FeignHttpRequestMessage requestMessage)
+        protected virtual Task<Uri> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
         {
-            return requestMessage.RequestUri;
+            return Task.FromResult(requestMessage.RequestUri);
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -61,11 +61,7 @@ namespace Feign.Proxy
                 var requestContext = new RequestPipelineContext<TService>(_feignClient, request, cancellationToken);
 
                 #region BuildingRequest                
-                await _feignClient.OnBuildingRequestAsync(requestContext)
-#if CONFIGUREAWAIT_FALSE
-                        .ConfigureAwait(false)
-#endif
-                      ;
+                await _feignClient.OnBuildingRequestAsync(requestContext).ConfigureAwait(false);
                 request.RequestUri = requestContext.RequestUri;
                 if (requestContext.Headers != null && requestContext.Headers.Count > 0)
                 {
@@ -75,13 +71,9 @@ namespace Feign.Proxy
                     }
                 }
                 #endregion
-                request.RequestUri = LookupRequestUri(request);
+                request.RequestUri = await LookupRequestUriAsync(request).ConfigureAwait(false);
                 #region SendingRequest
-                await _feignClient.OnSendingRequestAsync(requestContext)
-#if CONFIGUREAWAIT_FALSE
-                            .ConfigureAwait(false)
-#endif
-                        ;
+                await _feignClient.OnSendingRequestAsync(requestContext).ConfigureAwait(false);
 
                 if (requestContext.IsTerminated)
                 {
@@ -107,18 +99,10 @@ namespace Feign.Proxy
                 #endregion
 
                 #region CannelRequest
-                await _feignClient.OnCancelRequestAsync(requestContext)
-#if CONFIGUREAWAIT_FALSE
-                      .ConfigureAwait(false)
-#endif
-                      ;
+                await _feignClient.OnCancelRequestAsync(requestContext).ConfigureAwait(false);
                 #endregion
 
-                return await base.SendAsync(request, requestContext.CancellationToken)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+                return await base.SendAsync(request, requestContext.CancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)
             {

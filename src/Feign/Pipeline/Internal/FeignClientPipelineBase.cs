@@ -10,15 +10,15 @@ namespace Feign.Pipeline.Internal
     {
         public virtual bool Enabled { get; set; } = true;
 
-        private List<BuildingRequestDelegate<TService>> _buildingRequestMiddlewares = new List<BuildingRequestDelegate<TService>>();
-        private List<CancelRequestDelegate<TService>> _cancelRequestMiddlewares = new List<CancelRequestDelegate<TService>>();
-        private List<DisposingDelegate<TService>> _disposingMiddlewares = new List<DisposingDelegate<TService>>();
-        private List<ErrorRequestDelegate<TService>> _errorRequestMiddlewares = new List<ErrorRequestDelegate<TService>>();
-        private List<FallbackRequestDelegate<TService>> _fallbackRequestMiddlewares = new List<FallbackRequestDelegate<TService>>();
-        private List<InitializingDelegate<TService>> _initializingMiddlewares = new List<InitializingDelegate<TService>>();
-        private List<ReceivingResponseDelegate<TService>> _receivingResponseMiddlewares = new List<ReceivingResponseDelegate<TService>>();
-        private List<ReceivedResponseDelegate<TService>> _receivedResponseMiddlewares = new List<ReceivedResponseDelegate<TService>>();
-        private List<SendingRequestDelegate<TService>> _sendingRequestMiddlewares = new List<SendingRequestDelegate<TService>>();
+        private readonly List<BuildingRequestDelegate<TService>> _buildingRequestMiddlewares = new List<BuildingRequestDelegate<TService>>();
+        private readonly List<CancelRequestDelegate<TService>> _cancelRequestMiddlewares = new List<CancelRequestDelegate<TService>>();
+        private readonly List<DisposingDelegate<TService>> _disposingMiddlewares = new List<DisposingDelegate<TService>>();
+        private readonly List<ErrorRequestDelegate<TService>> _errorRequestMiddlewares = new List<ErrorRequestDelegate<TService>>();
+        private readonly List<FallbackRequestDelegate<TService>> _fallbackRequestMiddlewares = new List<FallbackRequestDelegate<TService>>();
+        private readonly List<InitializingDelegate<TService>> _initializingMiddlewares = new List<InitializingDelegate<TService>>();
+        private readonly List<ReceivingResponseDelegate<TService>> _receivingResponseMiddlewares = new List<ReceivingResponseDelegate<TService>>();
+        private readonly List<ReceivedResponseDelegate<TService>> _receivedResponseMiddlewares = new List<ReceivedResponseDelegate<TService>>();
+        private readonly List<SendingRequestDelegate<TService>> _sendingRequestMiddlewares = new List<SendingRequestDelegate<TService>>();
 
         public IFeignClientPipeline<TService> UseBuildingRequest(BuildingRequestDelegate<TService> middleware)
         {
@@ -114,11 +114,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _buildingRequestMiddlewares)
             {
-                await middleware.Invoke(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
         protected internal virtual async Task SendingRequestAsync(ISendingRequestPipelineContext<TService> context)
@@ -133,11 +129,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _sendingRequestMiddlewares)
             {
-                await middleware.Invoke(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
         protected internal virtual async Task CancelRequestAsync(ICancelRequestPipelineContext<TService> context)
@@ -152,11 +144,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _cancelRequestMiddlewares)
             {
-                await middleware.Invoke(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
         protected internal virtual async Task ErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
@@ -171,11 +159,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _errorRequestMiddlewares)
             {
-                await middleware.Invoke(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
         protected internal virtual async Task ReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
@@ -190,11 +174,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _receivingResponseMiddlewares)
             {
-                await middleware.Invoke(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
         protected internal virtual async Task ReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
@@ -209,11 +189,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _receivedResponseMiddlewares)
             {
-                await middleware.Invoke(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
         protected internal virtual void Initializing(IInitializingPipelineContext<TService> context)
@@ -258,11 +234,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _fallbackRequestMiddlewares)
             {
-                await middleware.Invoke(context)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
 

@@ -498,7 +498,7 @@ namespace Feign.Reflection
             }
             #endregion
 
-            Label newFeingClientRequestLabel = iLGenerator.DefineLabel();
+            Label nextLabel = iLGenerator.DefineLabel();
 
             #region if (base.FeignOptions.IncludeMethodMetadata) set the call method
             //这里获取方法元数据
@@ -509,13 +509,13 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Callvirt, includeMethodMetadataProperty.GetMethod);
             iLGenerator.Emit(OpCodes.Ldc_I4, 1);
             iLGenerator.Emit(OpCodes.Ceq);
-            iLGenerator.Emit(OpCodes.Brfalse_S, newFeingClientRequestLabel);
+            iLGenerator.Emit(OpCodes.Brfalse_S, nextLabel);
             iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
             iLGenerator.EmitMethodInfo(feignClientMethodInfo.MethodMetadata);
             iLGenerator.Emit(OpCodes.Call, typeof(FeignClientMethodInfo).GetProperty("MethodMetadata").SetMethod);
             #endregion
             //处理下 if GOTO
-            iLGenerator.MarkLabel(newFeingClientRequestLabel);
+            iLGenerator.MarkLabel(nextLabel);
             return localBuilder;
         }
 

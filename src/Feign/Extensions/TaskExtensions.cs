@@ -15,12 +15,7 @@ namespace Feign
             {
                 return task.Result;
             }
-
-            return task
-#if CONFIGUREAWAIT_FALSE
-               .ConfigureAwait(false)
-#endif
-                .GetAwaiter().GetResult();
+            return task.ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public static TResult GetResult<TResult>(this ConfiguredTaskAwaitable<TResult> configuredTaskAwaitable)
@@ -35,11 +30,7 @@ namespace Feign
             {
                 return;
             }
-            task
-#if CONFIGUREAWAIT_FALSE
-             .ConfigureAwait(false)
-#endif
-              .GetAwaiter().GetResult();
+            task.ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
     }

@@ -41,32 +41,20 @@ namespace Feign.Proxy
 
         protected virtual async Task SendAsync(FeignClientHttpRequest request)
         {
-            HttpResponseMessage response = await GetResponseMessageAsync(request)
-#if  CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                ;
+            HttpResponseMessage response = await GetResponseMessageAsync(request).ConfigureAwait(false);
             if (response == null)
             {
                 return;
             }
             using (response)
             {
-                await EnsureSuccessAsync(request, response)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-           ;
+                await EnsureSuccessAsync(request, response).ConfigureAwait(false);
             }
 
         }
         protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request)
         {
-            HttpResponseMessage response = await GetResponseMessageAsync(request)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                ;
+            HttpResponseMessage response = await GetResponseMessageAsync(request).ConfigureAwait(false);
             if (response == null)
             {
                 return default;
@@ -74,11 +62,7 @@ namespace Feign.Proxy
             try
             {
                 var responseContext = new ResponsePipelineContext<TService, TResult>(this, request, response);
-                return await GetResultAsync(responseContext)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                ;
+                return await GetResultAsync(responseContext).ConfigureAwait(false);
             }
             finally
             {
@@ -98,11 +82,7 @@ namespace Feign.Proxy
         {
             try
             {
-                return await SendAsyncInternal(request)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+                return await SendAsyncInternal(request).ConfigureAwait(false);
             }
             catch (TerminatedRequestException)
             {
@@ -120,11 +100,7 @@ namespace Feign.Proxy
             {
                 #region ErrorRequest
                 ErrorRequestPipelineContext<TService> errorContext = new ErrorRequestPipelineContext<TService>(this, ex);
-                await OnErrorRequestAsync(errorContext)
-#if CONFIGUREAWAIT_FALSE
-                        .ConfigureAwait(false)
-#endif
-                        ;
+                await OnErrorRequestAsync(errorContext).ConfigureAwait(false);
                 if (errorContext.ExceptionHandled)
                 {
                     return null;
@@ -143,12 +119,8 @@ namespace Feign.Proxy
         {
             if (!responseMessage.IsSuccessStatusCode)
             {
-                string content = await responseMessage.Content.ReadAsStringAsync()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
-                _logger?.LogError($"request on \"{responseMessage.RequestMessage.RequestUri.ToString()}\" status code : " + responseMessage.StatusCode.GetHashCode() + " content : " + content);
+                string content = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                _logger?.LogError($"request on \"{responseMessage.RequestMessage.RequestUri}\" status code : " + responseMessage.StatusCode.GetHashCode() + " content : " + content);
                 throw new FeignHttpRequestException(this,
                     responseMessage.RequestMessage as FeignHttpRequestMessage,
                     new HttpRequestException($"Response status code does not indicate success: {responseMessage.StatusCode.GetHashCode()} ({responseMessage.ReasonPhrase}).\r\nContent : {content}"));
@@ -175,11 +147,7 @@ namespace Feign.Proxy
                         httpRequestMessage.Content = httpContent;
                     }
                 }
-                return await HttpClient.SendAsync(httpRequestMessage, request.CompletionOption)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                    ;
+                return await HttpClient.SendAsync(httpRequestMessage, request.CompletionOption).ConfigureAwait(false);
             }
         }
 

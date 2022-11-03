@@ -29,34 +29,18 @@ namespace Feign.Proxy
             }
 
             #region ReceivingResponse
-            await OnReceivingResponseAsync(responseContext)
-#if CONFIGUREAWAIT_FALSE
-               .ConfigureAwait(false)
-#endif
-               ;
+            await OnReceivingResponseAsync(responseContext).ConfigureAwait(false);
             //if (receivingResponseContext.Result != null)
             if (responseContext._isSetResult)
             {
-                await OnReceivedResponseAsync(responseContext)
-#if CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
-#endif
-                    ;
+                await OnReceivedResponseAsync(responseContext).ConfigureAwait(false);
                 return responseContext.GetResult();
             }
             #endregion
 
-            var result = await GetResultInternalAsync<TResult>(responseContext.Request, responseContext.ResponseMessage)
-#if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
-#endif
-                ;
+            var result = await GetResultInternalAsync<TResult>(responseContext.Request, responseContext.ResponseMessage).ConfigureAwait(false);
             responseContext._result = result;
-            await OnReceivedResponseAsync(responseContext)
-#if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
-#endif
-                ;
+            await OnReceivedResponseAsync(responseContext).ConfigureAwait(false);
             return result;
         }
 
@@ -66,16 +50,8 @@ namespace Feign.Proxy
             {
                 return (TResult)(object)responseMessage;
             }
-            await EnsureSuccessAsync(request, responseMessage)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                ;
-            var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                 ;
+            await EnsureSuccessAsync(request, responseMessage).ConfigureAwait(false);
+            var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage).ConfigureAwait(false);
             if (specialResult.IsSpecialResult)
             {
                 return specialResult.Result;
@@ -93,33 +69,17 @@ namespace Feign.Proxy
                      new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
 
-            using (var stream = await responseMessage.Content.ReadAsStreamAsync()
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-           )
+            using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
             {
                 if (stream.CanSeek)
                 {
-                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method.ResultType)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                        ;
+                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method.ResultType).ConfigureAwait(false);
                 }
                 using (Stream seekStream = new MemoryStream())
                 {
-                    await stream.CopyToAsync(seekStream)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-                        ;
+                    await stream.CopyToAsync(seekStream).ConfigureAwait(false);
                     seekStream.Seek(0, SeekOrigin.Begin);
-                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType)
-#if CONFIGUREAWAIT_FALSE
-           .ConfigureAwait(false)
-#endif
-           ;
+                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType).ConfigureAwait(false);
                 }
             }
 

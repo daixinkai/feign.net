@@ -41,7 +41,7 @@ namespace Feign
             return null;
         }
 
-        static bool ImplicitlyConvertsTo(Type type, Type destinationType)
+        private static bool ImplicitlyConvertsTo(Type type, Type destinationType)
         {
             if (type == destinationType)
                 return true;
@@ -51,7 +51,7 @@ namespace Feign
                     where method.Name == "op_Implicit" &&
                           method.ReturnType == destinationType
                     select method
-                    ).Count() > 0;
+                    ).Any();
         }
 
     }

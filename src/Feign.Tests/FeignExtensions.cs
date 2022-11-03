@@ -71,7 +71,7 @@ namespace Feign.Tests
                 IFallbackProxy fallbackProxy = context.FallbackProxy;
                 if (fallbackProxy == null)
                 {
-                    string s = "";
+                    //string s = "";
                 }
                 MethodInfo method = context.Method;
                 context.Terminate();

@@ -62,11 +62,7 @@ namespace Feign.Formatting
         private async Task<TResult> DeserializeObjectAsyncInternal<TResult>(Stream stream, Encoding encoding)
         {
             byte[] buffer = new byte[stream.Length];
-            await stream.ReadAsync(buffer, 0, buffer.Length)
-#if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
-#endif
-                 ;
+            await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
             string json = (encoding ?? Encoding.Default).GetString(buffer);
             return DeserializeObject<TResult>(json);
         }
@@ -83,11 +79,7 @@ namespace Feign.Formatting
         private async Task<object> DeserializeObjectAsyncInternal(Stream stream, Type type, Encoding encoding)
         {
             byte[] buffer = new byte[stream.Length];
-            await stream.ReadAsync(buffer, 0, buffer.Length)
-#if CONFIGUREAWAIT_FALSE
-                .ConfigureAwait(false)
-#endif
-                 ;
+            await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
             string json = (encoding ?? Encoding.Default).GetString(buffer);
             return DeserializeObject(json, type);
         }
