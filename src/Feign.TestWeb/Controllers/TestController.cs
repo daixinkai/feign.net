@@ -15,6 +15,7 @@ namespace Feign.TestWeb.Controllers
         [HttpGet("")]
         public Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync(string? id, [FromQuery] TestServiceParam param)
         {
+            param.Name = param.Name + "_" + id + "_" + Guid.NewGuid().ToString();
             return Task.FromResult<IQueryResult<TestServiceParam>>(new QueryResult<TestServiceParam>()
             {
                 Data = param,
