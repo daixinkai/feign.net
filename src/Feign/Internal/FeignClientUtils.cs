@@ -127,6 +127,10 @@ namespace Feign.Internal
             // the content to a string.
             if (charset != null)
             {
+                if (charset.Equals("utf-8", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Encoding.UTF8;
+                }
                 try
                 {
                     // Remove at most a single set of quotes.

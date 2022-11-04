@@ -60,7 +60,10 @@ namespace Feign.Pipeline.Internal
         }
         #endregion
 
-
+        /// <summary>
+        /// 是否跳过释放响应
+        /// </summary>
+        public bool SkipReleaseResponse { get; set; }
 
     }
 

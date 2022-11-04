@@ -1,9 +1,5 @@
 ﻿using Feign.Discovery;
-#if NETSTANDARD2_0
-using IDiscoveryClient = Steeltoe.Common.Discovery.IDiscoveryClient;
-#else
 using IDiscoveryClient = Steeltoe.Discovery.IDiscoveryClient;
-#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;

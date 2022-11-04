@@ -88,7 +88,7 @@ namespace Feign.Reflection
             MethodBuilder methodBuilder = typeBuilder.DefineMethod(getParametersMethod.Name, methodAttributes, CallingConventions.Standard, getParametersMethod.ReturnType, Type.EmptyTypes);
             ILGenerator iLGenerator = methodBuilder.GetILGenerator();
             LocalBuilder map = iLGenerator.DeclareLocal(typeof(IDictionary<string, object>));
-            iLGenerator.Emit(OpCodes.Newobj, typeof(Dictionary<string, object>).GetConstructor(Type.EmptyTypes));
+            iLGenerator.Emit(OpCodes.Newobj, typeof(Dictionary<string, object>).GetEmptyConstructor());
             iLGenerator.Emit(OpCodes.Stloc, map);
             //iLGenerator.Emit(OpCodes.Pop);
             MethodInfo addMethod = typeof(IDictionary<string, object>).GetMethod("Add", new Type[] { typeof(string), typeof(object) });

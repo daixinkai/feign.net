@@ -138,8 +138,8 @@ namespace Feign
             ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
             constructorIlGenerator.Emit(OpCodes.Ldarg_0);
             for (int i = 1; i <= baseConstructor.GetParameters().Length; i++)
-            {
-                constructorIlGenerator.Emit(OpCodes.Ldarg_S, i);
+            {                
+                constructorIlGenerator.EmitLdarg(i);
             }
             constructorIlGenerator.Emit(OpCodes.Call, baseConstructor);
             constructorIlGenerator.Emit(OpCodes.Ret);

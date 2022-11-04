@@ -14,7 +14,7 @@ namespace Feign.Cache
     {
         public JsonCacheProvider(IDistributedCache distributedCache)
         {
-            _distributedCache = distributedCache;
+            _distributedCache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
         }
 
         private readonly IDistributedCache _distributedCache;
@@ -22,7 +22,7 @@ namespace Feign.Cache
 
         public T Get<T>(string name)
         {
-            var json = _distributedCache?.GetString(name);
+            var json = _distributedCache.GetString(name);
             if (!string.IsNullOrWhiteSpace(json))
             {
                 return DeserializeFromCache<T>(json);
@@ -32,7 +32,7 @@ namespace Feign.Cache
 
         public async Task<T> GetAsync<T>(string name)
         {
-            var json = await _distributedCache?.GetStringAsync(name);
+            var json = await _distributedCache.GetStringAsync(name);
             if (!string.IsNullOrWhiteSpace(json))
             {
                 return DeserializeFromCache<T>(json);
@@ -49,9 +49,9 @@ namespace Feign.Cache
             });
         }
 
-        public async Task SetAsync<T>(string name, T value, TimeSpan? expirationTime)
+        public Task SetAsync<T>(string name, T value, TimeSpan? expirationTime)
         {
-            await _distributedCache?.SetStringAsync(name, SerializeForCache(value), new DistributedCacheEntryOptions
+            return _distributedCache?.SetStringAsync(name, SerializeForCache(value), new DistributedCacheEntryOptions
             {
                 //SlidingExpiration = expirationTime
                 AbsoluteExpirationRelativeToNow = expirationTime

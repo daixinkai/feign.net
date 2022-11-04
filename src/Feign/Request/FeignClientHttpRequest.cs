@@ -75,10 +75,8 @@ namespace Feign.Request
         /// </summary>
         public FeignClientHttpRequestContent RequestContent { get; set; }
         /// <summary>
-        /// 是否返回 HttpResponseMessage 默认false
+        /// 是否特殊结果
         /// </summary>
-        public bool IsReturnHttpResponseMessage { get; set; }
-
         public bool IsSpecialResult { get; set; }
 
         /// <summary>

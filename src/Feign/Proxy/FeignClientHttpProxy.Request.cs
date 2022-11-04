@@ -48,7 +48,7 @@ namespace Feign.Proxy
             }
             using (response)
             {
-                await EnsureSuccessAsync(request, response).ConfigureAwait(false);
+                await EnsureSuccessAsync(response).ConfigureAwait(false);
             }
 
         }
@@ -59,14 +59,14 @@ namespace Feign.Proxy
             {
                 return default;
             }
+            var responseContext = new ResponsePipelineContext<TService, TResult>(this, request, response);
             try
             {
-                var responseContext = new ResponsePipelineContext<TService, TResult>(this, request, response);
                 return await GetResultAsync(responseContext).ConfigureAwait(false);
             }
             finally
             {
-                if (!request.IsReturnHttpResponseMessage)
+                if (!responseContext.SkipReleaseResponse)
                 {
                     response.Dispose();
                 }
@@ -115,7 +115,7 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="request"></param>
         /// <param name="responseMessage"></param>
-        private async Task EnsureSuccessAsync(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
+        private async Task EnsureSuccessAsync(HttpResponseMessage responseMessage)
         {
             if (!responseMessage.IsSuccessStatusCode)
             {

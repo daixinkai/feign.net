@@ -7,7 +7,7 @@
 ### 定义服务 : 
 
 ```csharp
-    [FeignClient("test-service", Url = "http://testservice.xx.com")]
+    [FeignClient("test-service", UriKind = UriKind.RelativeOrAbsolute)]
     [Headers("Cache-Control:max-age=0")]
     [RequestMapping("/api/test")]
     public interface ITestService
@@ -27,7 +27,7 @@
         /// 获取流
         /// </summary>
         /// <returns></returns>
-        [GetMapping("/stream")]
+        [GetMapping("stream")]
         Task<Stream> GetStreamAsync();
         /// <summary>
         /// 获取buffer
@@ -35,13 +35,13 @@
         /// <param name="authorization">sample: scheme parameter</param>
         /// <param name="header">sample: name:value</param>
         /// <returns></returns>
-        [GetMapping("/stream")]
+        [GetMapping("stream")]
         Task<byte[]> GetBufferAsync([RequestAuthorization] string authorization, [RequestHeader] string header);
         /// <summary>
         /// 获取HttpResponseMessage
         /// </summary>
         /// <returns></returns>
-        [GetMapping("/stream")]
+        [GetMapping("stream")]
         Task<HttpResponseMessage> GetHttpResponseMessageAsync();
 
         /// <summary>
@@ -50,7 +50,7 @@
         /// <param name="id"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        [RequestMapping("/{id}", Method = "POST")]
+        [RequestMapping("{id}", Method = "POST")]
         //[PostMapping("/{id}")]
         string PostJson([PathVariable] int id, [RequestBody] TestServiceParam param);
 
@@ -60,7 +60,7 @@
         /// <param name="id"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        [RequestMapping("/{id}", Method = "POST")]
+        [RequestMapping("{id}", Method = "POST")]
         //[PostMapping("/{id}")]
         string PostForm(int id, [RequestForm] TestServiceParam param);
 
@@ -70,7 +70,7 @@
         /// <param name="file1"></param>
         /// <param name="file2"></param>
         /// <returns></returns>
-        [PostMapping("/upload")]
+        [PostMapping("/api/test/upload")]
         string UploadFile(IHttpRequestFile file1, IHttpRequestFile file2);
 
         /// <summary>
@@ -79,287 +79,260 @@
         /// <param name="file1"></param>
         /// <param name="file2"></param>
         /// <returns></returns>
-        [PostMapping("/upload")]
+        [PostMapping("/api/test/upload")]
         string UploadFile(IHttpRequestFileForm files);
 
     }
 ```
 
 ## Emit代理类生成代码
+<details>
+<summary>TestService_Proxy</summary>
+
 ```csharp
-    // Token: 0x02000002 RID: 2
-    [StructLayout(LayoutKind.Auto, CharSet = CharSet.Auto)]
-    public class ITestService_Proxy_514A26D2BB864478AB253488510FBC97 : FeignClientHttpProxy<ITestService>, ITestService
-    {
-        // Token: 0x06000001 RID: 1 RVA: 0x00002050 File Offset: 0x00000250
-        public ITestService_Proxy_514A26D2BB864478AB253488510FBC97(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
-        {
-        }
+	[StructLayout(LayoutKind.Auto, CharSet = CharSet.Auto)]
+	public class ITestService_Proxy_5F7A08343A584555856613BF22ACB8CA : FeignClientHttpProxy<ITestService>, ITestService
+	{
+		// Token: 0x06000001 RID: 1 RVA: 0x00002050 File Offset: 0x00000250
+		public ITestService_Proxy_5F7A08343A584555856613BF22ACB8CA(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+		{
+		}
 
-        // Token: 0x17000001 RID: 1
-        // (get) Token: 0x06000002 RID: 2 RVA: 0x00002078 File Offset: 0x00000278
-        public override string ServiceId
-        {
-            get
-            {
-                return "test-service";
-            }
-        }
+		// Token: 0x17000001 RID: 1
+		// (get) Token: 0x06000002 RID: 2 RVA: 0x0000206C File Offset: 0x0000026C
+		public override string ServiceId
+		{
+			get
+			{
+				return "test-service";
+			}
+		}
 
-        // Token: 0x17000002 RID: 2
-        // (get) Token: 0x06000003 RID: 3 RVA: 0x0000208C File Offset: 0x0000028C
-        public override string BaseUri
-        {
-            get
-            {
-                return "/api/test";
-            }
-        }
+		// Token: 0x17000002 RID: 2
+		// (get) Token: 0x06000003 RID: 3 RVA: 0x00002080 File Offset: 0x00000280
+		public override string BaseUri
+		{
+			get
+			{
+				return "/api/test";
+			}
+		}
 
-        // Token: 0x17000003 RID: 3
-        // (get) Token: 0x06000004 RID: 4 RVA: 0x000020A0 File Offset: 0x000002A0
-        public override string Url
-        {
-            get
-            {
-                return "http://testservice.xx.com";
-            }
-        }
+		// Token: 0x17000003 RID: 3
+		// (get) Token: 0x06000004 RID: 4 RVA: 0x00002094 File Offset: 0x00000294
+		protected override UriKind UriKind
+		{
+			get
+			{
+				return UriKind.RelativeOrAbsolute;
+			}
+		}
 
-        // Token: 0x06000005 RID: 5 RVA: 0x000020B4 File Offset: 0x000002B4
-        [RequestMapping("/{id}", Method = "GET")]
-        [Headers(new string[]
-        {
-            "Cache-Control:max-age=0",
-            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
-        })]
-        [MethodId("GetAsync")]
-        public Task<string> GetAsync([PathVariable("id")] int id, [RequestQuery] string name)
-        {
-            string text = "/{id}";
-            text = base.ReplaceToStringPathVariable<int>(text, "id", id);
-            text = base.ReplaceStringRequestQuery(text, "name", name);
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/{id}", text, "GET", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "GetAsync";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetAsync(int, string));
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0",
-                "Cache-Control:max-age=0",
-                "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
-            };
-            return base.SendAsync<string>(feignClientHttpRequest);
-        }
+		// Token: 0x17000004 RID: 4
+		// (get) Token: 0x06000006 RID: 6 RVA: 0x000020C4 File Offset: 0x000002C4
+		protected override string[] DefaultHeaders
+		{
+			get
+			{
+				return ITestService_Proxy_5F7A08343A584555856613BF22ACB8CA.s_headers;
+			}
+		}
 
-        // Token: 0x06000006 RID: 6 RVA: 0x00002190 File Offset: 0x00000390
-        [GetMapping("/stream")]
-        public Task<Stream> GetStreamAsync()
-        {
-            string text = "/stream";
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/stream", text, "GET", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "GetStreamAsync()";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetStreamAsync());
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0"
-            };
-            return base.SendAsync<Stream>(feignClientHttpRequest);
-        }
+		// Token: 0x06000007 RID: 7 RVA: 0x000020D8 File Offset: 0x000002D8
+		[RequestMapping("/{id}", Method = "GET")]
+		[MethodId("GetAsync")]
+		[Headers(new string[]
+		{
+			"Cache-Control:max-age=0",
+			"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
+		})]
+		public Task<string> GetAsync([PathVariable("id")] int id, [RequestQuery] string name)
+		{
+			string uri = "/{id}";
+			uri = base.ReplaceToStringPathVariable<int>(uri, "id", id);
+			uri = base.ReplaceStringRequestQuery(uri, "name", name);
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "GetAsync";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetAsync(int, string));
+			}
+			FeignClientHttpRequest request = new FeignClientHttpRequest(this.BaseUrl, "/{id}", uri, "GET", null)
+			{
+				Method = feignClientMethodInfo,
+				Headers = new string[]
+				{
+					"Cache-Control:max-age=0",
+					"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
+				},
+				IsSpecialResult = true
+			};
+			return base.SendAsync<string>(request);
+		}
 
-        // Token: 0x06000007 RID: 7 RVA: 0x00002230 File Offset: 0x00000430
-        [GetMapping("/stream")]
-        public Task<byte[]> GetBufferAsync([RequestAuthorization] string authorization, [RequestHeader] string header)
-        {
-            string text = "/stream";
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/stream", text, "GET", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "GetBufferAsync(System.String,System.String)";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetBufferAsync(string, string));
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0"
-            };
-            feignClientHttpRequest.RequestHeaderHandlers = new List<IRequestHeaderHandler>();
-            IRequestHeaderHandler item = new RequestHeaderHandler(RequestAuthorizationAttribute.GetHeader(null, authorization));
-            feignClientHttpRequest.RequestHeaderHandlers.Add(item);
-            IRequestHeaderHandler item2 = new RequestHeaderHandler(null, header);
-            feignClientHttpRequest.RequestHeaderHandlers.Add(item2);
-            return base.SendAsync<byte[]>(feignClientHttpRequest);
-        }
+		// Token: 0x06000008 RID: 8 RVA: 0x0000218C File Offset: 0x0000038C
+		[GetMapping("stream")]
+		public Task<Stream> GetStreamAsync()
+		{
+			string uri = "stream";
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "GetStreamAsync";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetStreamAsync());
+			}
+			FeignClientHttpRequest request = new FeignClientHttpRequest(this.BaseUrl, "stream", uri, "GET", null)
+			{
+				Method = feignClientMethodInfo,
+				IsSpecialResult = true
+			};
+			return base.SendAsync<Stream>(request);
+		}
 
-        // Token: 0x06000008 RID: 8 RVA: 0x0000231C File Offset: 0x0000051C
-        [GetMapping("/stream")]
-        public Task<HttpResponseMessage> GetHttpResponseMessageAsync()
-        {
-            string text = "/stream";
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/stream", text, "GET", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "GetHttpResponseMessageAsync()";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetHttpResponseMessageAsync());
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0"
-            };
-            return base.SendAsync<HttpResponseMessage>(feignClientHttpRequest);
-        }
+		// Token: 0x06000009 RID: 9 RVA: 0x00002208 File Offset: 0x00000408
+		[GetMapping("stream")]
+		public Task<byte[]> GetBufferAsync([RequestAuthorization] string authorization, [RequestHeader] string header)
+		{
+			string uri = "stream";
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "GetBufferAsync";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetBufferAsync(string, string));
+			}
+			FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "stream", uri, "GET", null)
+			{
+				Method = feignClientMethodInfo,
+				IsSpecialResult = true
+			};
+			feignClientHttpRequest.RequestHeaderHandlers = new List<IRequestHeaderHandler>();
+			IRequestHeaderHandler item = new RequestHeaderHandler(RequestAuthorizationAttribute.GetHeader(null, authorization));
+			feignClientHttpRequest.RequestHeaderHandlers.Add(item);
+			IRequestHeaderHandler item2 = new RequestHeaderHandler(RequestHeaderAttribute.GetHeader(null, header));
+			feignClientHttpRequest.RequestHeaderHandlers.Add(item2);
+			return base.SendAsync<byte[]>(feignClientHttpRequest);
+		}
 
-        // Token: 0x06000009 RID: 9 RVA: 0x000023BC File Offset: 0x000005BC
-        [RequestMapping("/{id}", Method = "POST")]
-        public string PostJson([PathVariable] int id, [RequestBody] TestServiceParam param)
-        {
-            string text = "/{id}";
-            text = base.ReplaceToStringPathVariable<int>(text, "id", id);
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/{id}", text, "POST", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "PostJson(System.Int32,Feign.Tests.TestServiceParam)";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.PostJson(int, TestServiceParam));
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0"
-            };
-            feignClientHttpRequest.RequestContent = new FeignClientHttpJsonRequestContent<TestServiceParam>("param", param);
-            return base.Send<string>(feignClientHttpRequest);
-        }
+		// Token: 0x0600000A RID: 10 RVA: 0x000022CC File Offset: 0x000004CC
+		[GetMapping("stream")]
+		public Task<HttpResponseMessage> GetHttpResponseMessageAsync()
+		{
+			string uri = "stream";
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "GetHttpResponseMessageAsync";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.GetHttpResponseMessageAsync());
+			}
+			FeignClientHttpRequest request = new FeignClientHttpRequest(this.BaseUrl, "stream", uri, "GET", null)
+			{
+				Method = feignClientMethodInfo,
+				IsSpecialResult = true
+			};
+			return base.SendAsync<HttpResponseMessage>(request);
+		}
 
-        // Token: 0x0600000A RID: 10 RVA: 0x00002484 File Offset: 0x00000684
-        [RequestMapping("/{id}", Method = "POST")]
-        public string PostForm(int id, [RequestForm] TestServiceParam param)
-        {
-            string text = "/{id}";
-            text = base.ReplaceToStringPathVariable<int>(text, "id", id);
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/{id}", text, "POST", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "PostForm(System.Int32,Feign.Tests.TestServiceParam)";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.PostForm(int, TestServiceParam));
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0"
-            };
-            feignClientHttpRequest.RequestContent = new FeignClientHttpFormRequestContent<TestServiceParam>("param", param);
-            return base.Send<string>(feignClientHttpRequest);
-        }
+		// Token: 0x0600000B RID: 11 RVA: 0x00002348 File Offset: 0x00000548
+		[RequestMapping("{id}", Method = "POST")]
+		public string PostJson([PathVariable] int id, [RequestBody] TestServiceParam param)
+		{
+			string uri = "{id}";
+			uri = base.ReplaceToStringPathVariable<int>(uri, "id", id);
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "PostJson";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.PostJson(int, TestServiceParam));
+			}
+			FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "{id}", uri, "POST", null)
+			{
+				Method = feignClientMethodInfo,
+				IsSpecialResult = true
+			};
+			feignClientHttpRequest.RequestContent = new FeignClientHttpJsonRequestContent<TestServiceParam>("param", param);
+			return base.Send<string>(feignClientHttpRequest);
+		}
 
-        // Token: 0x0600000B RID: 11 RVA: 0x0000254C File Offset: 0x0000074C
-        [PostMapping("/upload")]
-        public string UploadFile(IHttpRequestFile file1, IHttpRequestFile file2)
-        {
-            string text = "/upload";
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/upload", text, "POST", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "UploadFile(Feign.Request.IHttpRequestFile,Feign.Request.IHttpRequestFile)";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.UploadFile(IHttpRequestFile, IHttpRequestFile));
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0"
-            };
-            FeignClientHttpRequest feignClientHttpRequest2 = feignClientHttpRequest;
-            FeignClientHttpMultipartFormRequestContent feignClientHttpMultipartFormRequestContent = new FeignClientHttpMultipartFormRequestContent();
-            FeignClientHttpRequestContent content = new FeignClientHttpFileRequestContent("file1", file1);
-            feignClientHttpMultipartFormRequestContent.AddContent("file1", content);
-            FeignClientHttpRequestContent content2 = new FeignClientHttpFileRequestContent("file2", file2);
-            feignClientHttpMultipartFormRequestContent.AddContent("file2", content2);
-            feignClientHttpRequest2.RequestContent = feignClientHttpMultipartFormRequestContent;
-            return base.Send<string>(feignClientHttpRequest);
-        }
+		// Token: 0x0600000C RID: 12 RVA: 0x000023E4 File Offset: 0x000005E4
+		[RequestMapping("{id}", Method = "POST")]
+		public string PostForm(int id, [RequestForm] TestServiceParam param)
+		{
+			string uri = "{id}";
+			uri = base.ReplaceToStringPathVariable<int>(uri, "id", id);
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "PostForm";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.PostForm(int, TestServiceParam));
+			}
+			FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "{id}", uri, "POST", null)
+			{
+				Method = feignClientMethodInfo,
+				IsSpecialResult = true
+			};
+			feignClientHttpRequest.RequestContent = new FeignClientHttpFormRequestContent<TestServiceParam>("param", param);
+			return base.Send<string>(feignClientHttpRequest);
+		}
 
-        // Token: 0x0600000C RID: 12 RVA: 0x00002634 File Offset: 0x00000834
-        [PostMapping("/upload")]
-        public string UploadFile(IHttpRequestFileForm files)
-        {
-            string text = "/upload";
-            FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/upload", text, "POST", null)
-            {
-                CompletionOption = HttpCompletionOption.ResponseContentRead
-            };
-            FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
-            feignClientMethodInfo.MethodId = "UploadFile(Feign.Request.IHttpRequestFileForm)";
-            if (base.FeignOptions.IncludeMethodMetadata)
-            {
-                feignClientMethodInfo.MethodMetadata = methodof(ITestService.UploadFile(IHttpRequestFileForm));
-            }
-            feignClientHttpRequest.Method = feignClientMethodInfo;
-            feignClientHttpRequest.Headers = new string[]
-            {
-                "Cache-Control:max-age=0"
-            };
-            feignClientHttpRequest.RequestContent = new FeignClientHttpFileFormRequestContent(files);
-            return base.Send<string>(feignClientHttpRequest);
-        }
+		// Token: 0x0600000D RID: 13 RVA: 0x00002480 File Offset: 0x00000680
+		[PostMapping("/api/test/upload")]
+		public string UploadFile(IHttpRequestFile file1, IHttpRequestFile file2)
+		{
+			string uri = "/api/test/upload";
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "UploadFile(Feign.Request.IHttpRequestFile,Feign.Request.IHttpRequestFile)";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.UploadFile(IHttpRequestFile, IHttpRequestFile));
+			}
+			FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/api/test/upload", uri, "POST", null)
+			{
+				Method = feignClientMethodInfo,
+				IsSpecialResult = true
+			};
+			FeignClientHttpRequest feignClientHttpRequest2 = feignClientHttpRequest;
+			FeignClientHttpMultipartFormRequestContent feignClientHttpMultipartFormRequestContent = new FeignClientHttpMultipartFormRequestContent();
+			FeignClientHttpRequestContent content = new FeignClientHttpFileRequestContent("file1", file1);
+			feignClientHttpMultipartFormRequestContent.AddContent("file1", content);
+			FeignClientHttpRequestContent content2 = new FeignClientHttpFileRequestContent("file2", file2);
+			feignClientHttpMultipartFormRequestContent.AddContent("file2", content2);
+			feignClientHttpRequest2.RequestContent = feignClientHttpMultipartFormRequestContent;
+			return base.Send<string>(feignClientHttpRequest);
+		}
 
-        // Token: 0x17000004 RID: 4
-        // (get) Token: 0x0600000D RID: 13 RVA: 0x000026E4 File Offset: 0x000008E4
-        // (set) Token: 0x0600000E RID: 14 RVA: 0x000026F8 File Offset: 0x000008F8
-        string ITestService.Name
-        {
-            [CompilerGenerated]
-            get
-            {
-                return this.< Feign.Tests.ITestService.Name > k__BackingField;
-            }
-            [CompilerGenerated]
-            set
-            {
-                this.< Feign.Tests.ITestService.Name > k__BackingField = value;
-            }
-        }
+		// Token: 0x0600000E RID: 14 RVA: 0x0000253C File Offset: 0x0000073C
+		[PostMapping("/api/test/upload")]
+		public string UploadFile(IHttpRequestFileForm files)
+		{
+			string uri = "/api/test/upload";
+			FeignClientMethodInfo feignClientMethodInfo = new FeignClientMethodInfo();
+			feignClientMethodInfo.MethodId = "UploadFile(Feign.Request.IHttpRequestFileForm)";
+			if (base.FeignOptions.IncludeMethodMetadata)
+			{
+				feignClientMethodInfo.MethodMetadata = methodof(ITestService.UploadFile(IHttpRequestFileForm));
+			}
+			FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(this.BaseUrl, "/api/test/upload", uri, "POST", null)
+			{
+				Method = feignClientMethodInfo,
+				IsSpecialResult = true
+			};
+			feignClientHttpRequest.RequestContent = new FeignClientHttpFileFormRequestContent(files);
+			return base.Send<string>(feignClientHttpRequest);
+		}
 
-        // Token: 0x04000001 RID: 1
-        [CompilerGenerated]
-        private string <Feign.Tests.ITestService.Name>k__BackingField;
+		// Token: 0x17000005 RID: 5
+		// (get) Token: 0x0600000F RID: 15 RVA: 0x000025C4 File Offset: 0x000007C4
+		// (set) Token: 0x06000010 RID: 16 RVA: 0x000025D8 File Offset: 0x000007D8
+		string ITestService.Name { get; set; }
+
+		// Token: 0x04000001 RID: 1
+		private static readonly string[] s_headers = new string[]
+		{
+			"Cache-Control:max-age=0"
+		};
 	}
 ```
-##
+</details>
 
 ## 支持继承父接口服务 : 
 

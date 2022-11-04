@@ -108,7 +108,7 @@ namespace Feign.Reflection
                 for (int i = 0; i < fieldBuilders.Count; i++)
                 {
                     constructorIlGenerator.Emit(OpCodes.Ldarg_0);
-                    constructorIlGenerator.Emit(OpCodes.Ldarg_S, (i + 1));
+                    constructorIlGenerator.EmitLdarg(i + 1);
                     constructorIlGenerator.Emit(OpCodes.Stfld, fieldBuilders[i]);
                 }
             }

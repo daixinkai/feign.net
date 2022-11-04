@@ -102,10 +102,10 @@ namespace Feign.Reflection
                 //field
                 iLGenerator.Emit(OpCodes.Ldarg_0); //this
 
-                iLGenerator.Emit(OpCodes.Call, typeBuilder.BaseType.GetProperty("Fallback").GetMethod); //.Fallback
+                iLGenerator.EmitGetProperty(typeBuilder.BaseType.GetProperty("Fallback")); //.Fallback
                 for (int i = 1; i <= method.GetParameters().Length; i++)
                 {
-                    iLGenerator.Emit(OpCodes.Ldarg_S, i);
+                    iLGenerator.EmitLdarg(i);
                 }
 
                 iLGenerator.Emit(OpCodes.Newobj, anonymousMethodClassTypeBuild.Item2);
@@ -116,7 +116,7 @@ namespace Feign.Reflection
             else
             {
                 iLGenerator.Emit(OpCodes.Ldarg_0); //this
-                iLGenerator.Emit(OpCodes.Call, typeBuilder.BaseType.GetProperty("Fallback").GetMethod); //.Fallback
+                iLGenerator.EmitGetProperty(typeBuilder.BaseType.GetProperty("Fallback")); //.Fallback
                 iLGenerator.Emit(OpCodes.Dup);
                 iLGenerator.Emit(OpCodes.Ldvirtftn, method);
             }

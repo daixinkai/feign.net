@@ -30,7 +30,6 @@ namespace Feign.Proxy
 
             #region ReceivingResponse
             await OnReceivingResponseAsync(responseContext).ConfigureAwait(false);
-            //if (receivingResponseContext.Result != null)
             if (responseContext._isSetResult)
             {
                 await OnReceivedResponseAsync(responseContext).ConfigureAwait(false);
@@ -38,19 +37,22 @@ namespace Feign.Proxy
             }
             #endregion
 
-            var result = await GetResultInternalAsync<TResult>(responseContext.Request, responseContext.ResponseMessage).ConfigureAwait(false);
+            var result = await GetResultInternalAsync(responseContext).ConfigureAwait(false);
             responseContext._result = result;
             await OnReceivedResponseAsync(responseContext).ConfigureAwait(false);
             return result;
         }
 
-        private async Task<TResult> GetResultInternalAsync<TResult>(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
+        private async Task<TResult> GetResultInternalAsync<TResult>(ResponsePipelineContext<TService, TResult> responseContext)
         {
-            if (request.IsReturnHttpResponseMessage && typeof(TResult) == typeof(HttpResponseMessage))
+            var request = responseContext.Request;
+            var responseMessage = responseContext.ResponseMessage;
+            if (request.IsSpecialResult && typeof(TResult) == typeof(HttpResponseMessage))
             {
+                responseContext.SkipReleaseResponse = true;
                 return (TResult)(object)responseMessage;
             }
-            await EnsureSuccessAsync(request, responseMessage).ConfigureAwait(false);
+            await EnsureSuccessAsync(responseMessage).ConfigureAwait(false);
             if (request.IsSpecialResult)
             {
                 var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage).ConfigureAwait(false);

@@ -133,6 +133,28 @@ namespace Feign
             }
         }
 
+        public static void EmitLdarg(this ILGenerator iLGenerator, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    iLGenerator.Emit(OpCodes.Ldarg_0);
+                    break;
+                case 1:
+                    iLGenerator.Emit(OpCodes.Ldarg_1);
+                    break;
+                case 2:
+                    iLGenerator.Emit(OpCodes.Ldarg_2);
+                    break;
+                case 3:
+                    iLGenerator.Emit(OpCodes.Ldarg_3);
+                    break;
+                default:
+                    iLGenerator.Emit(OpCodes.Ldarg_S, index);
+                    break;
+            }
+        }
+
         /// <summary>
         /// like new string[]{"1","2","3","4"}
         /// </summary>
@@ -179,11 +201,20 @@ namespace Feign
             constructorIlGenerator.Emit(OpCodes.Ldarg_0);
             for (int i = 1; i <= baseTypeConstructor.GetParameters().Length; i++)
             {
-                constructorIlGenerator.Emit(OpCodes.Ldarg_S, i);
+                constructorIlGenerator.EmitLdarg(i);
             }
             constructorIlGenerator.Emit(OpCodes.Call, baseTypeConstructor);
         }
 
+        public static void EmitGetProperty(this ILGenerator iLGenerator, PropertyInfo property)
+        {            
+            iLGenerator.Emit(OpCodes.Call, property.GetMethod);
+        }
+
+        public static void EmitSetProperty(this ILGenerator iLGenerator, PropertyInfo property)
+        {
+            iLGenerator.Emit(OpCodes.Call, property.SetMethod);
+        }
 
     }
 }
