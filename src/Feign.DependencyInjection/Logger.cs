@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Feign.Logging
 {
-    class Logger : Feign.Logging.ILogger
+    class Logger : ILogger
     {
         public Logger(Microsoft.Extensions.Logging.ILogger logger)
         {

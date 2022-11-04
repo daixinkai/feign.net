@@ -15,7 +15,7 @@ namespace Feign.Discovery
             _logger = logger;
         }
         private static readonly Random _random = new Random();
-        ILogger _logger;
+        private readonly ILogger _logger;
         public Uri ResolveService(Uri uri, IList<IServiceInstance> services)
         {
             _logger?.LogTrace($"ResolveService: {uri.Host}");

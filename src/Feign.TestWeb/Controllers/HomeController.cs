@@ -1,5 +1,6 @@
 ﻿using Feign.Tests;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Feign.TestWeb.Controllers
 {
@@ -53,6 +54,8 @@ namespace Feign.TestWeb.Controllers
             //var t = await testControllerService.GetQueryResultValueAsync("1", 1);
 
             //var t = await testControllerService.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });       
+
+
             var t = await testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });
             return new JsonResult(t);
 

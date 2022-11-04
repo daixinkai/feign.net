@@ -37,16 +37,10 @@ namespace Microsoft.Extensions.DependencyInjection
             DependencyInjectionFeignBuilder feignBuilder = new DependencyInjectionFeignBuilder();
             feignBuilder.Services = services;
             feignBuilder.Options = options;
-            feignBuilder.AddDefaultFeignClients();
-            if (services.Any(s => s.ServiceType == typeof(Microsoft.Extensions.Logging.ILoggerFactory)))
-            {
-                feignBuilder.AddLoggerFactory<LoggerFactory>();
-            }
-            if (services.Any(s => s.ServiceType == typeof(Microsoft.Extensions.Caching.Distributed.IDistributedCache)))
-            {
-                //feignBuilder.AddCacheProvider<CacheProvider>();
-                feignBuilder.AddCacheProvider<JsonCacheProvider>();
-            }
+            feignBuilder.AddDefaultFeignClients()
+            .AddLoggerFactory<LoggerFactory>()
+            .AddCacheProvider<JsonCacheProvider>()
+            ;
             return feignBuilder;
         }
 

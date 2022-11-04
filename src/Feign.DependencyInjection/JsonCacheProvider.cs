@@ -12,9 +12,9 @@ namespace Feign.Cache
 {
     internal class JsonCacheProvider : ICacheProvider
     {
-        public JsonCacheProvider(IDistributedCache distributedCache)
+        public JsonCacheProvider(IDistributedCache distributedCache = null)
         {
-            _distributedCache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
+            _distributedCache = distributedCache;
         }
 
         private readonly IDistributedCache _distributedCache;
@@ -22,22 +22,30 @@ namespace Feign.Cache
 
         public T Get<T>(string name)
         {
+            if (_distributedCache == null)
+            {
+                return default;
+            }
             var json = _distributedCache.GetString(name);
             if (!string.IsNullOrWhiteSpace(json))
             {
                 return DeserializeFromCache<T>(json);
             }
-            return default(T);
+            return default;
         }
 
         public async Task<T> GetAsync<T>(string name)
         {
-            var json = await _distributedCache.GetStringAsync(name);
+            if (_distributedCache == null)
+            {
+                return default;
+            }
+            var json = await _distributedCache.GetStringAsync(name).ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(json))
             {
                 return DeserializeFromCache<T>(json);
             }
-            return default(T);
+            return default;
         }
 
         public void Set<T>(string name, T value, TimeSpan? expirationTime)
@@ -51,7 +59,11 @@ namespace Feign.Cache
 
         public Task SetAsync<T>(string name, T value, TimeSpan? expirationTime)
         {
-            return _distributedCache?.SetStringAsync(name, SerializeForCache(value), new DistributedCacheEntryOptions
+            if (_distributedCache == null)
+            {
+                return Task.CompletedTask;
+            }
+            return _distributedCache.SetStringAsync(name, SerializeForCache(value), new DistributedCacheEntryOptions
             {
                 //SlidingExpiration = expirationTime
                 AbsoluteExpirationRelativeToNow = expirationTime

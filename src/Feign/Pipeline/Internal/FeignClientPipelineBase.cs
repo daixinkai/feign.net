@@ -101,7 +101,6 @@ namespace Feign.Pipeline.Internal
             return this;
         }
 
-
         protected internal virtual async Task BuildingRequestAsync(IBuildingRequestPipelineContext<TService> context)
         {
             if (!Enabled)
