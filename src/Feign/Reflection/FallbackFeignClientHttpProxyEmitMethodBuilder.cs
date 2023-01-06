@@ -53,7 +53,7 @@ namespace Feign.Reflection
             var invokeMethod = GetInvokeMethod(serviceType, feignClientMethodInfo.MethodMetadata, requestMapping);
             if (emitRequestContents != null && emitRequestContents.Count > 0 && !SupportRequestContent(invokeMethod, requestMapping))
             {
-                throw new NotSupportedException("不支持RequestBody或者RequestForm");
+                throw new NotSupportedException($"不支持RequestBody或者RequestForm: {serviceType.FullName}.{feignClientMethodInfo.MethodMetadata.Name}");
             }
             LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo);
             // fallback
