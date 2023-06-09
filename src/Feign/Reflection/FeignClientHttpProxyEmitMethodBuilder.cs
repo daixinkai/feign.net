@@ -9,7 +9,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -173,17 +172,6 @@ namespace Feign.Reflection
             return httpClientMethod;
         }
 
-        /// <summary>
-        /// 是否支持RequestContent
-        /// </summary>
-        /// <param name="method"></param>
-        /// <param name="requestMappingBaseAttribute"></param>
-        /// <returns></returns>
-        protected bool SupportRequestContent(MethodInfo method, RequestMappingBaseAttribute requestMappingBaseAttribute)
-        {
-            return requestMappingBaseAttribute.IsSupportRequestContent();
-        }
-
         protected RequestMappingBaseAttribute GetRequestMappingAttribute(MethodInfo method)
         {
             if (method.IsDefined(typeof(RequestMappingBaseAttribute)))
@@ -258,9 +246,9 @@ namespace Feign.Reflection
         {
             //得到Send方法
             var invokeMethod = GetInvokeMethod(serviceType, feignClientMethodInfo.MethodMetadata, requestMapping);
-            if (emitRequestContents != null && emitRequestContents.Count > 0 && !SupportRequestContent(invokeMethod, requestMapping))
+            if (emitRequestContents != null && emitRequestContents.Count > 0 && !requestMapping.IsSupportRequestContent())
             {
-                throw new NotSupportedException("不支持RequestBody或者RequestForm");
+                throw new NotSupportedException("RequestBody or RequestForm is not supported");
             }
             //定义请求的详情 FeignClientHttpRequest
             LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo);
@@ -573,7 +561,7 @@ namespace Feign.Reflection
                     constructorInfo = typeof(FeignClientHttpFormRequestContent<>).MakeGenericType(emitRequestContent.Parameter.ParameterType).GetFirstConstructor();
                     break;
                 default:
-                    throw new NotSupportedException("不支持的content type");
+                    throw new NotSupportedException($"ContentType {emitRequestContent.MediaType}  is not supported");
                     //constructorInfo = typeof(FeignClientFormRequestContent<>).MakeGenericType(emitRequestContent.Parameter.ParameterType).GetConstructors()[0];
                     //break;
             };
@@ -697,11 +685,25 @@ namespace Feign.Reflection
                     //replaceValueMethod = ReplaceRequestQueryMethod;
                     replaceValueMethod = GetReplaceRequestQueryMethod(typeBuilder, parameterInfo.ParameterType);
                 }
-                else
+                else if (parameterInfo.IsDefined(typeof(PathVariableAttribute)))
                 {
-                    name = parameterInfo.IsDefined(typeof(PathVariableAttribute)) ? parameterInfo.GetCustomAttribute<PathVariableAttribute>().Name : parameterInfo.Name;
+                    name = parameterInfo.GetCustomAttribute<PathVariableAttribute>().Name;
                     //replaceValueMethod = ReplacePathVariableMethod;
                     replaceValueMethod = GetReplacePathVariableMethod(typeBuilder, parameterInfo.ParameterType);
+                }
+                else
+                {
+                    name = parameterInfo.Name;
+                    if (FeignClientUtils.ContainsPathVariable(requestMapping.Value, name))
+                    {
+                        //replaceValueMethod = ReplacePathVariableMethod;
+                        replaceValueMethod = GetReplacePathVariableMethod(typeBuilder, parameterInfo.ParameterType);
+                    }
+                    else
+                    {
+                        //replaceValueMethod = ReplaceRequestQueryMethod;
+                        replaceValueMethod = GetReplaceRequestQueryMethod(typeBuilder, parameterInfo.ParameterType);
+                    }
                 }
 
                 if (string.IsNullOrWhiteSpace(name))

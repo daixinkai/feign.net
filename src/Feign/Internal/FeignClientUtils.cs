@@ -11,9 +11,20 @@ using System.Text;
 
 namespace Feign.Internal
 {
-    static class FeignClientUtils
+    internal static class FeignClientUtils
     {
         #region PathVariable
+
+        internal static bool ContainsPathVariable(string uri, string name)
+        {
+            if (string.IsNullOrWhiteSpace(uri))
+            {
+                return false;
+            }
+            name = "{" + name + "}";
+            return uri.Contains(name);
+        }
+
         public static string ReplacePathVariable(string uri, string name, string value, bool urlEncode)
         {
             if (urlEncode && !string.IsNullOrEmpty(value))

@@ -72,7 +72,7 @@ namespace Feign.Tests
         void GetValueVoid([PathVariable] int id, [RequestParam] TestServiceParam queryParam, [RequestQuery] TestServiceParam param);
 
         [RequestMapping("/{id}")]
-        void GetNullableVoid([PathVariable] int id, [RequestParam] int? appId);
+        void GetNullableVoid(int id, int? appId);
 
         //[GetMapping("/{id}")]
         //Task<JObject> GetValueAsync([PathVariable]int id, [RequestParam] string test, [RequestQuery] TestServiceParam param);

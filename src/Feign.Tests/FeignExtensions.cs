@@ -50,7 +50,7 @@ namespace Feign.Tests
             });
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseSendingRequest(context =>
             {
-                var types = feignBuilder.Options.Types;
+                var types = feignBuilder.Options.Types;                
                 if (context.RequestMessage.Content != null)
                 {
                     MultipartFormDataContent multipartFormDataContent = context.RequestMessage.Content as MultipartFormDataContent;

@@ -14,7 +14,7 @@ namespace Feign.Reflection
     /// <summary>
     /// 支持降级服务的方法生成器
     /// </summary>
-    class FallbackFeignClientHttpProxyEmitMethodBuilder : FeignClientHttpProxyEmitMethodBuilder
+    internal class FallbackFeignClientHttpProxyEmitMethodBuilder : FeignClientHttpProxyEmitMethodBuilder
     {
         public FallbackFeignClientHttpProxyEmitMethodBuilder(DynamicAssembly dynamicAssembly)
         {
@@ -51,9 +51,9 @@ namespace Feign.Reflection
         protected override void EmitCallMethod(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, FeignClientMethodInfo feignClientMethodInfo, RequestMappingBaseAttribute requestMapping, LocalBuilder uri, List<EmitRequestContent> emitRequestContents)
         {
             var invokeMethod = GetInvokeMethod(serviceType, feignClientMethodInfo.MethodMetadata, requestMapping);
-            if (emitRequestContents != null && emitRequestContents.Count > 0 && !SupportRequestContent(invokeMethod, requestMapping))
+            if (emitRequestContents != null && emitRequestContents.Count > 0 && !requestMapping.IsSupportRequestContent())
             {
-                throw new NotSupportedException("不支持RequestBody或者RequestForm");
+                throw new NotSupportedException("RequestBody or RequestForm is not supported");
             }
             LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo);
             // fallback
@@ -73,7 +73,7 @@ namespace Feign.Reflection
         /// <param name="serviceType"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        LocalBuilder DefineFallbackDelegate(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, MethodInfo method)
+        private LocalBuilder DefineFallbackDelegate(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, MethodInfo method)
         {
             Type delegateType;
             if (method.ReturnType == null || method.ReturnType == typeof(void))

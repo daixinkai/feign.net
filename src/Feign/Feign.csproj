@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0;netstandard2.1;net5.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0;netstandard2.1;net5.0;net6.0;net7.0;</TargetFrameworks>
     <Version>1.4.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
@@ -18,6 +18,7 @@
     <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
     <DefineConstants Condition="'$(TargetFramework)'=='net5.0'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
 	<DefineConstants Condition="'$(TargetFramework)'=='net6.0'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
+	<DefineConstants Condition="'$(TargetFramework)'=='net7.0'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -26,6 +27,7 @@
     <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
     <DefineConstants Condition="'$(TargetFramework)'=='net5.0'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
 	<DefineConstants Condition="'$(TargetFramework)'=='net6.0'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)'=='net7.0'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
