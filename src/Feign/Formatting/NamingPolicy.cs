@@ -20,6 +20,28 @@ namespace Feign.Formatting
         /// </summary>
         public static NamingPolicy CamelCase { get; } = new CamelCaseNamingPolicy();
 
+#if NETSTANDARD2_1 || NETCOREAPP3_0_OR_GREATER
+        /// <summary>
+        /// Returns the naming policy for lower snake-casing.
+        /// </summary>
+        public static NamingPolicy SnakeCaseLower { get; } = new SeparatorNamingPolicy(true, '_');
+
+        /// <summary>
+        /// Returns the naming policy for upper snake-casing.
+        /// </summary>
+        public static NamingPolicy SnakeCaseUpper { get; } = new SeparatorNamingPolicy(false, '_');
+
+        /// <summary>
+        /// Returns the naming policy for lower kebab-casing.
+        /// </summary>
+        public static NamingPolicy KebabCaseLower { get; } = new SeparatorNamingPolicy(true, '-');
+
+        /// <summary>
+        /// Returns the naming policy for upper kebab-casing.
+        /// </summary>
+        public static NamingPolicy KebabCaseUpper { get; } = new SeparatorNamingPolicy(false, '-');
+#endif
+
         /// <summary>
         /// When overridden in a derived class, converts the specified name according to the policy.
         /// </summary>

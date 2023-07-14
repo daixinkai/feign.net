@@ -6,6 +6,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+#if NETCOREAPP2_1_OR_GREATER
+using HttpHandlerType = System.Net.Http.SocketsHttpHandler;
+#else
+using HttpHandlerType = System.Net.Http.HttpClientHandler;
+#endif
 
 namespace Feign.Pipeline
 {
@@ -19,5 +24,6 @@ namespace Feign.Pipeline
         /// 获取HttpClient
         /// </summary>
         FeignHttpClient HttpClient { get; set; }
+        HttpHandlerType HttpHandler { get; }
     }
 }

@@ -5,7 +5,9 @@ using Feign.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
@@ -23,6 +25,31 @@ namespace Feign.Proxy
         private FeignClientHttpProxy<TService> _feignClient;
 
         public FeignClientHttpProxy<TService> FeignClient => _feignClient;
+
+#if NETCOREAPP2_1_OR_GREATER
+
+        private static readonly Func<HttpClientHandler, SocketsHttpHandler> SocketsHttpHandlerGetter = CreateSocketsHttpHandlerGetter();
+
+        private static Func<HttpClientHandler, SocketsHttpHandler> CreateSocketsHttpHandlerGetter()
+        {
+            var fieldInfo = typeof(HttpClientHandler).GetField("_underlyingHandler", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (fieldInfo == null || fieldInfo.FieldType != typeof(SocketsHttpHandler))
+            {
+                return null;
+            }
+            ParameterExpression instance = Expression.Parameter(typeof(HttpClientHandler));
+            Expression body = Expression.Field(instance, fieldInfo);
+            return Expression.Lambda<Func<HttpClientHandler, SocketsHttpHandler>>(body, instance).Compile();
+        }
+
+        internal SocketsHttpHandler HttpHandler
+                    => SocketsHttpHandlerGetter?.Invoke(this);
+#else
+        internal HttpClientHandler HttpHandler
+            => this;
+#endif
+
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeignProxyHttpClientHandler{T}"/> class.

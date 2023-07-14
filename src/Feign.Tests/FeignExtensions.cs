@@ -1,6 +1,7 @@
 ﻿using Feign.Cache;
 using Feign.Discovery;
 using Feign.Fallback;
+using Feign.Formatting;
 using Feign.Logging;
 using Feign.Pipeline;
 using Feign.Tests;
@@ -26,6 +27,15 @@ namespace Feign.Tests
             feignBuilder.AddConverter(new TestServiceParamStringConverter());
             feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
+            feignBuilder.Options.AutomaticDecompression = DecompressionMethods.GZip;
+#if NETCOREAPP2_1_OR_GREATER
+            feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
+            {
+                var httpHandler = context.HttpHandler;
+                httpHandler.PooledConnectionLifetime = TimeSpan.FromHours(1);
+            });
+            feignBuilder.Options.PropertyNamingPolicy = NamingPolicy.SnakeCaseLower;
+#endif
             feignBuilder.AddFeignClients(Assembly.GetExecutingAssembly(), FeignClientLifetime.Transient);
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseSendingRequest(context =>
             {
@@ -50,7 +60,7 @@ namespace Feign.Tests
             });
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseSendingRequest(context =>
             {
-                var types = feignBuilder.Options.Types;                
+                var types = feignBuilder.Options.Types;
                 if (context.RequestMessage.Content != null)
                 {
                     MultipartFormDataContent multipartFormDataContent = context.RequestMessage.Content as MultipartFormDataContent;

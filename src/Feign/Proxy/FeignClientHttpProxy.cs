@@ -48,8 +48,8 @@ namespace Feign.Proxy
             BaseUrl = BuildBaseUrl(baseUrl);
 
             Origin = $"{_scheme}://{ServiceId}";
-
             var initializingContext = new InitializingPipelineContext<TService>(this);
+            initializingContext.HttpHandler = serviceDiscoveryHttpClientHandler.HttpHandler;
             initializingContext.HttpClient = HttpClient;
             OnInitializing(initializingContext);
             HttpClient = initializingContext.HttpClient;

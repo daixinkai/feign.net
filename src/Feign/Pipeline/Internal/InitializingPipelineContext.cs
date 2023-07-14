@@ -6,6 +6,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+#if NETCOREAPP2_1_OR_GREATER
+using HttpHandlerType = System.Net.Http.SocketsHttpHandler;
+#else
+using HttpHandlerType = System.Net.Http.HttpClientHandler;
+#endif
 
 namespace Feign.Pipeline.Internal
 {
@@ -13,11 +18,11 @@ namespace Feign.Pipeline.Internal
     /// 表示初始化时提供的参数
     /// </summary>
     /// <typeparam name="TService"></typeparam>
-//#if NET5_0_OR_GREATER
-//    internal record InitializingPipelineContext<TService> : FeignClientPipelineContext<TService>, IInitializingPipelineContext<TService>
-//#else
+    //#if NET5_0_OR_GREATER
+    //    internal record InitializingPipelineContext<TService> : FeignClientPipelineContext<TService>, IInitializingPipelineContext<TService>
+    //#else
     internal class InitializingPipelineContext<TService> : FeignClientPipelineContext<TService>, IInitializingPipelineContext<TService>
-//#endif
+    //#endif
     {
         internal InitializingPipelineContext(IFeignClient<TService> feignClient) : base(feignClient)
         {
@@ -26,6 +31,8 @@ namespace Feign.Pipeline.Internal
         /// 获取或设置HttpClient
         /// </summary>
         public FeignHttpClient HttpClient { get; set; }
+
+        public HttpHandlerType HttpHandler { get; internal set; }
 
     }
 }

@@ -4,32 +4,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+#if USE_SYSTEM_TEXT_JSON
+using JsonProviderType = Feign.Formatting.SystemTextJsonProvider;
+#else
+using JsonProviderType = Feign.Formatting.NewtonsoftJsonProvider;
+#endif
 
 namespace Feign
 {
     public interface IFeignOptions
     {
         /// <summary>
-        /// 获取程序集集合
+        /// Gets the Assemblies
         /// </summary>
         IList<Assembly> Assemblies { get; }
         /// <summary>
-        /// 获取获取转换器集合
+        /// Gets the Converters
         /// </summary>
         ConverterCollection Converters { get; }
         /// <summary>
-        /// 获取媒体处理器集合
+        /// Gets the MediaTypeFormatters
         /// </summary>
         MediaTypeFormatterCollection MediaTypeFormatters { get; }
         /// <summary>
-        /// 获取全局工作管道
+        /// Gets the Global Pipeline
         /// </summary>
         IGlobalFeignClientPipeline FeignClientPipeline { get; }
         /// <summary>
-        /// 获取或设置服务的生命周期 默认值 <see cref="FeignClientLifetime.Singleton"/>
+        /// Gets or sets the Lifetime.
+        /// default value is <see cref="FeignClientLifetime.Singleton"/>
         /// </summary>
         FeignClientLifetime Lifetime { get; set; }
         /// <summary>
@@ -38,37 +45,42 @@ namespace Feign
         bool IncludeMethodMetadata { get; set; }
 
         /// <summary>
-        /// 获取或设置属性命名规则
+        /// Gets or sets the PropertyNamingPolicy
         /// </summary>
         NamingPolicy PropertyNamingPolicy { get; set; }
 
         /// <summary>
-        /// 获取或设置JsonProvider
+        /// Gets or sets the JsonProvider.
+        /// default value is <see cref="JsonProviderType"/>
         /// </summary>
         IJsonProvider JsonProvider { get; set; }
 
         /// <summary>
-        /// 获取或设置处理程序用于自动解压缩内容响应的解压缩方法类型。默认 : null
-        /// </summary>
-        DecompressionMethods? AutomaticDecompression { get; set; }
-
-        /// <summary>
-        /// 获取生成的类型
+        /// Gets or sets the Types
         /// </summary>
         IList<FeignClientTypeInfo> Types { get; }
         /// <summary>
-        /// 缓存服务时间 default : 10min
-        /// 设置为null则不使用缓存
+        /// Gets or sets the DiscoverServiceCacheTime.
+        /// default value : 10min.
+        /// Set to null to not use cache
         /// </summary>
         TimeSpan? DiscoverServiceCacheTime { get; set; }
+
+        /// <summary>
+        /// Is enable url encode (如 : RequestQuery,PathVariable)
+        /// </summary>
+        bool UseUrlEncode { get; set; }
+
+        /// <summary>
+        ///   Gets or sets the type of decompression method used by the handler for automatic decompression of the HTTP content response.
+        ///   Default value : null
+        /// </summary>
+        DecompressionMethods? AutomaticDecompression { get; set; }
 
         /// <summary>
         /// 默认HttpClientHandler的UseCookies值
         /// </summary>
         bool? UseCookies { get; set; }
-        /// <summary>
-        /// 是否启用编码Url (如 : RequestQuery,PathVariable)
-        /// </summary>
-        bool UseUrlEncode { get; set; }
+
     }
 }

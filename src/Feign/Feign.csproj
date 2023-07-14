@@ -9,25 +9,11 @@
     <PackageId>Feign</PackageId>
     <Description>spring cloud feign for .net</Description>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <NoWarn>1701;1702;1591</NoWarn>
+    <NoWarn>1701;1702;1591</NoWarn>	
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants Condition="'$(TargetFramework)'=='net45'">DEBUG;TRACE;</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.0'">DEBUG;TRACE;</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='net5.0'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)'=='net6.0'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)'=='net7.0'">DEBUG;TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DefineConstants Condition="'$(TargetFramework)'=='net45'">TRACE;</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.0'">TRACE;</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='net5.0'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
-	<DefineConstants Condition="'$(TargetFramework)'=='net6.0'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='net7.0'">TRACE;USE_SYSTEM_TEXT_JSON;</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)'!='net45' AND '$(TargetFramework)'!='netstandard2.0'">
+	<DefineConstants>USE_SYSTEM_TEXT_JSON;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">

@@ -3,11 +3,15 @@ using Feign.Pipeline.Internal;
 using Feign.Reflection;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+#if USE_SYSTEM_TEXT_JSON
+using JsonProviderType = Feign.Formatting.SystemTextJsonProvider;
+#else
+using JsonProviderType = Feign.Formatting.NewtonsoftJsonProvider;
+#endif
 
 namespace Feign
 {
@@ -33,11 +37,7 @@ namespace Feign
             Types = new List<FeignClientTypeInfo>();
             DiscoverServiceCacheTime = TimeSpan.FromMinutes(10);
             PropertyNamingPolicy = NamingPolicy.CamelCase;
-#if USE_SYSTEM_TEXT_JSON
-            JsonProvider = new SystemTextJsonProvider();
-#else
-            JsonProvider = new NewtonsoftJsonProvider();
-#endif
+            JsonProvider = new JsonProviderType();
         }
         public IList<Assembly> Assemblies { get; }
         public ConverterCollection Converters { get; }
