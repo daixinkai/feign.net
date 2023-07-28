@@ -23,17 +23,21 @@ namespace Feign.Discovery.LoadBalancing
         {
             var serviceCount = services.Count;
             var leastRequestsService = services[0];
-            var leastRequestsCount = GetCounter(0).Value;
+            var leastCounter = GetCounter(0);
+            var leastRequestsCount = leastCounter.Value;
             for (var i = 1; i < serviceCount; i++)
             {
                 var service = services[i];
-                var endpointRequestCount = GetCounter(i).Value;
+                var endpointCounter= GetCounter(i);
+                var endpointRequestCount = endpointCounter.Value;
                 if (endpointRequestCount < leastRequestsCount)
                 {
                     leastRequestsService = service;
+                    leastCounter = endpointCounter;
                     leastRequestsCount = endpointRequestCount;
                 }
             }
+            leastCounter.Increment();
             return leastRequestsService.Uri;
         }
 

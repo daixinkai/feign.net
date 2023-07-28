@@ -31,7 +31,15 @@ namespace Feign.Discovery.LoadBalancing
             } while (firstIndex == secondIndex);
             var first = services[firstIndex];
             var second = services[secondIndex];
-            return (GetCounter(firstIndex).Value <= GetCounter(secondIndex).Value) ? first.Uri : second.Uri;
+            var firstCounter = GetCounter(firstIndex);
+            var secondCounter = GetCounter(secondIndex);
+            if (firstCounter.Value <= secondCounter.Value)
+            {
+                firstCounter.Increment();
+                return first.Uri;
+            }
+            secondCounter.Increment();
+            return second.Uri;
         }
 
         private AtomicCounter GetCounter(int index)
