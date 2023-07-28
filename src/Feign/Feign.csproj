@@ -5,6 +5,7 @@
     <Version>1.4.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
+	<LangVersion>8.0</LangVersion>
     <Authors>daixinkai</Authors>
     <PackageId>Feign</PackageId>
     <Description>spring cloud feign for .net</Description>

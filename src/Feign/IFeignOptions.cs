@@ -1,4 +1,5 @@
-﻿using Feign.Formatting;
+﻿using Feign.Discovery.LoadBalancing;
+using Feign.Formatting;
 using Feign.Reflection;
 using System;
 using System.Collections.Generic;
@@ -81,6 +82,12 @@ namespace Feign
         /// 默认HttpClientHandler的UseCookies值
         /// </summary>
         bool? UseCookies { get; set; }
+
+        /// <summary>
+        /// Gets or sets Load balancing policy.
+        /// Default value : <see cref="LoadBalancingPolicy.Random"/>
+        /// </summary>
+        LoadBalancingPolicy LoadBalancingPolicy { get; set; }
 
     }
 }

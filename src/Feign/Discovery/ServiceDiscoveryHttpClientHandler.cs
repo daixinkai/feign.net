@@ -1,4 +1,5 @@
 ﻿using Feign.Cache;
+using Feign.Discovery.LoadBalancing;
 using Feign.Internal;
 using Feign.Logging;
 using Feign.Proxy;
@@ -33,7 +34,15 @@ namespace Feign.Discovery
             ICacheProvider serviceCacheProvider,
             ILogger logger) : base(feignClient, logger)
         {
-            _serviceResolve = new RandomServiceResolve(logger);
+            _serviceResolve = (feignClient.FeignOptions.LoadBalancingPolicy) switch
+            {
+                LoadBalancingPolicy.FirstAlphabetical => new FirstServiceResolve(logger),
+                LoadBalancingPolicy.Random => new RandomServiceResolve(logger),
+                LoadBalancingPolicy.RoundRobin => new RoundRobinServiceResolve(logger),
+                LoadBalancingPolicy.LeastRequests => new LeastRequestsServiceResolve(logger),
+                LoadBalancingPolicy.PowerOfTwoChoices => new PowerOfTwoChoicesServiceResolve(logger),
+                _ => new RandomServiceResolve(logger)
+            };
             _serviceDiscovery = serviceDiscovery;
             _serviceCacheProvider = serviceCacheProvider;
             ShouldResolveService = true;

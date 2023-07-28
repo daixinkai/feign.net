@@ -1,20 +1,18 @@
 ﻿using Feign.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Feign.Discovery
+namespace Feign.Discovery.LoadBalancing
 {
-    /// <summary>
-    /// 随机服务决定
-    /// </summary>
-    public class RandomServiceResolve : IServiceResolve
+    public abstract class ServiceResolveBase : IServiceResolve
     {
-        public RandomServiceResolve(ILogger logger)
+        protected ServiceResolveBase(ILogger logger)
         {
             _logger = logger;
         }
-        private static readonly Random _random = new Random();
         private readonly ILogger _logger;
         public Uri ResolveService(Uri uri, IList<IServiceInstance> services)
         {
@@ -24,16 +22,8 @@ namespace Feign.Discovery
                 _logger?.LogWarning($"Attempted to resolve service for {uri.Host} but found 0 instances");
                 return uri;
             }
-            Uri resolvedUri;
-            if (services.Count == 1)
-            {
-                resolvedUri = services[0].Uri;
-            }
-            else
-            {
-                resolvedUri = services[_random.Next(services.Count)].Uri;
-            }
-            _logger?.LogWarning($"Attempted to resolve service for {uri.Host} but found 0 instances");
+
+            var resolvedUri = services.Count == 1 ? services[0].Uri : ResolveServiceCore(uri, services);
 
             //return new Uri(resolvedUri, uri.PathAndQuery);
 
@@ -49,5 +39,8 @@ namespace Feign.Discovery
             }
             return new Uri(resolvedUri.ToString().TrimEnd('/') + "/" + uri.PathAndQuery.TrimStart('/'));
         }
+
+        public abstract Uri ResolveServiceCore(Uri uri, IList<IServiceInstance> services);
+
     }
 }

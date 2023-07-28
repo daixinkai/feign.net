@@ -1,4 +1,5 @@
-﻿using Feign.Formatting;
+﻿using Feign.Discovery.LoadBalancing;
+using Feign.Formatting;
 using Feign.Pipeline.Internal;
 using Feign.Reflection;
 using System;
@@ -38,6 +39,7 @@ namespace Feign
             DiscoverServiceCacheTime = TimeSpan.FromMinutes(10);
             PropertyNamingPolicy = NamingPolicy.CamelCase;
             JsonProvider = new JsonProviderType();
+            LoadBalancingPolicy = LoadBalancingPolicy.Random;
         }
         public IList<Assembly> Assemblies { get; }
         public ConverterCollection Converters { get; }
@@ -64,6 +66,11 @@ namespace Feign
         /// 是否启用编码Url (如 : RequestQuery,PathVariable)
         /// </summary>
         public bool UseUrlEncode { get; set; }
+
+        /// <summary>
+        /// Gets or sets Load balancing policy.
+        /// </summary>
+        public LoadBalancingPolicy LoadBalancingPolicy { get; set; }
 
     }
 }
