@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Polly
 {
-    class PolicySingletonCollection : PolicyCollection
+    internal class PolicySingletonCollection : PolicyCollection
     {
 
         internal readonly ConcurrentDictionary<Type, IAsyncPolicy> _serviceTypePolicyMap = new ConcurrentDictionary<Type, IAsyncPolicy>();

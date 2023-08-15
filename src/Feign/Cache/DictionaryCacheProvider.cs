@@ -11,7 +11,7 @@ namespace Feign.Cache
 {
     public class DictionaryCacheProvider : ICacheProvider
     {
-        class CacheEntry
+        private class CacheEntry
         {
             public string Key { get; set; }
             public object Value { get; set; }
@@ -66,7 +66,7 @@ namespace Feign.Cache
         }
 
         private static long GetCurrentTimeMillis(TimeSpan timeSpan)
-        {            
+        {
 #if NET45
             TimeSpan ts = DateTimeOffset.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
             ts.Add(timeSpan);

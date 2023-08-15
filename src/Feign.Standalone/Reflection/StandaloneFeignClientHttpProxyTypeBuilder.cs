@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Standalone.Reflection
 {
-    class StandaloneFeignClientHttpProxyTypeBuilder : FeignClientHttpProxyTypeBuilder
+    internal class StandaloneFeignClientHttpProxyTypeBuilder : FeignClientHttpProxyTypeBuilder
     {
         protected override Type GetParentType(Type parentType)
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Internal
 {
-    class ServiceResolveFailException : Exception, ISkipLogException
+    internal class ServiceResolveFailException : Exception, ISkipLogException
     {
         public ServiceResolveFailException()
         {

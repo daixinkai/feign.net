@@ -38,7 +38,7 @@ namespace Feign.Reflection
                 return _moduleBuilder;
             }
         }
-        void EnsureAssemblyBuilder()
+        private void EnsureAssemblyBuilder()
         {
             if (_assemblyBuilder == null)
             {
@@ -56,7 +56,7 @@ namespace Feign.Reflection
 #endif
             }
         }
-        void EnsureModuleBuilder()
+        private void EnsureModuleBuilder()
         {
             EnsureAssemblyBuilder();
             if (_moduleBuilder == null)

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Standalone
 {
-    class StandaloneFeignBuilder : IStandaloneFeignBuilder
+    internal class StandaloneFeignBuilder : IStandaloneFeignBuilder
     {
         public StandaloneFeignBuilder()
         {

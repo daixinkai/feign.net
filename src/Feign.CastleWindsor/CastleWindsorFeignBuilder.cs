@@ -8,7 +8,7 @@ using Feign.Reflection;
 
 namespace Feign.CastleWindsor
 {
-    sealed class CastleWindsorFeignBuilder : ICastleWindsorFeignBuilder
+    internal sealed class CastleWindsorFeignBuilder : ICastleWindsorFeignBuilder
     {
 
         public CastleWindsorFeignBuilder()
@@ -65,7 +65,7 @@ namespace Feign.CastleWindsor
         }
 
         ComponentRegistration<T> Lifestyle<T>(ComponentRegistration<T> registration, FeignClientLifetime lifetime)
-    where T : class
+            where T : class
         {
             switch (lifetime)
             {

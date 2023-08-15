@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Reflection
 {
-    class EmitRequestContent
+    internal class EmitRequestContent
     {
         public EmitRequestContent()
         {

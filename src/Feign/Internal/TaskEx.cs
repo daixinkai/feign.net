@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Internal
 {
-    static class TaskEx
+    internal static class TaskEx
     {
 
         public static Task CompletedTask

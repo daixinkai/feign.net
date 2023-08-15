@@ -11,7 +11,7 @@ namespace Feign.Polly
     public class FeignPollyOptions
     {
 
-        readonly PolicyCollection _policyCollection = new PolicySingletonCollection();
+        private readonly PolicyCollection _policyCollection = new PolicySingletonCollection();
 
 
         public void Configure(Func<IAsyncPolicy, IAsyncPolicy> setup)

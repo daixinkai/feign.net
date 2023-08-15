@@ -191,13 +191,13 @@ namespace Feign.Reflection
         }
 
 
-        string GetTypeFullName(Type serviceType)
+        private string GetTypeFullName(Type serviceType)
         {
             return serviceType.FullName + _suffix;
             //return interfaceType.Assembly.GetName().ToString() + "_" + interfaceType.FullName;
         }
 
-        internal static bool NeedBuildType(Type type)
+        private static bool NeedBuildType(Type type)
         {
             return type.IsInterface && type.IsDefinedIncludingBaseInterfaces<FeignClientAttribute>() && !type.IsDefined(typeof(NonFeignClientAttribute)) && !type.IsGenericType;
         }

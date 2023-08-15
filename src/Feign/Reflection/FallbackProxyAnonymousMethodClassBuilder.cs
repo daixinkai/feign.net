@@ -13,7 +13,7 @@ namespace Feign.Reflection
     /// <summary>
     /// 生成lambda表达式的匿名调用类型
     /// </summary>
-    class FallbackProxyAnonymousMethodClassBuilder : AnonymousMethodClassBuilderBase
+    internal class FallbackProxyAnonymousMethodClassBuilder : AnonymousMethodClassBuilderBase
     {
 
         public Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method)
@@ -34,7 +34,7 @@ namespace Feign.Reflection
             return BuildNewType(moduleBuilder, typeName, comparer.TargetType.Namespace + ".Anonymous", comparer);
         }
 
-        static Tuple<Type, ConstructorInfo, MethodInfo> BuildNewType(ModuleBuilder moduleBuilder, string typeName, string nameSpace, Comparer comparer)
+        private static Tuple<Type, ConstructorInfo, MethodInfo> BuildNewType(ModuleBuilder moduleBuilder, string typeName, string nameSpace, Comparer comparer)
         {
             string fullName = nameSpace + "." + typeName;
             if (fullName.StartsWith("."))
@@ -76,7 +76,7 @@ namespace Feign.Reflection
             return Tuple.Create(typeBuilder.CreateTypeInfo().AsType(), (ConstructorInfo)constructorBuilder, (MethodInfo)methodBuilder);
         }
 
-        static void AddFallbackTarget_GetParameters(TypeBuilder typeBuilder, ParameterInfo[] parameters, List<FieldBuilder> parameterFields)
+        private static void AddFallbackTarget_GetParameters(TypeBuilder typeBuilder, ParameterInfo[] parameters, List<FieldBuilder> parameterFields)
         {
             MethodInfo getParametersMethod = typeof(IFallbackProxy).GetMethod("GetParameters");
             MethodAttributes methodAttributes =
@@ -110,7 +110,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ret);
         }
 
-        static void AddFallbackTarget_GetParameterTypes(TypeBuilder typeBuilder, ParameterInfo[] parameters)
+        private static void AddFallbackTarget_GetParameterTypes(TypeBuilder typeBuilder, ParameterInfo[] parameters)
         {
             MethodInfo getParametersMethod = typeof(IFallbackProxy).GetMethod("GetParameterTypes");
             MethodAttributes methodAttributes =
@@ -141,7 +141,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ret);
         }
 
-        static void AddFallbackTarget_MethodName(TypeBuilder typeBuilder, string methodName)
+        private static void AddFallbackTarget_MethodName(TypeBuilder typeBuilder, string methodName)
         {
             PropertyBuilder propertyBuilder = typeBuilder.DefineProperty("MethodName", PropertyAttributes.None, typeof(string), Type.EmptyTypes);
             MethodBuilder propertyGet = typeBuilder.DefineMethod("get_MethodName", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Final, typeof(string), Type.EmptyTypes);
@@ -150,7 +150,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ret);
             propertyBuilder.SetGetMethod(propertyGet);
         }
-        static void AddFallbackTarget_ReturnType(TypeBuilder typeBuilder, Type returnType)
+        private static void AddFallbackTarget_ReturnType(TypeBuilder typeBuilder, Type returnType)
         {
             PropertyBuilder propertyBuilder = typeBuilder.DefineProperty("ReturnType", PropertyAttributes.None, typeof(Type), Type.EmptyTypes);
             MethodBuilder propertyGet = typeBuilder.DefineMethod("get_ReturnType", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Final, typeof(Type), Type.EmptyTypes);
@@ -174,15 +174,15 @@ namespace Feign.Reflection
             propertyBuilder.SetGetMethod(propertyGet);
         }
 
-        static void AddFallbackTarget_Method(TypeBuilder typeBuilder, MethodInfo method)
-        {
-            PropertyBuilder propertyBuilder = typeBuilder.DefineProperty("Method", PropertyAttributes.None, typeof(MethodInfo), Type.EmptyTypes);
-            MethodBuilder propertyGet = typeBuilder.DefineMethod("get_Method", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Final, typeof(MethodInfo), Type.EmptyTypes);
-            ILGenerator iLGenerator = propertyGet.GetILGenerator();
-            iLGenerator.EmitMethodInfo(method);
-            iLGenerator.Emit(OpCodes.Ret);
-            propertyBuilder.SetGetMethod(propertyGet);
-        }
+        //private static void AddFallbackTarget_Method(TypeBuilder typeBuilder, MethodInfo method)
+        //{
+        //    PropertyBuilder propertyBuilder = typeBuilder.DefineProperty("Method", PropertyAttributes.None, typeof(MethodInfo), Type.EmptyTypes);
+        //    MethodBuilder propertyGet = typeBuilder.DefineMethod("get_Method", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Final, typeof(MethodInfo), Type.EmptyTypes);
+        //    ILGenerator iLGenerator = propertyGet.GetILGenerator();
+        //    iLGenerator.EmitMethodInfo(method);
+        //    iLGenerator.Emit(OpCodes.Ret);
+        //    propertyBuilder.SetGetMethod(propertyGet);
+        //}
 
     }
 }

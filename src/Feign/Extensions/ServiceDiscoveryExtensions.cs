@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
-    static class ServiceDiscoveryExtensions
+    internal static class ServiceDiscoveryExtensions
     {
         public static async Task<IList<IServiceInstance>> GetServiceInstancesWithCacheAsync(this IServiceDiscovery serviceDiscovery, string serviceId, ICacheProvider cacheProvider, TimeSpan time, string serviceInstancesKeyPrefix = "ServiceDiscovery-ServiceInstances-")
         {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Polly
 {
-    class PolicyCollection
+    internal class PolicyCollection
     {
         internal readonly List<Func<IAsyncPolicy, IAsyncPolicy>> _globalPolicySetups = new List<Func<IAsyncPolicy, IAsyncPolicy>>();
         internal readonly List<Func<IAsyncPolicy, Task<IAsyncPolicy>>> _globalPolicyAsyncSetups = new List<Func<IAsyncPolicy, Task<IAsyncPolicy>>>();

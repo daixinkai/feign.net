@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Feign.Standalone
 {
-    class ServiceCollection //: IList<ServiceDescriptor>
+    internal class ServiceCollection //: IList<ServiceDescriptor>
     {
         readonly IDictionary<Type, ServiceDescriptor> _map = new Dictionary<Type, ServiceDescriptor>();
 
-        object _lockObject = new object();
+        private object _lockObject = new object();
 
         public void AddOrUpdate(ServiceDescriptor serviceDescriptor)
         {

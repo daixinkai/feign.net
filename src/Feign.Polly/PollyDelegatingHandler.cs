@@ -24,7 +24,7 @@ namespace Feign.Polly
             _asyncPolicy = asyncPolicy;
         }
 
-        IAsyncPolicy _asyncPolicy;
+        private readonly IAsyncPolicy _asyncPolicy;
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

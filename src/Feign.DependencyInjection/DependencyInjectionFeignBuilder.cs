@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Feign.DependencyInjection
 {
-    sealed class DependencyInjectionFeignBuilder : IDependencyInjectionFeignBuilder
+    internal sealed class DependencyInjectionFeignBuilder : IDependencyInjectionFeignBuilder
     {
 
         public DependencyInjectionFeignBuilder()
@@ -60,7 +60,7 @@ namespace Feign.DependencyInjection
 
         public void AddService<TService>(TService service) where TService : class
         {
-            Services.AddSingleton<TService>(service);
+            Services.AddSingleton(service);
         }
 
         public void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)

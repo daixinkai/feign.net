@@ -12,7 +12,7 @@ namespace Feign.Request
     /// </summary>
     public class FeignHttpRequestException : HttpRequestException
     {
-        public FeignHttpRequestException(IFeignClient feignClient, FeignHttpRequestMessage requestMessage, Exception exception) : base(GetMessage(feignClient, requestMessage, exception), exception)
+        public FeignHttpRequestException(IFeignClient feignClient, FeignHttpRequestMessage requestMessage, Exception exception) : base(GetMessage(requestMessage, exception), exception)
         {
             FeignClient = feignClient;
             RequestMessage = requestMessage;
@@ -26,21 +26,21 @@ namespace Feign.Request
         /// </summary>
         public FeignHttpRequestMessage RequestMessage { get; }
 
-        static string GetMessage(IFeignClient feignClient, FeignHttpRequestMessage httpRequestMessage, Exception exception)
-        {
+        private static string GetMessage(FeignHttpRequestMessage httpRequestMessage, Exception exception)
+        {            
             //string url = BuildUrl(httpRequestMessage.FeignClientRequest.BaseUrl, httpRequestMessage.FeignClientRequest.MappingUri);
             string url = httpRequestMessage.RequestUri.ToString();
             return $"{httpRequestMessage.Method.Method} request error on {url} : {exception.Message}";
         }
 
-        static string BuildUrl(string baseUrl, string uri)
-        {
-            if (uri.StartsWith("/"))
-            {
-                return baseUrl + uri;
-            }
-            return baseUrl + "/" + uri;
-        }
+        //private static string BuildUrl(string baseUrl, string uri)
+        //{
+        //    if (uri.StartsWith("/"))
+        //    {
+        //        return baseUrl + uri;
+        //    }
+        //    return baseUrl + "/" + uri;
+        //}
 
     }
 }

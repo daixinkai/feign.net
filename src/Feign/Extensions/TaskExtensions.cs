@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
-    static class TaskExtensions
+    internal static class TaskExtensions
     {
         public static TResult GetResult<TResult>(this Task<TResult> task)
         {

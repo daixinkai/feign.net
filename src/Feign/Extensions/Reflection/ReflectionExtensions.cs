@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
-    static partial class ReflectionExtensions
+    internal static partial class ReflectionExtensions
     {
 
         public static ConstructorInfo GetEmptyConstructor(this Type type)

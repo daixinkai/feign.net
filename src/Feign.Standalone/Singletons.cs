@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign.Standalone
 {
 
-    class Singletons
+    internal class Singletons
     {
         static readonly IDictionary<Type, object> _map = new Dictionary<Type, object>();
         public object Value { get; set; }

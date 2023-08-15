@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
-    static class Constants
+    internal static class Constants
     {
         public static class MediaTypes
         {

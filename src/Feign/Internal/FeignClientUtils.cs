@@ -15,7 +15,7 @@ namespace Feign.Internal
     {
         #region PathVariable
 
-        internal static bool ContainsPathVariable(string uri, string name)
+        public static bool ContainsPathVariable(string uri, string name)
         {
             if (string.IsNullOrWhiteSpace(uri))
             {

@@ -50,7 +50,7 @@ namespace Feign
         /// <param name="lifetime">服务的生命周期</param>
         /// <returns></returns>
         public static TFeignBuilder AddFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, Assembly assembly, FeignClientLifetime lifetime)
-    where TFeignBuilder : IFeignBuilder
+            where TFeignBuilder : IFeignBuilder
         {
             if (assembly == null)
             {

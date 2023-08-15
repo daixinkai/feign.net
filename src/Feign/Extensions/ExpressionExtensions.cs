@@ -9,7 +9,7 @@
 
 //namespace Feign
 //{
-//    static class ExpressionExtensions
+//    internal static class ExpressionExtensions
 //    {
 //        /// <summary>
 //        /// Nullable.HasValue表达式
@@ -88,7 +88,7 @@
 //            return new Tuple<bool, Expression>(result, resultExpression);
 //        }
 
-//        static Expression ConvertValueExpression(this Expression expression, Type targetType)
+//        internal static Expression ConvertValueExpression(this Expression expression, Type targetType)
 //        {
 //            if (ReferenceEquals(expression.Type, targetType))
 //            {

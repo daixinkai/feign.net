@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
-    static class ExceptionExtensions
+    internal static class ExceptionExtensions
     {
         public static bool IsSkipLog(this Exception exception)
         {

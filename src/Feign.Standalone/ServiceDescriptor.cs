@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Standalone
 {
-    class ServiceDescriptor
+    internal class ServiceDescriptor
     {
 
         public ServiceDescriptor(Type serviceType, object instance)
@@ -56,7 +56,7 @@ namespace Feign.Standalone
         }
 
 
-        static object GetNewService(Type type)
+        private static object GetNewService(Type type)
         {
             return Activator.CreateInstance(type);
         }

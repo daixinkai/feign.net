@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
-    static class SpecialResults
+    internal static class SpecialResults
     {
         private static readonly IDictionary<Type, object> s_handlers = new Dictionary<Type, object>();
         static SpecialResults()
@@ -39,7 +39,7 @@ namespace Feign.Proxy
 
     }
 
-    class SpecialResultHandler<TResult>
+    internal class SpecialResultHandler<TResult>
     {
         public SpecialResultHandler(Func<HttpResponseMessage, Task<TResult>> asyncFunc)
         {
@@ -51,8 +51,8 @@ namespace Feign.Proxy
             _func = func;
         }
 
-        private Func<HttpResponseMessage, Task<TResult>> _asyncFunc;
-        private Func<HttpResponseMessage, TResult> _func;
+        private readonly Func<HttpResponseMessage, Task<TResult>> _asyncFunc;
+        private readonly Func<HttpResponseMessage, TResult> _func;
 
         public static SpecialResultHandler<TResult> FromResult(Func<HttpResponseMessage, TResult> func)
         {
@@ -74,7 +74,7 @@ namespace Feign.Proxy
         }
     }
 
-    struct SpecialResult<TResult>
+    internal struct SpecialResult<TResult>
     {
         public bool IsSpecialResult { get; set; }
         public TResult Result { get; set; }

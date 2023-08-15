@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Feign.Internal
 {
-    class TerminatedRequestException : Exception, ISkipLogException
+    internal class TerminatedRequestException : Exception, ISkipLogException
     {
         public TerminatedRequestException()
         {
-     
+
         }
 
         public TerminatedRequestException(string message) : base(message)

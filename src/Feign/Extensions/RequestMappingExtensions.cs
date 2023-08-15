@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
-    static class RequestMappingExtensions
+    internal static class RequestMappingExtensions
     {
         public static bool IsHttpMethod(this IRequestMapping requestMapping, HttpMethod httpMethod)
         {
