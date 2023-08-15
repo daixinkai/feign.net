@@ -72,7 +72,7 @@ namespace Feign.Formatting
             }
         }
 
-        static JsonWriter CreateJsonWriter(Type type, Stream writeStream, Encoding effectiveEncoding)
+        private static JsonWriter CreateJsonWriter(Type type, Stream writeStream, Encoding effectiveEncoding)
         {
             if (type == null)
             {
@@ -98,7 +98,7 @@ namespace Feign.Formatting
 
             return jsonWriter;
         }
-        static JsonSerializerSettings CreateDefaultSerializerSettings()
+        private static JsonSerializerSettings CreateDefaultSerializerSettings()
         {
             return new JsonSerializerSettings()
             {
@@ -113,7 +113,7 @@ namespace Feign.Formatting
                 TypeNameHandling = TypeNameHandling.None
             };
         }
-        JsonSerializer CreateJsonSerializer()
+        private JsonSerializer CreateJsonSerializer()
         {
             JsonSerializer jsonSerializer = JsonSerializer.Create(_jsonSerializerSettings);
             return jsonSerializer;
@@ -128,6 +128,12 @@ namespace Feign.Formatting
         {
             return Task.FromResult(DeserializeObject(stream, type, encoding));
         }
+
+        public void Configure(Action<JsonSerializerOptions> configure)
+        {
+            configure(_jsonSerializerSettings);
+        }
+
     }
 }
 

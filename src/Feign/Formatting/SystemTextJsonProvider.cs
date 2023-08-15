@@ -104,15 +104,10 @@ namespace Feign.Formatting
             return JsonSerializer.Deserialize(value, type, _jsonSerializerOptions);
         }
 
-
-        public void Serialize(Stream stream, object value, Type type, Encoding encoding)
+        public void Configure(Action<JsonSerializerOptions> configure)
         {
-            using (Utf8JsonWriter utf8JsonWriter = new Utf8JsonWriter(stream))
-            {
-                JsonSerializer.Serialize(utf8JsonWriter, value, _jsonSerializerOptions);
-            }
+            configure(_jsonSerializerOptions);
         }
-
 
     }
 }

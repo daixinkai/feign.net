@@ -6,9 +6,6 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-#if NET45
-using FeignClientAuthorization = System.Tuple<string, string>;
-#endif
 
 namespace Feign
 {

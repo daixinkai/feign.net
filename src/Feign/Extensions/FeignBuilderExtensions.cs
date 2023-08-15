@@ -1,10 +1,4 @@
-﻿#if USE_SYSTEM_TEXT_JSON
-using System.Text.Json;
-using JsonSerializerSettings = System.Text.Json.JsonSerializerOptions;
-#else
-using Newtonsoft.Json;
-#endif
-using Feign.Cache;
+﻿using Feign.Cache;
 using Feign.Discovery;
 using Feign.Formatting;
 using Feign.Logging;
@@ -140,7 +134,7 @@ namespace Feign
         /// <param name="feignBuilder"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static TFeignBuilder ConfigureJsonSettings<TFeignBuilder>(this TFeignBuilder feignBuilder, Action<JsonSerializerSettings> configure) where TFeignBuilder : IFeignBuilder
+        public static TFeignBuilder ConfigureJsonSettings<TFeignBuilder>(this TFeignBuilder feignBuilder, Action<JsonSerializerOptions> configure) where TFeignBuilder : IFeignBuilder
         {
             feignBuilder.Options.ConfigureJsonSettings(configure);
             return feignBuilder;

@@ -1,11 +1,4 @@
-﻿#if USE_SYSTEM_TEXT_JSON
-using System.Text.Json;
-#else
-using Newtonsoft.Json;
-#endif
-
-using Feign.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

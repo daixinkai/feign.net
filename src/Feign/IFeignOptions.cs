@@ -9,11 +9,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-#if USE_SYSTEM_TEXT_JSON
-using JsonProviderType = Feign.Formatting.SystemTextJsonProvider;
-#else
-using JsonProviderType = Feign.Formatting.NewtonsoftJsonProvider;
-#endif
 
 namespace Feign
 {
