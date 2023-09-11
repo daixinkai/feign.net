@@ -150,8 +150,20 @@ namespace Feign
                     iLGenerator.Emit(OpCodes.Ldarg_3);
                     break;
                 default:
-                    iLGenerator.Emit(OpCodes.Ldarg_S, index);
+                    iLGenerator.EmitLdargS(index);
                     break;
+            }
+        }
+
+        public static void EmitLdargS(this ILGenerator iLGenerator, int index)
+        {
+            if (index > byte.MaxValue)
+            {
+                iLGenerator.Emit(OpCodes.Ldarg_S, index);
+            }
+            else
+            {
+                iLGenerator.Emit(OpCodes.Ldarg_S, (byte)index);
             }
         }
 
@@ -207,7 +219,7 @@ namespace Feign
         }
 
         public static void EmitGetProperty(this ILGenerator iLGenerator, PropertyInfo property)
-        {            
+        {
             iLGenerator.Emit(OpCodes.Call, property.GetMethod);
         }
 
@@ -216,5 +228,11 @@ namespace Feign
             iLGenerator.Emit(OpCodes.Call, property.SetMethod);
         }
 
+        public static void EmitNop(this ILGenerator _)
+        {
+            //#if DEBUG
+            //            _.Emit(OpCodes.Nop);
+            //#endif
+        }
     }
 }

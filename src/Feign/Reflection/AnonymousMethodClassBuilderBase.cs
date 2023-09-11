@@ -102,7 +102,7 @@ namespace Feign.Reflection
             ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
 
             constructorIlGenerator.CallBaseTypeDefaultConstructor(typeBuilder.BaseType);
-            constructorIlGenerator.Emit(OpCodes.Nop);
+            constructorIlGenerator.EmitNop();
             if (fieldBuilders.Count > 0)
             {
                 for (int i = 0; i < fieldBuilders.Count; i++)
