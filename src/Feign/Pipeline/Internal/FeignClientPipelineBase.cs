@@ -10,15 +10,15 @@ namespace Feign.Pipeline.Internal
     {
         public virtual bool Enabled { get; set; } = true;
 
-        private readonly List<BuildingRequestDelegate<TService>> _buildingRequestMiddlewares = new List<BuildingRequestDelegate<TService>>();
-        private readonly List<CancelRequestDelegate<TService>> _cancelRequestMiddlewares = new List<CancelRequestDelegate<TService>>();
-        private readonly List<DisposingDelegate<TService>> _disposingMiddlewares = new List<DisposingDelegate<TService>>();
-        private readonly List<ErrorRequestDelegate<TService>> _errorRequestMiddlewares = new List<ErrorRequestDelegate<TService>>();
-        private readonly List<FallbackRequestDelegate<TService>> _fallbackRequestMiddlewares = new List<FallbackRequestDelegate<TService>>();
-        private readonly List<InitializingDelegate<TService>> _initializingMiddlewares = new List<InitializingDelegate<TService>>();
-        private readonly List<ReceivingResponseDelegate<TService>> _receivingResponseMiddlewares = new List<ReceivingResponseDelegate<TService>>();
-        private readonly List<ReceivedResponseDelegate<TService>> _receivedResponseMiddlewares = new List<ReceivedResponseDelegate<TService>>();
-        private readonly List<SendingRequestDelegate<TService>> _sendingRequestMiddlewares = new List<SendingRequestDelegate<TService>>();
+        private readonly List<BuildingRequestDelegate<TService>> _buildingRequestMiddlewares = new();
+        private readonly List<CancelRequestDelegate<TService>> _cancelRequestMiddlewares = new();
+        private readonly List<DisposingDelegate<TService>> _disposingMiddlewares = new();
+        private readonly List<ErrorRequestDelegate<TService>> _errorRequestMiddlewares = new();
+        private readonly List<FallbackRequestDelegate<TService>> _fallbackRequestMiddlewares = new();
+        private readonly List<InitializingDelegate<TService>> _initializingMiddlewares = new();
+        private readonly List<ReceivingResponseDelegate<TService>> _receivingResponseMiddlewares = new();
+        private readonly List<ReceivedResponseDelegate<TService>> _receivedResponseMiddlewares = new();
+        private readonly List<SendingRequestDelegate<TService>> _sendingRequestMiddlewares = new();
 
         public IFeignClientPipeline<TService> UseBuildingRequest(BuildingRequestDelegate<TService> middleware)
         {

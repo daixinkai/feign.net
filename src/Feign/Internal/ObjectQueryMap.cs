@@ -46,9 +46,9 @@ namespace Feign.Internal
                     yield return new KeyValuePair<string, string?>(GetName(property, NamingPolicy), propertyValue.ToString());
                     continue;
                 }
-                if (propertyValue is IEnumerable)
+                if (propertyValue is IEnumerable enumerable)
                 {
-                    foreach (var item in (IEnumerable)propertyValue)
+                    foreach (var item in enumerable)
                     {
                         if (item == null)
                         {

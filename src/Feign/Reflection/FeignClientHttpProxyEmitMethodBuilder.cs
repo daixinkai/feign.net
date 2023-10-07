@@ -352,7 +352,7 @@ namespace Feign.Reflection
             //headers
             if (feignClientMethodInfo.MethodMetadata!.IsDefined(typeof(HeadersAttribute), true))
             {
-                List<IEmitValue<string>> headers = new List<IEmitValue<string>>();
+                List<IEmitValue<string>> headers = new();
                 var methodHeaders = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<HeadersAttribute>()!.Headers;
                 if (methodHeaders != null)
                 {
@@ -604,7 +604,7 @@ namespace Feign.Reflection
         protected static List<EmitRequestContent> EmitParameter(TypeBuilder typeBuilder, RequestMappingBaseAttribute requestMapping, ILGenerator iLGenerator, MethodInfo method, LocalBuilder uri)
         {
             int index = 0;
-            List<EmitRequestContent> emitRequestContents = new List<EmitRequestContent>();
+            List<EmitRequestContent> emitRequestContents = new();
             foreach (var parameterInfo in method.GetParameters())
             {
                 index++;

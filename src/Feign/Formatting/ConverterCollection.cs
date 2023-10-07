@@ -117,7 +117,7 @@ namespace Feign.Formatting
         }
 
 
-        internal TResult? ConvertDefaultValue<TResult>(object? value)
+        private TResult? ConvertDefaultValue<TResult>(object? value)
         {
             var converter = FindConverter<object, TResult>();
             if (converter == null)

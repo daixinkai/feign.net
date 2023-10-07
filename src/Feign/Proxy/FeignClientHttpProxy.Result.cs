@@ -74,23 +74,19 @@ namespace Feign.Proxy
                      new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
 
-            using (var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            using var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            if (stream.CanSeek)
             {
-                if (stream.CanSeek)
-                {
-                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method?.ResultType).ConfigureAwait(false);
-                }
-                using (Stream seekStream = new MemoryStream())
-                {
-                    await stream.CopyToAsync(seekStream).ConfigureAwait(false);
-                    seekStream.Seek(0, SeekOrigin.Begin);
-                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method?.ResultType).ConfigureAwait(false);
-                }
+                return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method!.ResultType).ConfigureAwait(false);
             }
+            using Stream seekStream = new MemoryStream();
+            await stream.CopyToAsync(seekStream).ConfigureAwait(false);
+            seekStream.Seek(0, SeekOrigin.Begin);
+            return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method!.ResultType).ConfigureAwait(false);
 
         }
 
-        private Task<TResult?> GetResultAsyncInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, MediaTypeHeaderValue? mediaTypeHeaderValue, Type? resultType)
+        private static Task<TResult?> GetResultAsyncInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, MediaTypeHeaderValue? mediaTypeHeaderValue, Type? resultType)
         {
             if (resultType != null)
             {

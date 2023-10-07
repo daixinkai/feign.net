@@ -18,7 +18,7 @@ namespace Feign.Pipeline
         /// <summary>
         /// 获取HttpClient
         /// </summary>
-        FeignHttpClient? HttpClient { get; set; }
+        FeignHttpClient HttpClient { get; set; }
         HttpHandlerType? HttpHandler { get; }
     }
 }

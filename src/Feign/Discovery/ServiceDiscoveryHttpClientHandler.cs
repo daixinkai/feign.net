@@ -34,7 +34,7 @@ namespace Feign.Discovery
             ICacheProvider? serviceCacheProvider,
             ILogger? logger) : base(feignClient, logger)
         {
-            _serviceResolve = (feignClient.FeignOptions.LoadBalancingPolicy) switch
+            _serviceResolve = feignClient.FeignOptions.LoadBalancingPolicy switch
             {
                 LoadBalancingPolicy.FirstAlphabetical => new FirstServiceResolve(logger),
                 LoadBalancingPolicy.Random => new RandomServiceResolve(logger),
@@ -73,7 +73,7 @@ namespace Feign.Discovery
             return _serviceResolve.ResolveService(requestMessage.RequestUri, services);
         }
 
-        private void ServiceResolveFail(FeignHttpRequestMessage requestMessage)
+        private static void ServiceResolveFail(FeignHttpRequestMessage requestMessage)
         {
             throw new ServiceResolveFailException($"Resolve service fail : {requestMessage.RequestUri}");
         }

@@ -21,8 +21,8 @@ namespace Feign.Proxy
         public FeignClientHttpProxy(
             IFeignOptions feignOptions,
             IServiceDiscovery serviceDiscovery,
-            ICacheProvider? cacheProvider = null,
-            ILoggerFactory? loggerFactory = null
+            ICacheProvider? cacheProvider,
+            ILoggerFactory? loggerFactory
             )
         {
             FeignOptions = feignOptions;
@@ -47,10 +47,11 @@ namespace Feign.Proxy
 
             BaseUrl = BuildBaseUrl(baseUrl);
 
-            Origin = $"{_scheme}://{ServiceId}";
-            var initializingContext = new InitializingPipelineContext<TService>(this);
-            initializingContext.HttpHandler = serviceDiscoveryHttpClientHandler.HttpHandler;
-            initializingContext.HttpClient = HttpClient;
+            Origin = $"{s_httpScheme}://{ServiceId}";
+            var initializingContext = new InitializingPipelineContext<TService>(this, HttpClient)
+            {
+                HttpHandler = serviceDiscoveryHttpClientHandler.HttpHandler
+            };
             OnInitializing(initializingContext);
             HttpClient = initializingContext.HttpClient;
             if (HttpClient == null)
@@ -64,7 +65,7 @@ namespace Feign.Proxy
         {
             if (!baseUrl.StartsWith("http") && baseUrl != "")
             {
-                baseUrl = $"{_scheme}://{baseUrl}";
+                baseUrl = $"{s_httpScheme}://{baseUrl}";
             }
             if (!string.IsNullOrWhiteSpace(BaseUri))
             {
@@ -92,19 +93,19 @@ namespace Feign.Proxy
         /// <summary>
         /// 全局pipeline
         /// </summary>
-        internal GlobalFeignClientPipeline? _globalFeignClientPipeline;
+        internal readonly GlobalFeignClientPipeline? _globalFeignClientPipeline;
         /// <summary>
         /// serviceId pipeline
         /// </summary>
-        internal ServiceIdFeignClientPipeline? _serviceIdFeignClientPipeline;
+        internal readonly ServiceIdFeignClientPipeline? _serviceIdFeignClientPipeline;
         /// <summary>
         /// TService pipeline
         /// </summary>
-        internal ServiceFeignClientPipeline<TService>? _serviceFeignClientPipeline;
+        internal readonly ServiceFeignClientPipeline<TService>? _serviceFeignClientPipeline;
 
-        private ILogger? _logger;
+        private readonly ILogger? _logger;
 
-        private string _scheme = "http";
+        private const string s_httpScheme = "http";
 
         protected internal IFeignOptions FeignOptions { get; private set; }
 
@@ -169,7 +170,6 @@ namespace Feign.Proxy
 
         // 添加此代码以正确实现可处置模式。
         void IDisposable.Dispose()
-#pragma warning restore CA1063 // Implement IDisposable Correctly
         {
             // 请勿更改此代码。将清理代码放入以上 Dispose(bool disposing) 中。
             Dispose(true);
@@ -206,7 +206,7 @@ namespace Feign.Proxy
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplaceRequestQuery<T>(FeignOptions.Converters, FeignOptions.PropertyNamingPolicy, uri, name, value, FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(FeignOptions.Converters, FeignOptions.PropertyNamingPolicy, uri, name, value, FeignOptions.UseUrlEncode);
         }
         protected string ReplaceStringRequestQuery(string uri, string name, string value)
         {

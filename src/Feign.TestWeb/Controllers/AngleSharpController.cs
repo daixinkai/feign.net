@@ -23,7 +23,7 @@ namespace Feign.TestWeb.Controllers
             string url = "https://www.jd.com";
             string html = await _angleSharpTestService.GetHtmlAsync(url);
             var document = await _angleSharpTestService.GetHtmlDocumentAsync(url);
-            return Content(document.Head.GetElementsByTagName("title").FirstOrDefault()?.TextContent ?? "no content");
+            return Content(document!.Head!.GetElementsByTagName("title").FirstOrDefault()?.TextContent ?? "no content");
         }
 
 

@@ -117,13 +117,13 @@ namespace Feign.Tests
             feignBuilder.Options.FeignClientPipeline.UseBuildingRequest(FeignClientPipeline_BuildingRequest);
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseBuildingRequest(context =>
             {
-                IFeignClient<ITestService> feignClient = context.FeignClient as IFeignClient<ITestService>;
+                IFeignClient<ITestService> feignClient = context.FeignClient;
                 ITestService service = feignClient.Service;
                 return TaskEx.CompletedTask;
-            });
+            });            
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseBuildingRequest(context =>
             {
-                var fallbackFeignClient = context.FeignClient.AsFallback<object>();
+                var fallbackFeignClient = context.FeignClient.AsFallback();
                 fallbackFeignClient = context.FeignClient.AsFallback<object>();
                 fallbackFeignClient = context.FeignClient.AsFallback<ITestService>();
 
