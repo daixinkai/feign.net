@@ -21,8 +21,8 @@ namespace Feign.Proxy
         public FeignClientHttpProxy(
             IFeignOptions feignOptions,
             IServiceDiscovery serviceDiscovery,
-            ICacheProvider cacheProvider = null,
-            ILoggerFactory loggerFactory = null
+            ICacheProvider? cacheProvider = null,
+            ILoggerFactory? loggerFactory = null
             )
         {
             FeignOptions = feignOptions;
@@ -33,7 +33,7 @@ namespace Feign.Proxy
             var serviceDiscoveryHttpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, serviceDiscovery, cacheProvider, _logger);
             if (FeignOptions.AutomaticDecompression.HasValue)
             {
-                serviceDiscoveryHttpClientHandler.AutomaticDecompression = feignOptions.AutomaticDecompression.Value;
+                serviceDiscoveryHttpClientHandler.AutomaticDecompression = FeignOptions.AutomaticDecompression.Value;
             }
             if (FeignOptions.UseCookies.HasValue)
             {
@@ -43,7 +43,7 @@ namespace Feign.Proxy
             serviceDiscoveryHttpClientHandler.ShouldResolveService = Url == null;
             serviceDiscoveryHttpClientHandler.AllowAutoRedirect = false;
             HttpClient = new FeignHttpClient(new FeignDelegatingHandler(serviceDiscoveryHttpClientHandler));
-            string baseUrl = serviceDiscoveryHttpClientHandler.ShouldResolveService ? ServiceId ?? "" : Url;
+            string baseUrl = serviceDiscoveryHttpClientHandler.ShouldResolveService ? (ServiceId ?? "") : Url!;
 
             BaseUrl = BuildBaseUrl(baseUrl);
 
@@ -72,7 +72,7 @@ namespace Feign.Proxy
                 {
                     baseUrl = baseUrl.TrimEnd('/');
                 }
-                if (BaseUri.StartsWith("/"))
+                if (BaseUri!.StartsWith("/"))
                 {
                     baseUrl += BaseUri;
                 }
@@ -92,23 +92,23 @@ namespace Feign.Proxy
         /// <summary>
         /// 全局pipeline
         /// </summary>
-        internal GlobalFeignClientPipeline _globalFeignClientPipeline;
+        internal GlobalFeignClientPipeline? _globalFeignClientPipeline;
         /// <summary>
         /// serviceId pipeline
         /// </summary>
-        internal ServiceIdFeignClientPipeline _serviceIdFeignClientPipeline;
+        internal ServiceIdFeignClientPipeline? _serviceIdFeignClientPipeline;
         /// <summary>
         /// TService pipeline
         /// </summary>
-        internal ServiceFeignClientPipeline<TService> _serviceFeignClientPipeline;
+        internal ServiceFeignClientPipeline<TService>? _serviceFeignClientPipeline;
 
-        private ILogger _logger;
+        private ILogger? _logger;
 
         private string _scheme = "http";
 
         protected internal IFeignOptions FeignOptions { get; private set; }
 
-        TService IFeignClient<TService>.Service { get { return this as TService; } }
+        TService IFeignClient<TService>.Service { get { return (this as TService)!; } }
 
         Type IFeignClient<TService>.ServiceType { get { return typeof(TService); } }
 
@@ -126,17 +126,17 @@ namespace Feign.Proxy
         /// <summary>
         /// 获取服务的base uri
         /// </summary>
-        public virtual string BaseUri { get { return null; } }
+        public virtual string? BaseUri { get { return null; } }
         /// <summary>
         /// 获取服务的url
         /// </summary>
-        public virtual string Url { get { return null; } }
+        public virtual string? Url { get { return null; } }
 
         protected string BaseUrl { get; }
 
         protected string Origin { get; }
 
-        protected virtual string[] DefaultHeaders => null;
+        protected virtual string[]? DefaultHeaders => null;
 
         protected FeignHttpClient HttpClient { get; }
 
@@ -179,7 +179,7 @@ namespace Feign.Proxy
         #endregion
 
         #region ConvertToStringValue
-        protected virtual string ConvertToStringValue<T>(T value)
+        protected virtual string? ConvertToStringValue<T>(T value)
         {
             return FeignOptions.Converters.ConvertValue<T, string>(value, true);
         }
@@ -188,7 +188,7 @@ namespace Feign.Proxy
         #region PathVariable
         protected string ReplacePathVariable<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplacePathVariable<T>(FeignOptions.Converters, uri, name, value, FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(FeignOptions.Converters, uri, name, value, FeignOptions.UseUrlEncode);
         }
         protected string ReplaceStringPathVariable(string uri, string name, string value)
         {

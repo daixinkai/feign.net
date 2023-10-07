@@ -37,11 +37,11 @@ namespace Feign.Pipeline.Internal
 
         internal bool _isSetResult;
 
-        internal TResult _result;
+        internal TResult? _result;
         /// <summary>
         /// 获取或设置返回对象
         /// </summary>
-        public object Result
+        public object? Result
         {
             get
             {
@@ -50,11 +50,13 @@ namespace Feign.Pipeline.Internal
             set
             {
                 _isSetResult = true;
+#pragma warning disable CS8600
                 _result = (TResult)value;
+#pragma warning restore CS8600
             }
         }
 
-        internal TResult GetResult()
+        internal TResult? GetResult()
         {
             return _result;
         }

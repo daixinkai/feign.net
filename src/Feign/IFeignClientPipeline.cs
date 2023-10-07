@@ -1,14 +1,4 @@
-﻿
-/* 项目“Feign (netstandard2.1)”的未合并的更改
-在此之前:
-using System;
-在此之后:
-using Feign;
-using Feign;
-using Feign.Pipeline;
-using System;
-*/
-using Feign.Pipeline;
+﻿using Feign.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;

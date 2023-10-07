@@ -12,9 +12,9 @@ namespace Feign
     partial class ReflectionExtensions
     {
 
-        private static readonly MethodInfo GetMethodFromHandleMethodInfoAndTypeHandle = typeof(MethodBase).GetMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) });
+        private static readonly MethodInfo GetMethodFromHandleMethodInfoAndTypeHandle = typeof(MethodBase).GetRequiredMethod("GetMethodFromHandle", new Type[] { typeof(RuntimeMethodHandle), typeof(RuntimeTypeHandle) });
 
-        private static readonly MethodInfo GetTypeFromHandleMethodInfo = typeof(Type).GetMethod("GetTypeFromHandle");
+        private static readonly MethodInfo GetTypeFromHandleMethodInfo = typeof(Type).GetRequiredMethod("GetTypeFromHandle");
 
         public static MethodBuilder DefineMethodBuilder(this TypeBuilder typeBuilder, MethodInfo method, MethodAttributes methodAttributes, bool copyCustomAttributes)
         {
@@ -41,7 +41,7 @@ namespace Feign
         {
             iLGenerator.Emit(OpCodes.Ldtoken, method);
             //iLGenerator.Emit(OpCodes.Call, GetMethodFromHandleMethodInfo);
-            iLGenerator.Emit(OpCodes.Ldtoken, method.DeclaringType);
+            iLGenerator.Emit(OpCodes.Ldtoken, method.DeclaringType!);
             iLGenerator.Emit(OpCodes.Call, GetMethodFromHandleMethodInfoAndTypeHandle);
             iLGenerator.Emit(OpCodes.Castclass, typeof(MethodInfo));
         }
@@ -62,7 +62,7 @@ namespace Feign
         /// </summary>
         /// <param name="iLGenerator"></param>
         /// <param name="value"></param>
-        public static void EmitStringValue(this ILGenerator iLGenerator, string value)
+        public static void EmitStringValue(this ILGenerator iLGenerator, string? value)
         {
             if (value == null)
             {
@@ -133,6 +133,14 @@ namespace Feign
             }
         }
 
+        public static void EmitLdargEx(this ILGenerator iLGenerator, int from, int count)
+        {
+            for (int i = from; i <= count; i++)
+            {
+                iLGenerator.EmitLdarg(i);
+            }
+        }
+
         public static void EmitLdarg(this ILGenerator iLGenerator, int index)
         {
             switch (index)
@@ -178,7 +186,7 @@ namespace Feign
 #if !NET45
             if (count == 0)
             {
-                iLGenerator.Emit(OpCodes.Call, typeof(Array).GetMethod("Empty").MakeGenericMethod(typeof(string)));
+                iLGenerator.Emit(OpCodes.Call, typeof(Array).GetRequiredMethod("Empty").MakeGenericMethod(typeof(string)));
                 return;
             }
 #endif
@@ -199,7 +207,7 @@ namespace Feign
 
         public static void CallBaseTypeDefaultConstructor(this ILGenerator constructorIlGenerator, Type baseType)
         {
-            var defaultConstructor = baseType.GetConstructors().Where(s => s.GetParameters().Length == 0).FirstOrDefault();
+            var defaultConstructor = baseType.GetDefaultConstructor();
             if (defaultConstructor == null)
             {
                 throw new ArgumentException("The default constructor not found . Type : " + baseType.FullName);
@@ -220,12 +228,12 @@ namespace Feign
 
         public static void EmitGetProperty(this ILGenerator iLGenerator, PropertyInfo property)
         {
-            iLGenerator.Emit(OpCodes.Call, property.GetMethod);
+            iLGenerator.Emit(OpCodes.Call, property.GetMethod!);
         }
 
         public static void EmitSetProperty(this ILGenerator iLGenerator, PropertyInfo property)
         {
-            iLGenerator.Emit(OpCodes.Call, property.SetMethod);
+            iLGenerator.Emit(OpCodes.Call, property.SetMethod!);
         }
 
         public static void EmitNop(this ILGenerator _)

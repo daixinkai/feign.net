@@ -5,7 +5,7 @@ using System.Text;
 namespace Feign
 {
     /// <summary>
-    /// 映射一个POST请求
+    /// mapping HTTP POST requests
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public sealed class PostMappingAttribute : RequestMappingBaseAttribute

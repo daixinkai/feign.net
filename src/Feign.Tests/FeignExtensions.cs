@@ -128,7 +128,6 @@ namespace Feign.Tests
                 fallbackFeignClient = context.FeignClient.AsFallback<ITestService>();
 
                 var fallback = fallbackFeignClient?.Fallback;
-
                 fallback = context.FeignClient.GetFallback<object>();
                 fallback = context.FeignClient.GetFallback<object>();
                 //     fallback = e.FeignClient.GetFallback<ITestService>();

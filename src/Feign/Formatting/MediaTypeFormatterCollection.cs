@@ -51,7 +51,7 @@ namespace Feign.Formatting
         /// </summary>
         /// <param name="mediaType"></param>
         /// <returns></returns>
-        public IMediaTypeFormatter FindFormatter(string mediaType)
+        public IMediaTypeFormatter? FindFormatter(string? mediaType)
         {
             if (mediaType == null)
             {

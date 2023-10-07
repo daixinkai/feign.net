@@ -11,9 +11,9 @@ namespace Feign
 {
     partial class ReflectionExtensions
     {
-        public static T GetCustomAttributeIncludingBaseInterfaces<T>(this Type type) where T : Attribute
+        public static T? GetCustomAttributeIncludingBaseInterfaces<T>(this Type type) where T : Attribute
         {
-            T attribute = type.GetCustomAttribute<T>();
+            T? attribute = type.GetCustomAttribute<T>();
             if (attribute != null)
             {
                 return attribute;
@@ -21,9 +21,9 @@ namespace Feign
             return GetCustomAttributeFromBaseInterfaces<T>(type);
         }
 
-        private static T GetCustomAttributeFromBaseInterfaces<T>(this Type type) where T : Attribute
+        private static T? GetCustomAttributeFromBaseInterfaces<T>(this Type type) where T : Attribute
         {
-            T attribute;
+            T? attribute;
             foreach (var item in type.GetInterfaces())
             {
                 attribute = item.GetCustomAttribute<T>();
@@ -93,6 +93,7 @@ namespace Feign
         {
             List<CustomAttributeNamedArgument> propertyArguments = data.NamedArguments.Where(s => !s.IsField).ToList();
             List<CustomAttributeNamedArgument> fieldArguments = data.NamedArguments.Where(s => s.IsField).ToList();
+#pragma warning disable CS8620
             CustomAttributeBuilder customAttributeBuilder = new CustomAttributeBuilder(
                 data.Constructor,
                 data.ConstructorArguments.Select(GetArgumentValue).ToArray(),
@@ -100,15 +101,16 @@ namespace Feign
                 propertyArguments.Select(s => s.TypedValue.Value).ToArray(),
                 fieldArguments.Select(s => (FieldInfo)s.MemberInfo).ToArray(),
                 fieldArguments.Select(s => s.TypedValue.Value).ToArray());
+#pragma warning restore CS8620
             return customAttributeBuilder;
         }
 
-        private static object GetArgumentValue(CustomAttributeTypedArgument argument)
+        private static object? GetArgumentValue(CustomAttributeTypedArgument argument)
         {
             if (argument.ArgumentType.IsArray)
             {
                 var values = argument.Value as System.Collections.ObjectModel.ReadOnlyCollection<CustomAttributeTypedArgument>;
-                return values.Select(GetArgumentValue).ToArray();
+                return values!.Select(GetArgumentValue).ToArray();
             }
             return argument.Value;
         }
@@ -121,19 +123,19 @@ namespace Feign
             }
             if (expression.Body.NodeType == ExpressionType.New)
             {
-                NewExpression newExpression = expression.Body as NewExpression;
+                var newExpression = expression.Body as NewExpression;
                 return new CustomAttributeBuilder(
-                    newExpression.Constructor,
+                    newExpression!.Constructor!,
                     newExpression.Arguments.OfType<ConstantExpression>().Select(s => s.Value).ToArray()
                 );
             }
             else if (expression.Body.NodeType == ExpressionType.MemberInit)
             {
-                MemberInitExpression memberInitExpression = expression.Body as MemberInitExpression;
-                var fields = memberInitExpression.Bindings.OfType<MemberAssignment>().Where(s => s.Member.MemberType == MemberTypes.Field).ToList();
+                var memberInitExpression = expression.Body as MemberInitExpression;
+                var fields = memberInitExpression!.Bindings.OfType<MemberAssignment>().Where(s => s.Member.MemberType == MemberTypes.Field).ToList();
                 var properties = memberInitExpression.Bindings.OfType<MemberAssignment>().Where(s => s.Member.MemberType == MemberTypes.Property).ToList();
                 return new CustomAttributeBuilder(
-                    memberInitExpression.NewExpression.Constructor,
+                    memberInitExpression.NewExpression!.Constructor!,
                     memberInitExpression.NewExpression.Arguments.OfType<ConstantExpression>().Select(s => s.Value).ToArray(),
                     properties.Select(s => s.Member).OfType<PropertyInfo>().ToArray(),
                     properties.Select(s => s.Expression).OfType<ConstantExpression>().Select(s => s.Value).ToArray(),

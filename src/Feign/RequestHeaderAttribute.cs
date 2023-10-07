@@ -25,16 +25,16 @@ namespace Feign
             Name = name;
         }
 
-        public string Name { get; }
+        public string? Name { get; }
 
-        public static KeyValuePair<string, string> GetHeader(string name, string value)
+        public static KeyValuePair<string, string> GetHeader(string? name, string value)
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
                 return new KeyValuePair<string, string>(name, value);
             }
-            string[] values = value?.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (values.Length != 2)
+            string[] values = value.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            if (values == null || values.Length != 2)
             {
                 throw new ArgumentException("value must be (key:value) when Name is empty", nameof(value));
             }
@@ -56,8 +56,8 @@ namespace Feign
                 iLGenerator.Emit(OpCodes.Ldnull);
             }
             iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            iLGenerator.Emit(OpCodes.Call, method);
-            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) }));
+            iLGenerator.Emit(OpCodes.Call, method!);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) })!);
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
             return localBuilder;
         }

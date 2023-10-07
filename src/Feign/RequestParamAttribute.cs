@@ -23,6 +23,6 @@ namespace Feign
         /// <summary>
         /// 获取参数名
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
     }
 }

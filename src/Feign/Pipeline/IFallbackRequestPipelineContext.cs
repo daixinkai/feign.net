@@ -22,7 +22,7 @@ namespace Feign.Pipeline
         /// <summary>
         /// 获取降级代理对象
         /// </summary>
-        IFallbackProxy FallbackProxy { get; }
+        IFallbackProxy? FallbackProxy { get; }
         /// <summary>
         /// 获取降级服务对象
         /// </summary>
@@ -31,6 +31,10 @@ namespace Feign.Pipeline
         /// 获取降级的服务方法
         /// </summary>
         MethodInfo Method { get; }
+        /// <summary>
+        /// 获取触发降级的错误
+        /// </summary>
+        Exception Exception { get; }
         /// <summary>
         /// 获取请求的参数描述
         /// </summary>

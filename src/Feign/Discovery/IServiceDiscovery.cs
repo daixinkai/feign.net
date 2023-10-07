@@ -12,13 +12,13 @@ namespace Feign.Discovery
         /// <summary>
         /// 服务的serviceId 集合
         /// </summary>
-        IList<string> Services { get; }
+        IList<string>? Services { get; }
         /// <summary>
         /// 根据指定的serviceId获取服务对象集合
         /// </summary>
         /// <param name="serviceId"></param>
         /// <returns></returns>
-        IList<IServiceInstance> GetServiceInstances(string serviceId);
+        IList<IServiceInstance>? GetServiceInstances(string serviceId);
 
     }
 }

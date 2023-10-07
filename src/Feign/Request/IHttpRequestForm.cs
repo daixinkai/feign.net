@@ -11,6 +11,6 @@ namespace Feign.Request
     /// </summary>
     public interface IHttpRequestForm
     {
-        IEnumerable<KeyValuePair<string, string>> GetRequestForm();
+        IEnumerable<KeyValuePair<string, string?>> GetRequestForm();
     }
 }

@@ -15,10 +15,10 @@ namespace Feign.Reflection
             if (valueType.IsNullableType() && valueType.GenericTypeArguments[0].IsPrimitive)
             {
                 return typeof(StringValueMethods).GetMethods()
-                    .FirstOrDefault(s => s.Name == "NullableToString" && s.IsGenericMethod).MakeGenericMethod(valueType.GetGenericArguments()[0]);
+                    .FirstOrDefault(s => s.Name == "NullableToString" && s.IsGenericMethod)!.MakeGenericMethod(valueType.GetGenericArguments()[0]);
             }
             //return typeof(StringValueMethods).GetMethod("ToString", new Type[] { valueType });
-            return typeof(StringValueMethods).GetMethod("ToString", new Type[] { valueType });
+            return typeof(StringValueMethods).GetRequiredMethod("ToString", new Type[] { valueType });
         }
 
         public static string ToString(string value)
@@ -51,7 +51,7 @@ namespace Feign.Reflection
         {
             return value.ToString();
         }
-        public static string NullableToString<T>(T? value) where T : struct
+        public static string? NullableToString<T>(T? value) where T : struct
         {
             if (!value.HasValue)
             {

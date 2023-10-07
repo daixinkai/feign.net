@@ -20,12 +20,20 @@ namespace Feign.Pipeline.Internal
     internal class FallbackRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IFallbackRequestPipelineContext<TService>
 //#endif
     {
-        internal FallbackRequestPipelineContext(IFeignClient<TService> feignClient, FeignClientHttpRequest request, TService fallback, IFallbackProxy fallbackProxy, MethodInfo method) : base(feignClient)
+        internal FallbackRequestPipelineContext(
+            IFeignClient<TService> feignClient, 
+            FeignClientHttpRequest request, 
+            TService fallback, 
+            IFallbackProxy? fallbackProxy, 
+            MethodInfo? method,
+            Exception exception
+            ) : base(feignClient)
         {
             Request = request;
             Fallback = fallback;
             FallbackProxy = fallbackProxy;
             _method = method;
+            Exception = exception;
         }
         /// <summary>
         /// 获取请求对象
@@ -34,12 +42,12 @@ namespace Feign.Pipeline.Internal
         /// <summary>
         /// 获取降级代理对象
         /// </summary>
-        public IFallbackProxy FallbackProxy { get; }
+        public IFallbackProxy? FallbackProxy { get; }
         /// <summary>
         /// 获取降级服务对象
         /// </summary>
         public TService Fallback { get; }
-        private MethodInfo _method;
+        private MethodInfo? _method;
         /// <summary>
         /// 获取降级的服务方法
         /// </summary>
@@ -49,11 +57,15 @@ namespace Feign.Pipeline.Internal
             {
                 if (_method == null)
                 {
-                    _method = Fallback.GetType().GetMethod(FallbackProxy.MethodName, FallbackProxy.GetParameterTypes());
+                    _method = Fallback!.GetType().GetRequiredMethod(FallbackProxy!.MethodName, FallbackProxy.GetParameterTypes());
                 }
                 return _method;
             }
         }
+        /// <summary>
+        /// 获取触发降级的错误
+        /// </summary>
+        public Exception Exception { get; }
         /// <summary>
         /// 获取请求的参数描述
         /// </summary>

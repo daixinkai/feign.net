@@ -24,7 +24,7 @@ namespace Feign
 
         public Type ResultType { get; }
 
-        internal Type ConvertType(Type type)
+        internal Type? ConvertType(Type type)
         {
             Type resultType = ResultType;
             //特殊转换

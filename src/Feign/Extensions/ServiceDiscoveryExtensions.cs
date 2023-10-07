@@ -10,7 +10,7 @@ namespace Feign
 {
     internal static class ServiceDiscoveryExtensions
     {
-        public static async Task<IList<IServiceInstance>> GetServiceInstancesWithCacheAsync(this IServiceDiscovery serviceDiscovery, string serviceId, ICacheProvider cacheProvider, TimeSpan time, string serviceInstancesKeyPrefix = "ServiceDiscovery-ServiceInstances-")
+        public static async Task<IList<IServiceInstance>> GetServiceInstancesWithCacheAsync(this IServiceDiscovery serviceDiscovery, string serviceId, ICacheProvider? cacheProvider, TimeSpan time, string serviceInstancesKeyPrefix = "ServiceDiscovery-ServiceInstances-")
         {
             // if distributed cache was provided, just make the call back to the provider
             if (cacheProvider != null)

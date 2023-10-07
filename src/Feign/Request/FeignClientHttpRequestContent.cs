@@ -19,6 +19,6 @@ namespace Feign.Request
         /// <param name="contentType"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public abstract HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options);
+        public abstract HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options);
     }
 }

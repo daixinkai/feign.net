@@ -9,7 +9,7 @@ namespace Feign.Formatting
     /// </summary>
     public sealed class ObjectStringConverter : IConverter<object, string>
     {
-        public string Convert(object value)
+        public string? Convert(object? value)
         {
             return value?.ToString();
         }
@@ -17,7 +17,7 @@ namespace Feign.Formatting
 
     internal class ClassToStringConverter<T> : IConverter<T, string> where T : class
     {
-        public string Convert(T value)
+        public string? Convert(T? value)
         {
             return value?.ToString();
         }
@@ -25,7 +25,7 @@ namespace Feign.Formatting
 
     internal class StructToStringConverter<T> : IConverter<T, string> where T : struct
     {
-        public string Convert(T value)
+        public string? Convert(T value)
         {
             return value.ToString();
         }

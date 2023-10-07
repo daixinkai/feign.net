@@ -8,9 +8,9 @@ namespace Feign.Discovery
 {
     public class DefaultServiceDiscovery : IServiceDiscovery
     {
-        public IList<string> Services => null;
+        public IList<string>? Services => null;
 
-        public IList<IServiceInstance> GetServiceInstances(string serviceId)
+        public IList<IServiceInstance>? GetServiceInstances(string serviceId)
         {
             return null;
         }

@@ -108,7 +108,7 @@ namespace Feign
                 iLGenerator.Emit(OpCodes.Ldarg_0);
                 iLGenerator.Emit(OpCodes.Ldfld, fieldBuilder);
                 iLGenerator.Emit(OpCodes.Ret);
-                typeBuilder.DefineMethodOverride(propertyGet, property.GetMethod);
+                typeBuilder.DefineMethodOverride(propertyGet, property.GetMethod!);
                 propertyBuilder.SetGetMethod(propertyGet);
             }
 
@@ -122,20 +122,20 @@ namespace Feign
                 iLGenerator.Emit(OpCodes.Ldarg_1);
                 iLGenerator.Emit(OpCodes.Stfld, fieldBuilder);
                 iLGenerator.Emit(OpCodes.Ret);
-                typeBuilder.DefineMethodOverride(propertySet, property.SetMethod);
+                typeBuilder.DefineMethodOverride(propertySet, property.SetMethod!);
                 propertyBuilder.SetSetMethod(propertySet);
             }
 
             propertyBuilder.CopyCustomAttributes(property);
         }
 
-        public static void OverrideProperty(this TypeBuilder typeBuilder, PropertyInfo property, Action<ILGenerator> getterInvoker, Action<ILGenerator> setterInvoker)
+        public static void OverrideProperty(this TypeBuilder typeBuilder, PropertyInfo property, Action<ILGenerator>? getterInvoker, Action<ILGenerator>? setterInvoker)
         {
             MethodAttributes methodAttributes = MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual;
             PropertyBuilder propertyBuilder = typeBuilder.DefineProperty(property.Name, property.Attributes, property.PropertyType, Type.EmptyTypes);
             if (property.CanRead)
             {
-                MethodAttributes scope = property.GetMethod.Attributes.HasFlag(MethodAttributes.Public) ? MethodAttributes.Public : MethodAttributes.Family;
+                MethodAttributes scope = property.GetMethod!.Attributes.HasFlag(MethodAttributes.Public) ? MethodAttributes.Public : MethodAttributes.Family;
                 MethodBuilder propertyGet = typeBuilder.DefineMethod("get_" + property.Name, scope | methodAttributes, property.PropertyType, Type.EmptyTypes);
                 //propertyGet.SetCustomAttribute(() => new CompilerGeneratedAttribute());
                 ILGenerator iLGenerator = propertyGet.GetILGenerator();
@@ -149,14 +149,14 @@ namespace Feign
 
             if (property.CanWrite)
             {
-                MethodAttributes scope = property.SetMethod.Attributes.HasFlag(MethodAttributes.Public) ? MethodAttributes.Public : MethodAttributes.Family;
+                MethodAttributes scope = property.SetMethod!.Attributes.HasFlag(MethodAttributes.Public) ? MethodAttributes.Public : MethodAttributes.Family;
                 MethodBuilder propertySet = typeBuilder.DefineMethod("set_" + property.Name, scope | methodAttributes, typeof(void), new Type[] { property.PropertyType });
                 //propertySet.SetCustomAttribute(() => new CompilerGeneratedAttribute());
                 propertySet.DefineParameter(1, ParameterAttributes.None, "value");
                 ILGenerator iLGenerator = propertySet.GetILGenerator();
                 setterInvoker?.Invoke(iLGenerator);
                 iLGenerator.Emit(OpCodes.Ret);
-                if (!property.GetMethod.IsAbstract)
+                if (!property.GetMethod!.IsAbstract)
                 {
                     typeBuilder.DefineMethodOverride(propertySet, property.SetMethod);
                 }

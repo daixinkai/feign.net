@@ -39,14 +39,14 @@ namespace Feign.Pipeline.Internal
 
         #region BuildingRequest
         public string Method => _requestMessage.Method.ToString();
-        public Uri RequestUri { get; set; }
+        public Uri? RequestUri { get; set; }
         public IDictionary<string, string> Headers { get; }
         #endregion
 
         #region SendingRequest
 
         private bool _isTerminated;
-        internal CancellationTokenSource _cancellationTokenSource;
+        internal CancellationTokenSource? _cancellationTokenSource;
         /// <summary>
         /// 获取一个值,指示是否终止请求
         /// </summary>

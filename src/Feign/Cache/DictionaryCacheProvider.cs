@@ -13,8 +13,8 @@ namespace Feign.Cache
     {
         private class CacheEntry
         {
-            public string Key { get; set; }
-            public object Value { get; set; }
+            public string Key { get; set; } = null!;
+            public object Value { get; set; } = null!;
             public long? ExpirationTime { get; set; }
             public bool IsExpiration()
             {
@@ -24,7 +24,7 @@ namespace Feign.Cache
 
         private readonly ConcurrentDictionary<string, CacheEntry> _map = new ConcurrentDictionary<string, CacheEntry>();
 
-        public T Get<T>(string name)
+        public T? Get<T>(string name)
         {
             if (!_map.TryGetValue(name, out var cacheEntry))
             {
@@ -33,7 +33,7 @@ namespace Feign.Cache
             return cacheEntry.IsExpiration() ? default : (T)cacheEntry.Value;
         }
 
-        public Task<T> GetAsync<T>(string name)
+        public Task<T?> GetAsync<T>(string name)
         {
             return Task.FromResult(Get<T>(name));
         }
@@ -43,7 +43,7 @@ namespace Feign.Cache
             CacheEntry cacheEntry = new CacheEntry
             {
                 Key = name,
-                Value = value,
+                Value = value!,
                 ExpirationTime = expirationTime.HasValue ? GetCurrentTimeMillis(expirationTime.Value) : null
             };
             _map.AddOrUpdate(name, cacheEntry, (key, oldValue) => cacheEntry);

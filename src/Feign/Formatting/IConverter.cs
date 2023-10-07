@@ -15,6 +15,6 @@ namespace Feign.Formatting
     /// </summary>
     public interface IConverter<in TSource, out TResult> : IConverter
     {
-        TResult Convert(TSource value);
+        TResult? Convert(TSource? value);
     }
 }

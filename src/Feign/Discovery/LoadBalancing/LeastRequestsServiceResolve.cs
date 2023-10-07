@@ -13,7 +13,7 @@ namespace Feign.Discovery.LoadBalancing
     /// </summary>
     public class LeastRequestsServiceResolve : ServiceResolveBase
     {
-        public LeastRequestsServiceResolve(ILogger logger) : base(logger)
+        public LeastRequestsServiceResolve(ILogger? logger) : base(logger)
         {
         }
 

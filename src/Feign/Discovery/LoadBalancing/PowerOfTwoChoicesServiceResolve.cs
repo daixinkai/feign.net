@@ -13,7 +13,7 @@ namespace Feign.Discovery.LoadBalancing
     /// </summary>
     public class PowerOfTwoChoicesServiceResolve : ServiceResolveBase
     {
-        public PowerOfTwoChoicesServiceResolve(ILogger logger) : base(logger)
+        public PowerOfTwoChoicesServiceResolve(ILogger? logger) : base(logger)
         {
         }
         private static readonly Random _random = new Random();

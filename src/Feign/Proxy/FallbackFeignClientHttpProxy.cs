@@ -25,7 +25,13 @@ namespace Feign.Proxy
         where TFallback : TService
     {
 
-        public FallbackFeignClientHttpProxy(TFallback fallback, IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+        public FallbackFeignClientHttpProxy(
+            TFallback fallback,
+            IFeignOptions feignOptions,
+            IServiceDiscovery serviceDiscovery,
+            ICacheProvider? cacheProvider = null,
+            ILoggerFactory? loggerFactory = null)
+            : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
         {
             Fallback = fallback;
         }
@@ -41,22 +47,22 @@ namespace Feign.Proxy
 
         internal static MethodInfo GetHttpSendGenericFallbackMethod(Type serviceType, Type fallbackType)
         {
-            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => o.IsGenericMethod && o.Name == "Send").FirstOrDefault();
+            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => o.IsGenericMethod && o.Name == "Send").FirstOrDefault()!;
         }
 
         internal static MethodInfo GetHttpSendAsyncGenericFallbackMethod(Type serviceType, Type fallbackType)
         {
-            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => o.IsGenericMethod && o.Name == "SendAsync").FirstOrDefault();
+            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => o.IsGenericMethod && o.Name == "SendAsync").FirstOrDefault()!;
         }
 
         internal static MethodInfo GetHttpSendFallbackMethod(Type serviceType, Type fallbackType)
         {
-            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => !o.IsGenericMethod && o.Name == "Send").FirstOrDefault();
+            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => !o.IsGenericMethod && o.Name == "Send").FirstOrDefault()!;
         }
 
         internal static MethodInfo GetHttpSendAsyncFallbackMethod(Type serviceType, Type fallbackType)
         {
-            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => !o.IsGenericMethod && o.Name == "SendAsync").FirstOrDefault();
+            return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, fallbackType).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic).Where(o => !o.IsGenericMethod && o.Name == "SendAsync").FirstOrDefault()!;
         }
 
         #endregion
@@ -77,7 +83,7 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).ConfigureAwait(false);
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex).ConfigureAwait(false);
                 if (invokeFallbackRequestResult)
                 {
                     throw;
@@ -85,7 +91,7 @@ namespace Feign.Proxy
                 await fallback.Invoke().ConfigureAwait(false);
             }
         }
-        protected virtual async Task<TResult> SendAsync<TResult>(FeignClientHttpRequest request, Func<Task<TResult>> fallback)
+        protected virtual async Task<TResult?> SendAsync<TResult>(FeignClientHttpRequest request, Func<Task<TResult>> fallback)
         {
             try
             {
@@ -93,7 +99,7 @@ namespace Feign.Proxy
             }
             catch (TerminatedRequestException)
             {
-                return default(TResult);
+                return default;
             }
             catch (Exception ex)
             {
@@ -101,7 +107,7 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).ConfigureAwait(false);
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex).ConfigureAwait(false);
                 if (invokeFallbackRequestResult)
                 {
                     throw;
@@ -125,14 +131,14 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).GetResult())
+                if (InvokeFallbackRequestPipeline(request, fallback, ex).GetResult())
                 {
                     throw;
                 }
                 fallback.Invoke();
             }
         }
-        protected virtual TResult Send<TResult>(FeignClientHttpRequest request, Func<TResult> fallback)
+        protected virtual TResult? Send<TResult>(FeignClientHttpRequest request, Func<TResult> fallback)
         {
             try
             {
@@ -140,7 +146,7 @@ namespace Feign.Proxy
             }
             catch (TerminatedRequestException)
             {
-                return default(TResult);
+                return default;
             }
             catch (Exception ex)
             {
@@ -148,7 +154,7 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                if (InvokeFallbackRequestPipeline(request, fallback, ex as ServiceResolveFailException).GetResult())
+                if (InvokeFallbackRequestPipeline(request, fallback, ex).GetResult())
                 {
                     throw;
                 }
@@ -177,20 +183,20 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="request"></param>
         /// <param name="delegate"></param>
-        /// <param name="serviceResolveFailException"></param>
+        /// <param name="exception"></param>
         /// <returns></returns>
-        private async Task<bool> InvokeFallbackRequestPipeline(FeignClientHttpRequest request, Delegate @delegate, ServiceResolveFailException serviceResolveFailException)
+        private async Task<bool> InvokeFallbackRequestPipeline(FeignClientHttpRequest request, Delegate @delegate, Exception exception)
         {
-            IFallbackProxy fallbackProxy = @delegate.Target as IFallbackProxy;
+            IFallbackProxy? fallbackProxy = @delegate.Target as IFallbackProxy;
             FallbackRequestPipelineContext<TService> context;
             if (fallbackProxy == null)
             {
                 //可能因为method parameters length=0 , 故没有生成匿名调用类
-                context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, null, @delegate.Method);
+                context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, null, @delegate.Method, exception);
             }
             else
             {
-                context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, fallbackProxy, null);
+                context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, fallbackProxy, null, exception);
             }
             await OnFallbackRequest(context).ConfigureAwait(false);
             return context.IsTerminated;

@@ -23,7 +23,7 @@ namespace Feign.Discovery
 
         private readonly IServiceResolve _serviceResolve;
         private readonly IServiceDiscovery _serviceDiscovery;
-        private readonly ICacheProvider _serviceCacheProvider;
+        private readonly ICacheProvider? _serviceCacheProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceDiscoveryHttpClientHandler{TService}"/> class.
@@ -31,8 +31,8 @@ namespace Feign.Discovery
         public ServiceDiscoveryHttpClientHandler(
             FeignClientHttpProxy<TService> feignClient,
             IServiceDiscovery serviceDiscovery,
-            ICacheProvider serviceCacheProvider,
-            ILogger logger) : base(feignClient, logger)
+            ICacheProvider? serviceCacheProvider,
+            ILogger? logger) : base(feignClient, logger)
         {
             _serviceResolve = (feignClient.FeignOptions.LoadBalancingPolicy) switch
             {
@@ -52,7 +52,7 @@ namespace Feign.Discovery
         public bool ShouldResolveService { get; set; }
 
 
-        protected override async Task<Uri> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
+        protected override async Task<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
         {
             if (!ShouldResolveService)
             {
@@ -64,8 +64,8 @@ namespace Feign.Discovery
                 return requestMessage.RequestUri;
             }
 
-            IList<IServiceInstance> services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ?
-            await _serviceDiscovery.GetServiceInstancesWithCacheAsync(requestMessage.RequestUri.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value).ConfigureAwait(false) : _serviceDiscovery.GetServiceInstances(requestMessage.RequestUri.Host);
+            IList<IServiceInstance>? services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ?
+            await _serviceDiscovery.GetServiceInstancesWithCacheAsync(requestMessage.RequestUri!.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value).ConfigureAwait(false) : _serviceDiscovery.GetServiceInstances(requestMessage.RequestUri!.Host);
             if (services == null || services.Count == 0)
             {
                 ServiceResolveFail(requestMessage);

@@ -15,7 +15,7 @@ namespace Feign.Request
         /// <summary>
         /// 获取此文件的name
         /// </summary>
-        string Name { get; }
+        string? Name { get; }
         /// <summary>
         /// 获取随请求一起传输的HttpContent
         /// </summary>

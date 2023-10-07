@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 映射一个PATCH请求
+    /// mapping HTTP PATCH requests
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public sealed class PatchMappingAttribute : RequestMappingBaseAttribute

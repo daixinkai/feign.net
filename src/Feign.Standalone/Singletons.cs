@@ -13,8 +13,7 @@ namespace Feign.Standalone
         public object Value { get; set; }
         public static object GetInstance(Type type)
         {
-            object value;
-            _map.TryGetValue(type, out value);
+            _map.TryGetValue(type, out var value);
             return value;
         }
         public static void SetInstance(Type type, object value)

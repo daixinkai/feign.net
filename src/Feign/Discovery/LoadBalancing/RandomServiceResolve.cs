@@ -10,7 +10,7 @@ namespace Feign.Discovery.LoadBalancing
     /// </summary>
     public class RandomServiceResolve : ServiceResolveBase
     {
-        public RandomServiceResolve(ILogger logger) : base(logger)
+        public RandomServiceResolve(ILogger? logger) : base(logger)
         {
         }
         private static readonly Random _random = new Random();

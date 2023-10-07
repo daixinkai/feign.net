@@ -20,7 +20,7 @@ namespace Feign.Pipeline
         /// <summary>
         /// 获取或设置请求路径
         /// </summary>
-        Uri RequestUri { get; set; }
+        Uri? RequestUri { get; set; }
         /// <summary>
         /// 获取请求头
         /// </summary>

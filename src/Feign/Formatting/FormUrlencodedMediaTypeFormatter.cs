@@ -20,22 +20,12 @@ namespace Feign.Formatting
         }
         public string MediaType { get; }
 
-        public TResult GetResult<TResult>(Stream stream, Encoding encoding)
+        public Task<TResult?> GetResultAsync<TResult>(Stream stream, Encoding? encoding)
         {
             throw new NotImplementedException();
         }
 
-        public object GetResult(Type type, Stream stream, Encoding encoding)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<TResult> GetResultAsync<TResult>(Stream stream, Encoding encoding)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<object> GetResultAsync(Type type, Stream stream, Encoding encoding)
+        public Task<object?> GetResultAsync(Type type, Stream stream, Encoding? encoding)
         {
             throw new NotImplementedException();
         }

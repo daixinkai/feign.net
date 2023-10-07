@@ -14,7 +14,7 @@ namespace Feign.Internal
             get
             {
 #if NET45
-                return Task.FromResult<object>(null);
+                return Task.FromResult<object?>(null);
 #else
                 return Task.CompletedTask;
 #endif

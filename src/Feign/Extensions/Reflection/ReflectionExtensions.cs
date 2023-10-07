@@ -12,8 +12,14 @@ namespace Feign
     internal static partial class ReflectionExtensions
     {
 
-        public static ConstructorInfo GetEmptyConstructor(this Type type)
+        public static ConstructorInfo? GetEmptyConstructor(this Type type)
         {
+            return type.GetConstructor(Type.EmptyTypes);
+        }
+
+        public static ConstructorInfo? GetDefaultConstructor(this Type type)
+        {
+            //return type.GetConstructors().Where(s => s.GetParameters().Length == 0).FirstOrDefault();
             return type.GetConstructor(Type.EmptyTypes);
         }
 
@@ -33,14 +39,14 @@ namespace Feign
             {
                 if (!type.IsGenericType)
                 {
-                    return type.FullName;
+                    return type.FullName!;
                 }
-                Dictionary<Type, string> cache = new Dictionary<Type, string>();
+                Dictionary<Type, string> cache = new();
                 return GetFullName(type, cache);
             }
             catch //(Exception ex)
             {
-                return type.FullName;
+                return type.FullName!;
             }
         }
 
@@ -48,15 +54,14 @@ namespace Feign
         {
             if (!type.IsGenericType)
             {
-                return type.FullName;
+                return type.FullName!;
             }
-            string cacheFullName;
-            if (cache.TryGetValue(type, out cacheFullName))
+            if (cache.TryGetValue(type, out var cacheFullName))
             {
                 return cacheFullName;
             }
             string genericArgumentName = string.Join(",", type.GetGenericArguments().Select(s => GetFullName(s, cache)));
-            string fullName = type.GetGenericTypeDefinition().FullName.Split(new char[] { '`' })[0];
+            string fullName = type.GetGenericTypeDefinition().FullName!.Split(new char[] { '`' })[0];
             fullName = fullName + "<" + genericArgumentName + ">";
             cache.Add(type, fullName);
             return fullName;
@@ -70,37 +75,6 @@ namespace Feign
         public static void BuildFirstConstructor(this TypeBuilder typeBuilder, Type parentType)
         {
             ConstructorInfo baseConstructorInfo = GetFirstConstructor(parentType);
-            typeBuilder.BuildCallBaseTypeConstructor(baseConstructorInfo);
-        }
-
-
-        public static void BuildAndCallBaseTypeDefaultConstructor(this TypeBuilder typeBuilder)
-        {
-            Type baseType = (typeBuilder.BaseType ?? typeof(object));
-            ConstructorInfo baseConstructorInfo = baseType.GetConstructors().Where(s => s.GetParameters().Length == 0).FirstOrDefault();
-            if (baseConstructorInfo == null)
-            {
-                throw new ArgumentException("The default constructor not found . Type : " + baseType.FullName);
-            }
-            var parameterTypes = baseConstructorInfo.GetParameters().Select(s => s.ParameterType).ToArray();
-
-            ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
-               MethodAttributes.Public,
-               CallingConventions.Standard,
-               parameterTypes);
-
-            ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
-            constructorIlGenerator.CallBaseTypeConstructor(baseConstructorInfo);
-            constructorIlGenerator.Emit(OpCodes.Ret);
-        }
-
-        public static void BuildAndCallBaseTypeConstructor(this TypeBuilder typeBuilder, Type[] baseConstructorParameterTypes)
-        {
-            ConstructorInfo baseConstructorInfo = (typeBuilder.BaseType ?? typeof(object)).GetConstructors().Where(s => Equals(s.GetParameters(), baseConstructorParameterTypes)).FirstOrDefault();
-            if (baseConstructorInfo == null)
-            {
-                throw new ArgumentException("The constructor not found . Type[] : " + string.Join(",", baseConstructorParameterTypes.Select(s => s.FullName)));
-            }
             typeBuilder.BuildCallBaseTypeConstructor(baseConstructorInfo);
         }
 
@@ -123,29 +97,17 @@ namespace Feign
 
         }
 
-        public static void BuildConstructor(TypeBuilder typeBuilder, ConstructorInfo baseConstructor)
-        {
-            var parameterTypes = baseConstructor.GetParameters().Select(s => s.ParameterType).ToArray();
+        public static MethodInfo GetRequiredMethod(this Type type, string name)
+            => type.GetMethod(name)!;
+        public static MethodInfo GetRequiredMethod(this Type type, string name, BindingFlags bindingAttr)
+            => type.GetMethod(name, bindingAttr)!;
+        public static MethodInfo GetRequiredMethod(this Type type, string name, Type[] types)
+            => type.GetMethod(name, types)!;
 
-            ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
-               MethodAttributes.Public,
-               CallingConventions.Standard,
-               parameterTypes);
-            for (int i = 0; i < parameterTypes.Length; i++)
-            {
-                constructorBuilder.DefineParameter(i + 1, ParameterAttributes.None, parameterTypes[i].Name);
-            }
-            ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
-            constructorIlGenerator.Emit(OpCodes.Ldarg_0);
-            for (int i = 1; i <= baseConstructor.GetParameters().Length; i++)
-            {                
-                constructorIlGenerator.EmitLdarg(i);
-            }
-            constructorIlGenerator.Emit(OpCodes.Call, baseConstructor);
-            constructorIlGenerator.Emit(OpCodes.Ret);
-        }
-
-
+        public static PropertyInfo GetRequiredProperty(this Type type, string name)
+            => type.GetProperty(name)!;
+        public static PropertyInfo GetRequiredProperty(this Type type, string name, BindingFlags bindingAttr)
+            => type.GetProperty(name, bindingAttr)!;
 
     }
 }

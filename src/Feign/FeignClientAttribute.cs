@@ -38,7 +38,7 @@ namespace Feign
         /// <summary>
         /// gets or sets the service url
         /// </summary>
-        public string Url { get; set; }
+        public string? Url { get; set; }
         /// <summary>
         /// <para>gets or sets the UriKind. default value is <see cref="UriKind.Relative"/></para>
         /// <para><see cref="UriKind.Relative"/> : "api/user"+"create"="api/user/create" ; "api/user"+"/create"="api/user/create"</para>
@@ -49,11 +49,11 @@ namespace Feign
         /// <summary>
         /// gets or sets the service fallback type
         /// </summary>
-        public Type Fallback { get; set; }
+        public Type? Fallback { get; set; }
         /// <summary>
         /// gets or sets the service fallback factory type
         /// </summary>
-        public Type FallbackFactory { get; set; }
+        public Type? FallbackFactory { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿#if USE_SYSTEM_TEXT_JSON
+using Feign.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,97 +12,38 @@ namespace Feign.Formatting
 {
     public class SystemTextJsonProvider : IJsonProvider
     {
-        internal readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+        internal readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
             PropertyNameCaseInsensitive = true
         };
 
-        public TResult DeserializeObject<TResult>(byte[] buffer, Encoding encoding)
+        public async Task<TResult?> DeserializeObjectAsync<TResult>(Stream stream, Encoding? encoding)
         {
             if (encoding == Encoding.UTF8)
             {
-                return JsonSerializer.Deserialize<TResult>(buffer, _jsonSerializerOptions);
+                return await JsonSerializer.DeserializeAsync<TResult>(stream, _jsonSerializerOptions);
             }
-            string json = (encoding ?? Encoding.Default).GetString(buffer);
-            return DeserializeObject<TResult>(json);
+            Memory<byte> buffer = new();
+            await stream.ReadAsync(buffer).ConfigureAwait(false);
+            string json = EncodingEx.GetRequiredEncoding(encoding).GetString(buffer.ToArray());
+            return JsonSerializer.Deserialize<TResult>(json, _jsonSerializerOptions);
         }
 
-        public object DeserializeObject(byte[] buffer, Type type, Encoding encoding)
+        public async Task<object?> DeserializeObjectAsync(Stream stream, Type type, Encoding? encoding)
         {
             if (encoding == Encoding.UTF8)
             {
-                return JsonSerializer.Deserialize(buffer, type, _jsonSerializerOptions);
+                return await JsonSerializer.DeserializeAsync(stream, type, _jsonSerializerOptions);
             }
-            string json = (encoding ?? Encoding.Default).GetString(buffer);
-            return DeserializeObject(json, type);
+            Memory<byte> buffer = new();
+            await stream.ReadAsync(buffer).ConfigureAwait(false);
+            string json = EncodingEx.GetRequiredEncoding(encoding).GetString(buffer.ToArray());
+            return JsonSerializer.Deserialize(json, type, _jsonSerializerOptions);
         }
 
-        public TResult DeserializeObject<TResult>(Stream stream, Encoding encoding)
+        public string SerializeObject(object? value, Encoding? encoding)
         {
-            byte[] buffer = new byte[stream.Length];
-            stream.Read(buffer, 0, buffer.Length);
-            return DeserializeObject<TResult>(buffer, encoding);
-        }
-
-        public object DeserializeObject(Stream stream, Type type, Encoding encoding)
-        {
-            byte[] buffer = new byte[stream.Length];
-            stream.Read(buffer, 0, buffer.Length);
-            return DeserializeObject(buffer, type, encoding);
-        }
-
-        public Task<TResult> DeserializeObjectAsync<TResult>(Stream stream, Encoding encoding)
-        {
-            if (encoding == Encoding.UTF8)
-            {
-                return JsonSerializer.DeserializeAsync<TResult>(stream, _jsonSerializerOptions).AsTask();
-            }
-            return DeserializeObjectAsyncInternal<TResult>(stream, encoding);
-        }
-
-        private async Task<TResult> DeserializeObjectAsyncInternal<TResult>(Stream stream, Encoding encoding)
-        {
-            byte[] buffer = new byte[stream.Length];
-            await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-            string json = (encoding ?? Encoding.Default).GetString(buffer);
-            return DeserializeObject<TResult>(json);
-        }
-
-        public Task<object> DeserializeObjectAsync(Stream stream, Type type, Encoding encoding)
-        {
-            if (encoding == Encoding.UTF8)
-            {
-                return JsonSerializer.DeserializeAsync(stream, type, _jsonSerializerOptions).AsTask();
-            }
-            return DeserializeObjectAsyncInternal(stream, type, encoding);
-        }
-
-        private async Task<object> DeserializeObjectAsyncInternal(Stream stream, Type type, Encoding encoding)
-        {
-            byte[] buffer = new byte[stream.Length];
-            await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-            string json = (encoding ?? Encoding.Default).GetString(buffer);
-            return DeserializeObject(json, type);
-        }
-
-        public string SerializeObject(object value)
-        {
-            return JsonSerializer.Serialize(value, value.GetType(), _jsonSerializerOptions);
-        }
-
-        public string SerializeObject(object value, Encoding encoding)
-        {
-            return JsonSerializer.Serialize(value, value.GetType(), _jsonSerializerOptions);
-        }
-
-        public TResult DeserializeObject<TResult>(string value)
-        {
-            return JsonSerializer.Deserialize<TResult>(value, _jsonSerializerOptions);
-        }
-
-        public object DeserializeObject(string value, Type type)
-        {
-            return JsonSerializer.Deserialize(value, type, _jsonSerializerOptions);
+            return JsonSerializer.Serialize(value, _jsonSerializerOptions);
         }
 
         public void Configure(Action<JsonSerializerOptions> configure)

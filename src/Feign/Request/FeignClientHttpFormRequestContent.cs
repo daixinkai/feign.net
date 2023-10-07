@@ -21,15 +21,15 @@ namespace Feign.Request
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class FeignClientHttpFormRequestContent<T> : FeignClientHttpRequestContent
     {
-        public FeignClientHttpFormRequestContent(string name, T content)
+        public FeignClientHttpFormRequestContent(string name, T? content)
         {
             Name = name;
             Content = content;
         }
         public string Name { get; private set; }
-        public T Content { get; }
+        public T? Content { get; }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
+        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options)
         {
             Type type = typeof(T);
             if (!type.IsValueType && Content == null)
@@ -49,11 +49,12 @@ namespace Feign.Request
 
             if (Type.GetTypeCode(type) != TypeCode.Object)
             {
-                return new StringContent(Content.ToString());
+                return new StringContent(Content?.ToString() ?? "");
             }
 
-            List<KeyValuePair<string, string>> nameValueCollection = Content is IHttpRequestForm httpRequestForm ?
-                httpRequestForm.GetRequestForm()?.ToList() :
+            IList<KeyValuePair<string, string?>> nameValueCollection =
+                Content is IHttpRequestForm httpRequestForm ?
+                (httpRequestForm.GetRequestForm()?.ToList() ?? ArrayEx.EmptyList<KeyValuePair<string, string?>>()) :
                 FeignClientUtils.GetObjectStringParameters(Name, Content, options.Converters, options.PropertyNamingPolicy).ToList();
             FormUrlEncodedContent formUrlEncodedContent = new FormUrlEncodedContent(nameValueCollection);
             return formUrlEncodedContent;

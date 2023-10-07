@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 全局Pipeline
+    /// Global Pipeline
     /// </summary>
     public interface IGlobalFeignClientPipeline : IFeignClientPipeline<object>
     {
@@ -16,7 +16,7 @@ namespace Feign
         /// </summary>
         /// <param name="serviceId"></param>
         /// <returns></returns>
-        IFeignClientPipeline<object> GetServicePipeline(string serviceId);
+        IFeignClientPipeline<object>? GetServicePipeline(string serviceId);
         /// <summary>
         /// 获取指定的服务Pipeline
         /// </summary>
@@ -28,7 +28,7 @@ namespace Feign
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <returns></returns>
-        IFeignClientPipeline<TService> GetServicePipeline<TService>();
+        IFeignClientPipeline<TService>? GetServicePipeline<TService>();
         /// <summary>
         /// 获取指定的服务Pipeline
         /// </summary>

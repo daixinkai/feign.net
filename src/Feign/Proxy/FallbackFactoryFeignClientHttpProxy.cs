@@ -18,7 +18,12 @@ namespace Feign.Proxy
     public abstract class FallbackFactoryFeignClientHttpProxy<TService, TFallbackFactory> : FallbackFeignClientHttpProxy<TService, TService>, IFallbackFactoryFeignClient<TService>, IFeignClient<TService> where TService : class
         where TFallbackFactory : IFallbackFactory<TService>
     {
-        public FallbackFactoryFeignClientHttpProxy(TFallbackFactory fallbackFactory, IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider = null, ILoggerFactory loggerFactory = null) : base(GetFallback(fallbackFactory), feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+        public FallbackFactoryFeignClientHttpProxy(
+            TFallbackFactory fallbackFactory,
+            IFeignOptions feignOptions,
+            IServiceDiscovery serviceDiscovery,
+            ICacheProvider? cacheProvider,
+            ILoggerFactory? loggerFactory) : base(GetFallback(fallbackFactory), feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
         {
             FallbackFactory = fallbackFactory;
         }
@@ -36,11 +41,11 @@ namespace Feign.Proxy
 
         private static TService GetFallback(IFallbackFactory<TService> fallbackFactory)
         {
-            if (fallbackFactory != null)
-            {
-                return fallbackFactory.GetFallback();
-            }
-            return default(TService);
+            //if (fallbackFactory != null)
+            //{
+            return fallbackFactory.GetFallback();
+            //}
+            //return default;
         }
 
         protected override void Dispose(bool disposing)

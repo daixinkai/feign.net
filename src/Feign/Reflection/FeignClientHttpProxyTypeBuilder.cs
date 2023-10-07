@@ -40,7 +40,7 @@ namespace Feign.Reflection
         private readonly FallbackFeignClientHttpProxyEmitMethodBuilder _fallbackMethodBuilder;
         private readonly DynamicAssembly _dynamicAssembly;
 
-        public FeignClientTypeInfo Build(Type serviceType)
+        public FeignClientTypeInfo? Build(Type serviceType)
         {
             //校验一下是否可以生成代理类型
             if (!NeedBuildType(serviceType))
@@ -49,7 +49,7 @@ namespace Feign.Reflection
             }
             //获取一下描述特性
 
-            FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttributeIncludingBaseInterfaces<FeignClientAttribute>();
+            FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttributeIncludingBaseInterfaces<FeignClientAttribute>()!;
 
             IMethodBuilder methodBuilder;
 
@@ -77,7 +77,7 @@ namespace Feign.Reflection
             }
             parentType = GetParentType(parentType);
 
-            var feignClientTypeInfo = new FeignClientTypeInfo(serviceType)
+            var feignClientTypeInfo = new FeignClientTypeInfo(feignClientAttribute, serviceType)
             {
                 ParentType = parentType
             };
@@ -96,20 +96,20 @@ namespace Feign.Reflection
             typeBuilder.BuildFirstConstructor(parentType);
 
             //写入serviceId
-            typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("ServiceId"), iLGenerator =>
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("ServiceId"), iLGenerator =>
             {
                 iLGenerator.EmitStringValue(feignClientAttribute.Name);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
             //写入baseUri
-            typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("BaseUri"), iLGenerator =>
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("BaseUri"), iLGenerator =>
             {
-                string value = serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value;
+                var value = serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value;
                 iLGenerator.EmitStringValue(value);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
             //重写UriKind
-            typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("UriKind", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("UriKind", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
             {
                 iLGenerator.EmitEnumValue(feignClientAttribute.UriKind);
                 iLGenerator.Emit(OpCodes.Ret);
@@ -118,7 +118,7 @@ namespace Feign.Reflection
             // 写入url
             if (feignClientAttribute.Url != null)
             {
-                typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("Url"), iLGenerator =>
+                typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("Url"), iLGenerator =>
                 {
                     if (feignClientAttribute.Url == null)
                     {
@@ -140,7 +140,7 @@ namespace Feign.Reflection
                 #region cctor
                 var cctor = typeBuilder.DefineConstructor(MethodAttributes.PrivateScope | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Static, CallingConventions.Standard, Type.EmptyTypes);
                 var cctorILGenerator = cctor.GetILGenerator();
-                List<EmitConstantStringValue> headers = headersAttribute.Headers?.Select(s => new EmitConstantStringValue(s)).ToList();
+                List<EmitConstantStringValue>? headers = headersAttribute!.Headers?.Select(s => new EmitConstantStringValue(s)).ToList();
                 if (headers != null)
                 {
                     cctorILGenerator.EmitStringArray(headers);
@@ -149,7 +149,7 @@ namespace Feign.Reflection
                 cctorILGenerator.Emit(OpCodes.Ret);
                 #endregion
                 //重写DefaultHeaders
-                typeBuilder.OverrideProperty(typeBuilder.BaseType.GetProperty("DefaultHeaders", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
+                typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("DefaultHeaders", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
                 {
                     iLGenerator.Emit(OpCodes.Ldsfld, headersFieldBuilder);
                     iLGenerator.Emit(OpCodes.Ret);
@@ -174,7 +174,7 @@ namespace Feign.Reflection
 
 
             var typeInfo = typeBuilder.CreateTypeInfo();
-            Type type = typeInfo.AsType();
+            Type type = typeInfo!.AsType();
 
             feignClientTypeInfo.BuildType = type;
 

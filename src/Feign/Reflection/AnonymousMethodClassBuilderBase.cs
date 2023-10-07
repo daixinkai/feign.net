@@ -16,13 +16,13 @@ namespace Feign.Reflection
     {
         public class Comparer
         {
-            public MethodInfo Method { get; set; }
-            public Type TargetType { get; set; }
-            public ParameterInfo[] Parameters { get; set; }
+            public MethodInfo Method { get; set; } = null!;
+            public Type TargetType { get; set; } = null!;
+            public ParameterInfo[]? Parameters { get; set; }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
-                Comparer comparer = obj as Comparer;
+                Comparer? comparer = obj as Comparer;
                 if (comparer == null)
                 {
                     return false;
@@ -61,6 +61,7 @@ namespace Feign.Reflection
 
             public override int GetHashCode()
             {
+                //return HashCode.Combine();
                 int hashCode = 0;
                 if (TargetType != null)
                 {
@@ -101,7 +102,7 @@ namespace Feign.Reflection
 
             ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
 
-            constructorIlGenerator.CallBaseTypeDefaultConstructor(typeBuilder.BaseType);
+            constructorIlGenerator.CallBaseTypeDefaultConstructor(typeBuilder.BaseType!);
             constructorIlGenerator.EmitNop();
             if (fieldBuilders.Count > 0)
             {
@@ -168,10 +169,10 @@ namespace Feign.Reflection
 
             MethodBuilder methodBuilder = CreateMethod(typeBuilder, comparer.Method, fieldBuilders);
 
-            return Tuple.Create(typeBuilder.CreateTypeInfo().AsType(), (ConstructorInfo)constructorBuilder, (MethodInfo)methodBuilder);
+            return Tuple.Create(typeBuilder.CreateTypeInfo()!.AsType(), (ConstructorInfo)constructorBuilder, (MethodInfo)methodBuilder);
         }
 
-        protected static TypeBuilder CreateTypeBuilder(ModuleBuilder moduleBuilder, string typeName, Type parentType)
+        protected static TypeBuilder CreateTypeBuilder(ModuleBuilder moduleBuilder, string typeName, Type? parentType)
         {
             return moduleBuilder.DefineType(typeName,
                           //TypeAttributes.Public |

@@ -21,7 +21,7 @@ namespace Feign.Proxy
         /// <typeparam name="TResult"></typeparam>
         /// <param name="responseContext"></param>
         /// <returns></returns>
-        private async Task<TResult> GetResultAsync<TResult>(ResponsePipelineContext<TService, TResult> responseContext)
+        private async Task<TResult?> GetResultAsync<TResult>(ResponsePipelineContext<TService, TResult> responseContext)
         {
             if (responseContext.ResponseMessage == null)
             {
@@ -43,7 +43,7 @@ namespace Feign.Proxy
             return result;
         }
 
-        private async Task<TResult> GetResultInternalAsync<TResult>(ResponsePipelineContext<TService, TResult> responseContext)
+        private async Task<TResult?> GetResultInternalAsync<TResult>(ResponsePipelineContext<TService, TResult> responseContext)
         {
             var request = responseContext.Request;
             var responseMessage = responseContext.ResponseMessage;
@@ -64,13 +64,13 @@ namespace Feign.Proxy
 
             if (responseMessage.Content.Headers.ContentType == null && responseMessage.Content.Headers.ContentLength == 0)
             {
-                return default(TResult);
+                return default;
             }
-            IMediaTypeFormatter mediaTypeFormatter = FeignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
+            IMediaTypeFormatter? mediaTypeFormatter = FeignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
             if (mediaTypeFormatter == null)
             {
                 throw new FeignHttpRequestException(this,
-                     responseMessage.RequestMessage as FeignHttpRequestMessage,
+                     (FeignHttpRequestMessage)responseMessage.RequestMessage!,
                      new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
 
@@ -78,19 +78,19 @@ namespace Feign.Proxy
             {
                 if (stream.CanSeek)
                 {
-                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method.ResultType).ConfigureAwait(false);
+                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method?.ResultType).ConfigureAwait(false);
                 }
                 using (Stream seekStream = new MemoryStream())
                 {
                     await stream.CopyToAsync(seekStream).ConfigureAwait(false);
                     seekStream.Seek(0, SeekOrigin.Begin);
-                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method.ResultType).ConfigureAwait(false);
+                    return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method?.ResultType).ConfigureAwait(false);
                 }
             }
 
         }
 
-        private Task<TResult> GetResultAsyncInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, MediaTypeHeaderValue mediaTypeHeaderValue, Type resultType)
+        private Task<TResult?> GetResultAsyncInternal<TResult>(IMediaTypeFormatter mediaTypeFormatter, Stream stream, MediaTypeHeaderValue? mediaTypeHeaderValue, Type? resultType)
         {
             if (resultType != null)
             {

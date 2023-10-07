@@ -25,8 +25,7 @@ namespace Feign.Request
             HttpMethod = httpMethod;
             if (!string.IsNullOrWhiteSpace(contentType))
             {
-                MediaTypeHeaderValue mediaTypeHeaderValue;
-                if (!MediaTypeHeaderValue.TryParse(contentType, out mediaTypeHeaderValue))
+                if (!MediaTypeHeaderValue.TryParse(contentType, out var mediaTypeHeaderValue))
                 {
                     throw new ArgumentException("ContentType error");
                 }
@@ -53,19 +52,19 @@ namespace Feign.Request
         /// <summary>
         /// 获取媒体类型
         /// </summary>
-        public MediaTypeHeaderValue ContentType { get; }
+        public MediaTypeHeaderValue? ContentType { get; }
         /// <summary>
         /// 获取媒体类型
         /// </summary>
-        public string MediaType { get; }
+        public string? MediaType { get; }
         /// <summary>
         /// 获取或设置Headers
         /// </summary>
-        public string[] Headers { get; set; }
+        public string[]? Headers { get; set; }
         /// <summary>
         /// 获取或设置Accept
         /// </summary>
-        public string Accept { get; set; }
+        public string? Accept { get; set; }
         /// <summary>
         /// 获取或设置HttpCompletionOption
         /// </summary>
@@ -73,7 +72,7 @@ namespace Feign.Request
         /// <summary>
         /// 获取或设置RequestContent
         /// </summary>
-        public FeignClientHttpRequestContent RequestContent { get; set; }
+        public FeignClientHttpRequestContent? RequestContent { get; set; }
         /// <summary>
         /// 是否特殊结果
         /// </summary>
@@ -82,18 +81,18 @@ namespace Feign.Request
         /// <summary>
         /// 获取或设置方法元数据
         /// </summary>
-        public FeignClientMethodInfo Method { get; set; }
+        public FeignClientMethodInfo? Method { get; set; }
 
         /// <summary>
         /// 获取或设置处理请求头
         /// </summary>
-        public List<IRequestHeaderHandler> RequestHeaderHandlers { get; set; }
+        public List<IRequestHeaderHandler>? RequestHeaderHandlers { get; set; }
 
         /// <summary>
         /// 获取随请求一起发送的HttpContent
         /// </summary>
         /// <returns></returns>
-        public HttpContent GetHttpContent(IFeignOptions options)
+        public HttpContent? GetHttpContent(IFeignOptions options)
         {
             return RequestContent?.GetHttpContent(ContentType, options);
         }

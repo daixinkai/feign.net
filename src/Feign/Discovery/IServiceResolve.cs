@@ -15,6 +15,6 @@ namespace Feign.Discovery
         /// <param name="uri"></param>
         /// <param name="services"></param>
         /// <returns></returns>
-        Uri ResolveService(Uri uri, IList<IServiceInstance> services);
+        Uri ResolveService(Uri uri, IList<IServiceInstance>? services);
     }
 }

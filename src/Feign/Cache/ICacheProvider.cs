@@ -17,7 +17,7 @@ namespace Feign.Cache
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        T Get<T>(string name);
+        T? Get<T>(string name);
         /// <summary>
         ///设置缓存
         /// </summary>
@@ -32,7 +32,7 @@ namespace Feign.Cache
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        Task<T> GetAsync<T>(string name);
+        Task<T?> GetAsync<T>(string name);
         /// <summary>
         /// 设置缓存
         /// </summary>

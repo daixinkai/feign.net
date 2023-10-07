@@ -21,16 +21,16 @@ namespace Feign.Proxy
     /// <typeparam name="TService"></typeparam>
     public class FeignProxyHttpClientHandler<TService> : HttpClientHandler where TService : class
     {
-        private readonly ILogger _logger;
-        private FeignClientHttpProxy<TService> _feignClient;
+        private readonly ILogger? _logger;
+        private readonly FeignClientHttpProxy<TService> _feignClient;
 
         public FeignClientHttpProxy<TService> FeignClient => _feignClient;
 
 #if NETCOREAPP2_1_OR_GREATER
 
-        private static readonly Func<HttpClientHandler, SocketsHttpHandler> SocketsHttpHandlerGetter = CreateSocketsHttpHandlerGetter();
+        private static readonly Func<HttpClientHandler, SocketsHttpHandler>? SocketsHttpHandlerGetter = CreateSocketsHttpHandlerGetter();
 
-        private static Func<HttpClientHandler, SocketsHttpHandler> CreateSocketsHttpHandlerGetter()
+        private static Func<HttpClientHandler, SocketsHttpHandler>? CreateSocketsHttpHandlerGetter()
         {
             var fieldInfo = typeof(HttpClientHandler).GetField("_underlyingHandler", BindingFlags.Instance | BindingFlags.NonPublic);
             if (fieldInfo == null || fieldInfo.FieldType != typeof(SocketsHttpHandler))
@@ -42,7 +42,7 @@ namespace Feign.Proxy
             return Expression.Lambda<Func<HttpClientHandler, SocketsHttpHandler>>(body, instance).Compile();
         }
 
-        internal SocketsHttpHandler HttpHandler
+        internal SocketsHttpHandler? HttpHandler
                     => SocketsHttpHandlerGetter?.Invoke(this);
 #else
         internal HttpClientHandler HttpHandler
@@ -56,7 +56,7 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="feignClient"></param>
         /// <param name="logger"></param>
-        public FeignProxyHttpClientHandler(FeignClientHttpProxy<TService> feignClient, ILogger logger)
+        public FeignProxyHttpClientHandler(FeignClientHttpProxy<TService> feignClient, ILogger? logger)
         {
             _feignClient = feignClient;
             _logger = logger;
@@ -66,22 +66,25 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="requestMessage"></param>
         /// <returns></returns>
-        protected virtual Task<Uri> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
+        protected virtual Task<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
         {
+#if NET5_0_OR_GREATER
             return Task.FromResult(requestMessage.RequestUri);
+#else
+            return Task.FromResult((Uri?)requestMessage.RequestUri);
+#endif
         }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            FeignHttpRequestMessage feignRequest = request as FeignHttpRequestMessage;
-            return SendInternalAsync(feignRequest, cancellationToken);
+            return SendInternalAsync((FeignHttpRequestMessage)request, cancellationToken);
         }
 
 
         private async Task<HttpResponseMessage> SendInternalAsync(FeignHttpRequestMessage request, CancellationToken cancellationToken)
         {
             var current = request.RequestUri;
-            CancellationTokenSource cts = null;
+            CancellationTokenSource? cts = null;
             try
             {
 
@@ -137,9 +140,9 @@ namespace Feign.Proxy
                 {
                     _logger?.LogError(e, "Exception during SendAsync()");
                 }
-                if (e is HttpRequestException)
+                if (e is HttpRequestException exception)
                 {
-                    FeignHttpRequestException feignHttpRequestException = new FeignHttpRequestException(_feignClient, request, (HttpRequestException)e);
+                    FeignHttpRequestException feignHttpRequestException = new(_feignClient, request, exception);
                     ExceptionDispatchInfo exceptionDispatchInfo = ExceptionDispatchInfo.Capture(feignHttpRequestException);
                     exceptionDispatchInfo.Throw();
                 }
@@ -148,10 +151,7 @@ namespace Feign.Proxy
             finally
             {
                 request.RequestUri = current;
-                if (cts != null)
-                {
-                    cts.Dispose();
-                }
+                cts?.Dispose();
             }
         }
 

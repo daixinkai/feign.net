@@ -12,12 +12,12 @@ namespace Feign.Cache
     /// </summary>
     public class DefaultCacheProvider : ICacheProvider
     {
-        public T Get<T>(string name)
+        public T? Get<T>(string name)
         {
-            return default(T);
+            return default;
         }
 
-        public Task<T> GetAsync<T>(string name)
+        public Task<T?> GetAsync<T>(string name)
         {
             return Task.FromResult(default(T));
         }

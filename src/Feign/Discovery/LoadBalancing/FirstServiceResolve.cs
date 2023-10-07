@@ -12,7 +12,7 @@ namespace Feign.Discovery.LoadBalancing
     /// </summary>
     public class FirstServiceResolve : ServiceResolveBase
     {
-        public FirstServiceResolve(ILogger logger) : base(logger)
+        public FirstServiceResolve(ILogger? logger) : base(logger)
         {
         }
         public override Uri ResolveServiceCore(Uri uri, IList<IServiceInstance> services)

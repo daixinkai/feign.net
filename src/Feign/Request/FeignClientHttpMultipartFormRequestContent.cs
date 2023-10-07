@@ -34,14 +34,14 @@ namespace Feign.Request
             }
         }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
+        public override HttpContent GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options)
         {
-            string boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
+            string? boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
             MultipartFormDataContent multipartFormDataContent = FeignClientUtils.CreateMultipartFormDataContent(boundary, _quotedBoundary);
             foreach (var item in _map)
             {
                 object content = item.Value;
-                HttpContent httpContentPart = null;
+                HttpContent? httpContentPart = null;
                 if (content is HttpContent)
                 {
                     httpContentPart = (HttpContent)content;

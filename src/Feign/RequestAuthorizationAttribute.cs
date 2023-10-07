@@ -25,7 +25,7 @@ namespace Feign
             Scheme = scheme;
         }
 
-        public string Scheme { get; }
+        public string? Scheme { get; }
 
 
         public static KeyValuePair<string, string> GetHeader(string scheme, string value)
@@ -58,8 +58,8 @@ namespace Feign
                 iLGenerator.Emit(OpCodes.Ldnull);
             }
             iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
-            iLGenerator.Emit(OpCodes.Call, method);
-            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) }));
+            iLGenerator.Emit(OpCodes.Call, method!);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) })!);
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
             return localBuilder;
         }

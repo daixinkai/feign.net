@@ -51,8 +51,8 @@ namespace Feign.Proxy
             _func = func;
         }
 
-        private readonly Func<HttpResponseMessage, Task<TResult>> _asyncFunc;
-        private readonly Func<HttpResponseMessage, TResult> _func;
+        private readonly Func<HttpResponseMessage, Task<TResult>>? _asyncFunc;
+        private readonly Func<HttpResponseMessage, TResult>? _func;
 
         public static SpecialResultHandler<TResult> FromResult(Func<HttpResponseMessage, TResult> func)
         {
@@ -70,7 +70,7 @@ namespace Feign.Proxy
             {
                 return SpecialResult<TResult>.GetSpecialResultAsync(_asyncFunc(responseMessage));
             }
-            return SpecialResult<TResult>.GetSpecialResultAsync(_func(responseMessage));
+            return SpecialResult<TResult>.GetSpecialResultAsync(_func!(responseMessage));
         }
     }
 
@@ -84,7 +84,7 @@ namespace Feign.Proxy
             {
                 IsSpecialResult = true
             };
-            specialResult.Result = (TResult)(object)await task.ConfigureAwait(false);
+            specialResult.Result = (TResult)(object)(await task.ConfigureAwait(false))!;
             return specialResult;
         }
         public static Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource>(TSource result)
@@ -93,7 +93,7 @@ namespace Feign.Proxy
             {
                 IsSpecialResult = true
             };
-            specialResult.Result = (TResult)(object)result;
+            specialResult.Result = (TResult)(object)result!;
             return Task.FromResult(specialResult);
         }
     }

@@ -6,7 +6,7 @@ using System.Text;
 namespace Feign
 {
     /// <summary>
-    /// 一个接口,表示服务对象
+    /// An interface that represents the service object
     /// </summary>
     public interface IFeignClient
     {
@@ -16,7 +16,7 @@ namespace Feign
         string ServiceId { get; }
     }
     /// <summary>
-    /// 一个接口,表示已知类型的服务对象
+    /// An interface that represents a service object of a known type
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface IFeignClient<out TService> : IFeignClient

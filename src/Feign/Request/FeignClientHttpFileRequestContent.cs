@@ -24,10 +24,10 @@ namespace Feign.Request
         public string Name { get; }
         public IHttpRequestFile RequestFile { get; }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
+        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options)
         {
-            HttpContent httpContent = RequestFile?.GetHttpContent();
-            if (httpContent != null && string.IsNullOrWhiteSpace(httpContent.Headers.ContentDisposition.Name))
+            HttpContent? httpContent = RequestFile?.GetHttpContent();
+            if (httpContent != null && string.IsNullOrWhiteSpace(httpContent.Headers.ContentDisposition!.Name))
             {
                 httpContent.Headers.ContentDisposition.Name = Name;
             }

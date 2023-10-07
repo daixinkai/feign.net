@@ -23,19 +23,19 @@ namespace Feign.Request
         }
         public IHttpRequestFileForm RequestFileForm { get; }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
+        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options)
         {
             if (RequestFileForm == null)
             {
                 return null;
             }
-            string boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
+            string? boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
             MultipartFormDataContent multipartFormDataContent = FeignClientUtils.CreateMultipartFormDataContent(boundary, RequestFileForm.QuotedBoundary);
             if (RequestFileForm.RequestFiles != null)
             {
                 foreach (var requestFile in RequestFileForm.RequestFiles)
                 {
-                    HttpContent httpContent = requestFile?.GetHttpContent();
+                    HttpContent? httpContent = requestFile?.GetHttpContent();
                     if (httpContent != null)
                     {
                         multipartFormDataContent.Add(httpContent);

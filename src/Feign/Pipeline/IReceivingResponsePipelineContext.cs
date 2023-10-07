@@ -27,7 +27,7 @@ namespace Feign.Pipeline
         /// <summary>
         /// 获取或设置返回对象
         /// </summary>
-        object Result { get; set; }
+        object? Result { get; set; }
 
     }
 }

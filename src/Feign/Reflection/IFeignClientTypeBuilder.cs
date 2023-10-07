@@ -16,6 +16,6 @@ namespace Feign.Reflection
         /// </summary>
         /// <param name="serviceType"></param>
         /// <returns></returns>
-        FeignClientTypeInfo Build(Type serviceType);
+        FeignClientTypeInfo? Build(Type serviceType);
     }
 }

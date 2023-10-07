@@ -15,11 +15,11 @@ namespace Feign.Reflection
             ParameterIndex = -1;
         }
 
-        public string MediaType { get; set; }
+        public string MediaType { get; set; } = null!;
         /// <summary>
         /// 参数描述
         /// </summary>
-        public ParameterInfo Parameter { get; set; }
+        public ParameterInfo Parameter { get; set; } = null!;
         /// <summary>
         /// 此参数所在的索引
         /// </summary>

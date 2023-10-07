@@ -12,9 +12,9 @@ namespace Feign.Formatting
     {
 
 #if NET45
-        System.Collections.Concurrent.ConcurrentDictionary<Tuple<Type, Type>, IConverter> _map = new System.Collections.Concurrent.ConcurrentDictionary<Tuple<Type, Type>, IConverter>();
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<Tuple<Type, Type>, IConverter> _map = new ();
 #else
-        System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), IConverter> _map = new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), IConverter>();
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), IConverter> _map = new();
 #endif
 
 
@@ -56,9 +56,9 @@ namespace Feign.Formatting
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <returns></returns>
-        public IConverter<TSource, TResult> FindConverter<TSource, TResult>()
+        public IConverter<TSource, TResult>? FindConverter<TSource, TResult>()
         {
-            IConverter converter = FindConverter(typeof(TSource), typeof(TResult));
+            IConverter? converter = FindConverter(typeof(TSource), typeof(TResult));
             return converter == null ? null : (IConverter<TSource, TResult>)converter;
         }
         /// <summary>
@@ -67,52 +67,62 @@ namespace Feign.Formatting
         /// <param name="sourceType"></param>
         /// <param name="resultType"></param>
         /// <returns></returns>
-        public IConverter FindConverter(Type sourceType, Type resultType)
+        public IConverter? FindConverter(Type sourceType, Type resultType)
         {
 #if NET45
             var key = Tuple.Create(sourceType, resultType);
 #else
             var key = (sourceType, resultType);
 #endif
-            IConverter converter;
-            _map.TryGetValue(key, out converter);
+            _map.TryGetValue(key, out var converter);
             return converter;
         }
 
-        internal TResult ConvertValue<TResult>(object value, bool useDefault)
+        internal TResult? ConvertValue<TResult>(object value, bool useDefault)
         {
             if (value == null)
             {
-                return default(TResult);
+                return default;
             }
             var converter = FindConverter(value.GetType(), typeof(TResult));
             if (converter == null)
             {
                 if (!useDefault)
                 {
-                    return default(TResult);
+                    return default;
                 }
-                return FindConverter<object, TResult>().Convert(value);
+                return ConvertDefaultValue<TResult>(value);
             }
             //TODO : optimize
-            object convertValue = converter.GetType().GetMethod("Convert").Invoke(converter, new[] { value });
+            object? convertValue = converter.GetType().GetRequiredMethod("Convert").Invoke(converter, new[] { value });
             if (convertValue == null)
             {
-                return default(TResult);
+                return default;
             }
             return (TResult)convertValue;
         }
 
-        internal TResult ConvertValue<TSource, TResult>(TSource value, bool useDefault)
+        internal TResult? ConvertValue<TSource, TResult>(TSource value, bool useDefault)
         {
             var converter = FindConverter<TSource, TResult>();
             if (converter == null)
             {
                 if (!useDefault)
                 {
-                    return default(TResult);
+                    return default;
                 }
-                return FindConverter<object, TResult>().Convert(value);
+                return ConvertDefaultValue<TResult>(value);
+            }
+            return converter.Convert(value);
+        }
+
+
+        internal TResult? ConvertDefaultValue<TResult>(object? value)
+        {
+            var converter = FindConverter<object, TResult>();
+            if (converter == null)
+            {
+                return default;
             }
             return converter.Convert(value);
         }

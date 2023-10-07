@@ -5,7 +5,7 @@ using System.Text;
 namespace Feign
 {
     /// <summary>
-    /// 映射一个DELETE请求
+    /// mapping HTTP DELETE requests
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public sealed class DeleteMappingAttribute : RequestMappingBaseAttribute

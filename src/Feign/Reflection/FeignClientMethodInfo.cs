@@ -25,16 +25,16 @@ namespace Feign.Reflection
             ResultType = resultType;
         }
 
-        public string MethodId { get; set; }
+        public string? MethodId { get; set; }
 
-        public Type ResultType { get; set; }
+        public Type? ResultType { get; set; }
 
-        public MethodInfo MethodMetadata { get; set; }
+        public MethodInfo? MethodMetadata { get; set; }
 
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             sb.Append("Type: ");
             sb.Append(MethodMetadata?.DeclaringType?.GetFullName() ?? "<null>");

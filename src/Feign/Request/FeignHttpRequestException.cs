@@ -29,7 +29,7 @@ namespace Feign.Request
         private static string GetMessage(FeignHttpRequestMessage httpRequestMessage, Exception exception)
         {            
             //string url = BuildUrl(httpRequestMessage.FeignClientRequest.BaseUrl, httpRequestMessage.FeignClientRequest.MappingUri);
-            string url = httpRequestMessage.RequestUri.ToString();
+            string url = httpRequestMessage.RequestUri!.ToString();
             return $"{httpRequestMessage.Method.Method} request error on {url} : {exception.Message}";
         }
 

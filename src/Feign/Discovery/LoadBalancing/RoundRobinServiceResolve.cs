@@ -12,7 +12,7 @@ namespace Feign.Discovery.LoadBalancing
     /// </summary>
     public class RoundRobinServiceResolve : ServiceResolveBase
     {
-        public RoundRobinServiceResolve(ILogger logger) : base(logger)
+        public RoundRobinServiceResolve(ILogger? logger) : base(logger)
         {
         }
         private readonly AtomicCounter _counter = new AtomicCounter();

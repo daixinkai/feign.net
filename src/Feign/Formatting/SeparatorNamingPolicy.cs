@@ -112,7 +112,7 @@ namespace Feign.Formatting
             return name;
         }
 
-        private void ExpandBuffer(char[] rentedBuffer, int resultUsedLength, ref Span<char> result)
+        private void ExpandBuffer(char[]? rentedBuffer, int resultUsedLength, ref Span<char> result)
         {
             char[] newBuffer = ArrayPool<char>.Shared.Rent(result.Length * 2);
 
@@ -128,7 +128,7 @@ namespace Feign.Formatting
             result = rentedBuffer;
         }
 
-        private void WriteWord(ReadOnlySpan<char> word, char[] rentedBuffer, ref int resultUsedLength, ref Span<char> result)
+        private void WriteWord(ReadOnlySpan<char> word, char[]? rentedBuffer, ref int resultUsedLength, ref Span<char> result)
         {
             if (word.IsEmpty)
             {

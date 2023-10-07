@@ -15,7 +15,7 @@ namespace Feign.Internal
     {
         #region PathVariable
 
-        public static bool ContainsPathVariable(string uri, string name)
+        public static bool ContainsPathVariable(string? uri, string? name)
         {
             if (string.IsNullOrWhiteSpace(uri))
             {
@@ -25,7 +25,7 @@ namespace Feign.Internal
             return uri.Contains(name);
         }
 
-        public static string ReplacePathVariable(string uri, string name, string value, bool urlEncode)
+        public static string ReplacePathVariable(string uri, string name, string? value, bool urlEncode)
         {
             if (urlEncode && !string.IsNullOrEmpty(value))
             {
@@ -42,7 +42,7 @@ namespace Feign.Internal
         #endregion
 
         #region RequestQuery
-        public static string ReplaceRequestQuery(string uri, string name, string value, bool urlEncode)
+        public static string ReplaceRequestQuery(string uri, string name, string? value, bool urlEncode)
         {
             if (value == null)
             {
@@ -52,7 +52,11 @@ namespace Feign.Internal
             {
                 value = Uri.EscapeDataString(value);
             }
-            if (uri.IndexOf("?") >= 0)
+#if NETCOREAPP3_0_OR_GREATER
+            if (uri.Contains('?'))
+#else
+            if (uri.Contains("?"))
+#endif
             {
                 return uri + $"&{name}={value}";
             }
@@ -80,7 +84,7 @@ namespace Feign.Internal
         #endregion
 
 
-        public static IEnumerable<KeyValuePair<string, string>> GetObjectStringParameters<T>(string name, T value, ConverterCollection converters, NamingPolicy namingPolicy)
+        public static IEnumerable<KeyValuePair<string, string?>> GetObjectStringParameters<T>(string name, T value, ConverterCollection converters, NamingPolicy namingPolicy)
         {
             if (value == null)
             {
@@ -89,34 +93,34 @@ namespace Feign.Internal
             //Nullable<>
             if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                yield return new KeyValuePair<string, string>(name, converters.ConvertValue<T, string>(value, true));
+                yield return new KeyValuePair<string, string?>(name, converters.ConvertValue<T, string>(value, true));
                 yield break;
             }
 
             if (typeof(IDictionary).IsAssignableFrom(typeof(T)))
             {
-                IDictionary map = ((IDictionary)value);
+                IDictionary map = (IDictionary)value;
                 foreach (var item in map.Keys)
                 {
-                    var mapValue = map[item];
+                    var mapValue = map[item!];
                     if (mapValue == null)
                     {
                         continue;
                     }
-                    yield return new KeyValuePair<string, string>(item.ToString(), converters.ConvertValue<string>(mapValue, true));
+                    yield return new KeyValuePair<string, string?>(item!.ToString()!, converters.ConvertValue<string>(mapValue, true));
                 }
                 yield break;
             }
 
             if (typeof(IEnumerable).IsAssignableFrom(typeof(T)))
             {
-                foreach (var item in value as IEnumerable)
+                foreach (var item in (IEnumerable)value)
                 {
                     if (item == null)
                     {
                         continue;
                     }
-                    yield return new KeyValuePair<string, string>(name, converters.ConvertValue<string>(item, true));
+                    yield return new KeyValuePair<string, string?>(name, converters.ConvertValue<string>(item, true));
                 }
                 yield break;
             }
@@ -130,49 +134,52 @@ namespace Feign.Internal
 
         }
 
-        public static Encoding GetEncoding(MediaTypeHeaderValue mediaTypeHeaderValue)
+        public static Encoding? GetEncoding(MediaTypeHeaderValue? mediaTypeHeaderValue)
         {
-            string charset = mediaTypeHeaderValue?.CharSet;
+            string? charset = mediaTypeHeaderValue?.CharSet;
+
+            if (charset == null)
+            {
+                return null;
+            }
 
             // If we do have encoding information in the 'Content-Type' header, use that information to convert
             // the content to a string.
-            if (charset != null)
+
+            if (charset.Equals("utf-8", StringComparison.OrdinalIgnoreCase) || charset.Equals("utf8", StringComparison.OrdinalIgnoreCase))
             {
-                if (charset.Equals("utf-8", StringComparison.OrdinalIgnoreCase))
+                return Encoding.UTF8;
+            }
+            try
+            {
+                // Remove at most a single set of quotes.
+                if (charset.Length > 2 &&
+                    charset[0] == '\"' &&
+                    charset[charset.Length - 1] == '\"')
                 {
-                    return Encoding.UTF8;
+                    return Encoding.GetEncoding(charset.Substring(1, charset.Length - 2));
                 }
-                try
+                else
                 {
-                    // Remove at most a single set of quotes.
-                    if (charset.Length > 2 &&
-                        charset[0] == '\"' &&
-                        charset[charset.Length - 1] == '\"')
-                    {
-                        return Encoding.GetEncoding(charset.Substring(1, charset.Length - 2));
-                    }
-                    else
-                    {
-                        return Encoding.GetEncoding(charset);
-                    }
-                }
-                catch (ArgumentException e)
-                {
-                    throw new InvalidOperationException("The character set provided in ContentType is invalid. Cannot read content as string using an invalid character set.", e);
+                    return Encoding.GetEncoding(charset);
                 }
             }
-            return null;
+            catch (ArgumentException e)
+            {
+                throw new InvalidOperationException("The character set provided in ContentType is invalid. Cannot read content as string using an invalid character set.", e);
+            }
+
         }
 
 
-        public static MultipartFormDataContent CreateMultipartFormDataContent(string boundary, bool quotedBoundary)
+        public static MultipartFormDataContent CreateMultipartFormDataContent(string? boundary, bool quotedBoundary)
         {
             if (string.IsNullOrWhiteSpace(boundary))
             {
                 //boundary = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N")));
                 boundary = Guid.NewGuid().ToString("N");
             }
-            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent(boundary);
+            MultipartFormDataContent multipartFormDataContent = new(boundary);
             if (!quotedBoundary)
             {
                 //multipartFormDataContent.Headers.ContentType = MediaTypeHeaderValue.Parse($"multipart/form-data; boundary={boundary}");

@@ -30,8 +30,7 @@ namespace Feign.Standalone
 
         public ServiceDescriptor Get(Type serviceType)
         {
-            ServiceDescriptor serviceDescriptor;
-            if (_map.TryGetValue(serviceType, out serviceDescriptor))
+            if (_map.TryGetValue(serviceType, out var serviceDescriptor))
             {
                 return serviceDescriptor;
             }

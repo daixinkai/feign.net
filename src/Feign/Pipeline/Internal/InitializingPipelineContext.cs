@@ -25,9 +25,9 @@ namespace Feign.Pipeline.Internal
         /// <summary>
         /// 获取或设置HttpClient
         /// </summary>
-        public FeignHttpClient HttpClient { get; set; }
+        public FeignHttpClient? HttpClient { get; set; }
 
-        public HttpHandlerType HttpHandler { get; internal set; }
+        public HttpHandlerType? HttpHandler { get; internal set; }
 
     }
 }

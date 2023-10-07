@@ -17,12 +17,12 @@ namespace Feign.Request
             FeignClientRequest = feignClientRequest;
         }
 
-        public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest, HttpMethod method, string requestUri) : base(method, requestUri)
+        public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest, HttpMethod method, string? requestUri) : base(method, requestUri)
         {
             FeignClientRequest = feignClientRequest;
         }
 
-        public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest, HttpMethod method, Uri requestUri) : base(method, requestUri)
+        public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest, HttpMethod method, Uri? requestUri) : base(method, requestUri)
         {
             FeignClientRequest = feignClientRequest;
         }

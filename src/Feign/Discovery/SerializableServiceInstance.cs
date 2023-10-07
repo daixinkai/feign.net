@@ -10,15 +10,15 @@ namespace Feign.Discovery
     [Serializable]
     public class SerializableServiceInstance : IServiceInstance
     {
-        public string ServiceId { get; set; }
+        public string ServiceId { get; set; } = null!;
 
-        public string Host { get; set; }
+        public string Host { get; set; } = null!;
 
         public int Port { get; set; }
 
         //public bool IsSecure { get; set; }
 
-        public string Uri { get; set; }
+        public string Uri { get; set; } = null!;
 
         Uri IServiceInstance.Uri
         {

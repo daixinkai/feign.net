@@ -21,9 +21,9 @@ namespace Feign.Request
         }
 
         public byte[] Buffer { get; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public string FileName { get; }
-        public string MediaType { get; set; }
+        public string? MediaType { get; set; }
 
         /// <summary>
         /// <para>true : Content-Type = multipart/form-data; boundary="123456789"</para> 

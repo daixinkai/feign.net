@@ -6,13 +6,13 @@ using System.Text;
 
 namespace Feign.Reflection
 {
-#if DEBUG&&NET45
+#if DEBUG && NET45
     public
 #endif
-     class DynamicAssembly
+    class DynamicAssembly
     {
-        AssemblyBuilder _assemblyBuilder;
-        ModuleBuilder _moduleBuilder;
+        private AssemblyBuilder? _assemblyBuilder;
+        private ModuleBuilder? _moduleBuilder;
 
 #if DEBUG && NET45
         public bool DEBUG_MODE = false;
@@ -27,7 +27,7 @@ namespace Feign.Reflection
             get
             {
                 EnsureAssemblyBuilder();
-                return _assemblyBuilder;
+                return _assemblyBuilder!;
             }
         }
         public ModuleBuilder ModuleBuilder
@@ -35,7 +35,7 @@ namespace Feign.Reflection
             get
             {
                 EnsureModuleBuilder();
-                return _moduleBuilder;
+                return _moduleBuilder!;
             }
         }
         private void EnsureAssemblyBuilder()
@@ -64,14 +64,14 @@ namespace Feign.Reflection
 #if DEBUG&&NET45
                 if (DEBUG_MODE)
                 {
-                    _moduleBuilder = _assemblyBuilder.DefineDynamicModule("MainModule", AssemblyName);
+                    _moduleBuilder = _assemblyBuilder!.DefineDynamicModule("MainModule", AssemblyName);
                 }
                 else
                 {
-                    _moduleBuilder = _assemblyBuilder.DefineDynamicModule("MainModule");
+                    _moduleBuilder = _assemblyBuilder!.DefineDynamicModule("MainModule");
                 }
 #else
-                _moduleBuilder = _assemblyBuilder.DefineDynamicModule("MainModule");
+                _moduleBuilder = _assemblyBuilder!.DefineDynamicModule("MainModule");
 #endif
             }
         }

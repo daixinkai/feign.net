@@ -26,7 +26,7 @@ namespace Feign.Request
         public string Name { get; }
         public T Content { get; }
 
-        public override HttpContent GetHttpContent(MediaTypeHeaderValue contentType, IFeignOptions options)
+        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options)
         {
             Type type = typeof(T);
             if (type == typeof(byte[]) || typeof(Stream).IsAssignableFrom(type))

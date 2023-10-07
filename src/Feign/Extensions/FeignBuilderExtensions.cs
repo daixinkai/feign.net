@@ -49,7 +49,7 @@ namespace Feign
         /// <param name="assembly">要扫描的程序集</param>
         /// <param name="lifetime">服务的生命周期</param>
         /// <returns></returns>
-        public static TFeignBuilder AddFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, Assembly assembly, FeignClientLifetime lifetime)
+        public static TFeignBuilder AddFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, Assembly? assembly, FeignClientLifetime lifetime)
             where TFeignBuilder : IFeignBuilder
         {
             if (assembly == null)
@@ -58,14 +58,13 @@ namespace Feign
             }
             foreach (var serviceType in assembly.GetTypes())
             {
-                FeignClientTypeInfo feignClientTypeInfo = feignBuilder.TypeBuilder.Build(serviceType);
+                FeignClientTypeInfo? feignClientTypeInfo = feignBuilder.TypeBuilder.Build(serviceType);
                 if (feignClientTypeInfo == null || feignClientTypeInfo.BuildType == null)
                 {
                     continue;
                 }
                 feignBuilder.Options.Types.Add(feignClientTypeInfo);
-                //FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttribute<FeignClientAttribute>();
-                FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttributeIncludingBaseInterfaces<FeignClientAttribute>();
+                FeignClientAttribute feignClientAttribute = feignClientTypeInfo.FeignClient;
                 feignBuilder.AddService(serviceType, feignClientTypeInfo.BuildType, feignClientAttribute.Lifetime ?? lifetime);
                 // add fallback
                 if (feignClientAttribute.Fallback != null)

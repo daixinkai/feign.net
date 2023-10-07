@@ -21,7 +21,7 @@ namespace Feign.Reflection
             return BuildType(moduleBuilder, targetType, method, null);
         }
 
-        public Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method, ParameterInfo[] parameters)
+        public Tuple<Type, ConstructorInfo, MethodInfo> BuildType(ModuleBuilder moduleBuilder, Type targetType, MethodInfo method, ParameterInfo[]? parameters)
         {
             Comparer comparer = new Comparer
             {
@@ -73,12 +73,12 @@ namespace Feign.Reflection
             AddFallbackTarget_GetParameterTypes(typeBuilder, parameters);
             AddFallbackTarget_MethodName(typeBuilder, comparer.Method.Name);
             AddFallbackTarget_ReturnType(typeBuilder, comparer.Method.ReturnType);
-            return Tuple.Create(typeBuilder.CreateTypeInfo().AsType(), (ConstructorInfo)constructorBuilder, (MethodInfo)methodBuilder);
+            return Tuple.Create(typeBuilder.CreateTypeInfo()!.AsType(), (ConstructorInfo)constructorBuilder, (MethodInfo)methodBuilder);
         }
 
         private static void AddFallbackTarget_GetParameters(TypeBuilder typeBuilder, ParameterInfo[] parameters, List<FieldBuilder> parameterFields)
         {
-            MethodInfo getParametersMethod = typeof(IFallbackProxy).GetMethod("GetParameters");
+            MethodInfo getParametersMethod = typeof(IFallbackProxy).GetRequiredMethod("GetParameters");
             MethodAttributes methodAttributes =
                     MethodAttributes.Public
                     | MethodAttributes.HideBySig
@@ -88,22 +88,22 @@ namespace Feign.Reflection
             MethodBuilder methodBuilder = typeBuilder.DefineMethod(getParametersMethod.Name, methodAttributes, CallingConventions.Standard, getParametersMethod.ReturnType, Type.EmptyTypes);
             ILGenerator iLGenerator = methodBuilder.GetILGenerator();
             LocalBuilder map = iLGenerator.DeclareLocal(typeof(IDictionary<string, object>));
-            iLGenerator.Emit(OpCodes.Newobj, typeof(Dictionary<string, object>).GetEmptyConstructor());
+            iLGenerator.Emit(OpCodes.Newobj, typeof(Dictionary<string, object>).GetEmptyConstructor()!);
             iLGenerator.Emit(OpCodes.Stloc, map);
             //iLGenerator.Emit(OpCodes.Pop);
-            MethodInfo addMethod = typeof(IDictionary<string, object>).GetMethod("Add", new Type[] { typeof(string), typeof(object) });
+            MethodInfo addMethod = typeof(IDictionary<string, object>).GetRequiredMethod("Add", new Type[] { typeof(string), typeof(object) });
 
             for (int i = 0; i < parameterFields.Count; i++)
             {
                 iLGenerator.Emit(OpCodes.Ldloc, map);
-                iLGenerator.Emit(OpCodes.Ldstr, parameters[i].Name);
+                iLGenerator.Emit(OpCodes.Ldstr, parameters[i].Name!);
                 iLGenerator.Emit(OpCodes.Ldarg_0);
                 iLGenerator.Emit(OpCodes.Ldfld, parameterFields[i]);
                 if (parameterFields[i].FieldType.IsValueType)
                 {
                     iLGenerator.Emit(OpCodes.Box, parameterFields[i].FieldType);
                 }
-                iLGenerator.Emit(OpCodes.Callvirt, addMethod);
+                iLGenerator.Emit(OpCodes.Callvirt, addMethod!);
             }
 
             iLGenerator.Emit(OpCodes.Ldloc, map);
@@ -112,7 +112,7 @@ namespace Feign.Reflection
 
         private static void AddFallbackTarget_GetParameterTypes(TypeBuilder typeBuilder, ParameterInfo[] parameters)
         {
-            MethodInfo getParametersMethod = typeof(IFallbackProxy).GetMethod("GetParameterTypes");
+            MethodInfo getParametersMethod = typeof(IFallbackProxy).GetRequiredMethod("GetParameterTypes");
             MethodAttributes methodAttributes =
                     MethodAttributes.Public
                     | MethodAttributes.HideBySig
@@ -164,7 +164,7 @@ namespace Feign.Reflection
             }
             else
             {
-                var getTypeMethod = typeof(Type).GetMethod("GetTypeFromHandle");
+                var getTypeMethod = typeof(Type).GetRequiredMethod("GetTypeFromHandle");
                 iLGenerator.Emit(OpCodes.Ldtoken, returnType);
                 iLGenerator.Emit(OpCodes.Call, getTypeMethod);
                 //iLGenerator.Emit(OpCodes.Stloc_0);

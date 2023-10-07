@@ -8,7 +8,7 @@ namespace Feign.Formatting
 {
     public sealed class ValueTypeToStringConverter<T> : IConverter<T, string> where T : struct
     {
-        public string Convert(T value)
+        public string? Convert(T value)
         {
             return value.ToString();
         }

@@ -28,22 +28,12 @@ namespace Feign.Formatting
 
         private IFeignOptions _options;
 
-        public TResult GetResult<TResult>(Stream stream, Encoding encoding)
-        {
-            return _options.JsonProvider.DeserializeObject<TResult>(stream, encoding);
-        }
-
-        public object GetResult(Type type, Stream stream, Encoding encoding)
-        {
-            return _options.JsonProvider.DeserializeObject(stream, type, encoding);
-        }
-
-        public Task<TResult> GetResultAsync<TResult>(Stream stream, Encoding encoding)
+        public Task<TResult?> GetResultAsync<TResult>(Stream stream, Encoding? encoding)
         {
             return _options.JsonProvider.DeserializeObjectAsync<TResult>(stream, encoding);
         }
 
-        public Task<object> GetResultAsync(Type type, Stream stream, Encoding encoding)
+        public Task<object?> GetResultAsync(Type type, Stream stream, Encoding? encoding)
         {
             return _options.JsonProvider.DeserializeObjectAsync(stream, type, encoding);
         }

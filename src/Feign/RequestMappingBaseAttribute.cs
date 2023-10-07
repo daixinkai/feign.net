@@ -13,8 +13,8 @@ namespace Feign
     public abstract class RequestMappingBaseAttribute : Attribute, IRequestMapping
     {
         protected RequestMappingBaseAttribute()
-        { }
-
+        {
+        }
         protected RequestMappingBaseAttribute(string value)
         {
             Value = value;
@@ -22,15 +22,15 @@ namespace Feign
         /// <summary>
         /// 获取或设置请求路径
         /// </summary>
-        public string Value { get; set; }
+        public string? Value { get; set; }
         /// <summary>
         /// 获取或设置ContentType
         /// </summary>
-        public string ContentType { get; set; }
+        public string? ContentType { get; set; }
         /// <summary>
         /// 获取或设置Accept
         /// </summary>
-        public string Accept { get; set; }
+        public string? Accept { get; set; }
 
         /// <summary>
         /// 获取或设置HttpCompletionOption

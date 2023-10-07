@@ -16,14 +16,6 @@ namespace Feign.Pipeline.Internal
     internal class ErrorRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IErrorRequestPipelineContext<TService>
 //#endif
     {
-        internal ErrorRequestPipelineContext(IFeignClient<TService> feignClient, Exception exception) : base(feignClient)
-        {
-            Exception = exception;
-            if (exception is FeignHttpRequestException)
-            {
-                RequestMessage = ((FeignHttpRequestException)exception).RequestMessage;
-            }
-        }
         internal ErrorRequestPipelineContext(IFeignClient<TService> feignClient, FeignHttpRequestMessage requestMessage, Exception exception) : base(feignClient)
         {
             RequestMessage = requestMessage;
