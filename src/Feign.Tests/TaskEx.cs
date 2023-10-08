@@ -31,7 +31,7 @@ namespace Feign.Tests
 #if NETSTANDARD2_1 || NETCOREAPP3_1_OR_GREATER
                 return default;
 #else
-                return ValueTask.FromResult<object>(null);
+                return CompletedTask;
 #endif
             }
         }

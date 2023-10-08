@@ -25,10 +25,10 @@ namespace Feign.Internal
         {
             get
             {
-#if NETSTANDARD2_1 || NETCOREAPP3_1_OR_GREATER
+#if USE_VALUE_TASK
                 return default;
 #else
-                return Task.FromResult<object?>(null);
+                return CompletedTask;
 #endif
             }
         }
