@@ -12,3 +12,7 @@ global using Newtonsoft.Json;
 global using JsonSerializerOptions = Newtonsoft.Json.JsonSerializerSettings;
 global using JsonProviderType = Feign.Formatting.NewtonsoftJsonProvider;
 #endif
+
+#if !USE_VALUE_TASK
+global using ValueTask = System.Threading.Tasks.Task;
+#endif

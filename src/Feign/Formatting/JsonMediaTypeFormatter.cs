@@ -37,5 +37,6 @@ namespace Feign.Formatting
         {
             return _options.JsonProvider.DeserializeObjectAsync(stream, type, encoding);
         }
+
     }
 }

@@ -21,6 +21,17 @@ namespace Feign.Internal
             }
         }
 
+        public static ValueTask CompletedValueTask
+        {
+            get
+            {
+#if NETSTANDARD2_1 || NETCOREAPP3_1_OR_GREATER
+                return default;
+#else
+                return Task.FromResult<object?>(null);
+#endif
+            }
+        }
 
         public static Task FromException(Exception exception)
         {

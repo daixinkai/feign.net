@@ -51,8 +51,11 @@ namespace Feign.Discovery
 
         public bool ShouldResolveService { get; set; }
 
-
+#if !NETSTANDARD2_1 && !NETCOREAPP3_1_OR_GREATER
         protected override async Task<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
+#else
+        protected override async ValueTask<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
+#endif
         {
             if (!ShouldResolveService)
             {

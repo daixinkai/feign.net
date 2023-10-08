@@ -59,7 +59,7 @@ namespace Feign
                 {
                     context.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
                 }
-                return TaskEx.CompletedTask;
+                return TaskEx.CompletedValueTask;
             });
         }
         /// <summary>
@@ -82,7 +82,7 @@ namespace Feign
                     var authenticationHeaderValue = authenticationHeaderValueAction.Invoke(context.FeignClient);
                     context.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
                 }
-                return TaskEx.CompletedTask;
+                return TaskEx.CompletedValueTask;
             });
         }
         /// <summary>
@@ -109,7 +109,7 @@ namespace Feign
                 {
                     context.Headers["Authorization"] = scheme + " " + parameter;
                 }
-                return TaskEx.CompletedTask;
+                return TaskEx.CompletedValueTask;
             });
         }
 
@@ -134,7 +134,7 @@ namespace Feign
                     var schemeAndParameter = schemeAndParameterFactory.Invoke(context.FeignClient);
                     context.Headers["Authorization"] = schemeAndParameter.Item1 + " " + schemeAndParameter.Item2;
                 }
-                return TaskEx.CompletedTask;
+                return TaskEx.CompletedValueTask;
             });
         }
 #endif

@@ -66,15 +66,17 @@ namespace Feign.Proxy
         /// </summary>
         /// <param name="requestMessage"></param>
         /// <returns></returns>
+#if USE_VALUE_TASK
+        protected virtual ValueTask<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
+        {
+            return new ValueTask<Uri?>(requestMessage.RequestUri);
+        }
+#else
         protected virtual Task<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
         {
-#if NET5_0_OR_GREATER
-            return Task.FromResult(requestMessage.RequestUri);
-#else
-            return Task.FromResult((Uri?)requestMessage.RequestUri);
-#endif
+            return Task.FromResult<Uri?>(requestMessage.RequestUri);
         }
-
+#endif
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             return SendInternalAsync((FeignHttpRequestMessage)request, cancellationToken);

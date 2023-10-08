@@ -64,7 +64,7 @@ feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
 feignBuilder.Options.FeignClientPipeline.UseReceivedResponse(context =>
 {
     var result = context.Result;
-    return Task.CompletedTask;
+    return default;
 });
 
 

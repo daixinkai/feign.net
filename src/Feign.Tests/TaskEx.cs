@@ -1,4 +1,7 @@
-﻿using System;
+﻿#if !NETSTANDARD2_1 && !NETCOREAPP3_1_OR_GREATER
+global using ValueTask = System.Threading.Tasks.Task;
+#endif
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +24,17 @@ namespace Feign.Tests
             }
         }
 
+        public static ValueTask CompletedValueTask
+        {
+            get
+            {
+#if NETSTANDARD2_1 || NETCOREAPP3_1_OR_GREATER
+                return default;
+#else
+                return ValueTask.FromResult<object>(null);
+#endif
+            }
+        }
 
         public static Task FromException(Exception exception)
         {

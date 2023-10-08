@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'!='net45' AND '$(TargetFramework)'!='netstandard2.0'">
-	<DefineConstants>USE_SYSTEM_TEXT_JSON;</DefineConstants>
+	<DefineConstants>USE_SYSTEM_TEXT_JSON;USE_VALUE_TASK;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='netstandard2.0'">
