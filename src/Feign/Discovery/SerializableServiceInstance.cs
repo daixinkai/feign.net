@@ -5,7 +5,7 @@ using System.Text;
 namespace Feign.Discovery
 {
     /// <summary>
-    /// 可序列化的服务
+    /// Serializable services
     /// </summary>
     [Serializable]
     public class SerializableServiceInstance : IServiceInstance

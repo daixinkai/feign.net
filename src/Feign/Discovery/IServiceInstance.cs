@@ -5,24 +5,24 @@ using System.Text;
 namespace Feign.Discovery
 {
     /// <summary>
-    /// 一个接口,表示服务
+    /// An interface that represents a service
     /// </summary>
     public interface IServiceInstance
     {
         /// <summary>
-        /// 获取服务的serviceId
+        /// Gets the serviceId of the service
         /// </summary>
         string ServiceId { get; }
         /// <summary>
-        /// 获取服务host
+        /// Gets the host of the service
         /// </summary>
         string Host { get; }
         /// <summary>
-        /// 获取服务port
+        /// Gets the port of the service
         /// </summary>
         int Port { get; }
         /// <summary>
-        /// 获取服务地址
+        /// Gets the uri of the service
         /// </summary>
         Uri Uri { get; }
     }

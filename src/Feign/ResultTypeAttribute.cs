@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 指定返回的类型
+    /// Specify the type of return
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class ResultTypeAttribute : Attribute
@@ -27,10 +27,10 @@ namespace Feign
         internal Type? ConvertType(Type type)
         {
             Type resultType = ResultType;
-            //特殊转换
+            //Specify convert
             if (resultType.IsGenericType && resultType.IsGenericTypeDefinition && type.IsGenericType && resultType.GetGenericArguments().Length == type.GetGenericArguments().Length)
             {
-                //补全
+                //set type
                 resultType = resultType.MakeGenericType(type.GetGenericArguments());
             }
 

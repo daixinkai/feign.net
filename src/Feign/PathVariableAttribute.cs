@@ -6,7 +6,7 @@ using System.Text;
 namespace Feign
 {
     /// <summary>
-    /// 映射请求路径中绑定的占位符
+    /// Map placeholders bound in the request path
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
     public sealed class PathVariableAttribute : Attribute, IRequestParameter

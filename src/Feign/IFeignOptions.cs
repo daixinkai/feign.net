@@ -36,7 +36,8 @@ namespace Feign
         /// </summary>
         FeignClientLifetime Lifetime { get; set; }
         /// <summary>
-        /// 获取或设置一个值,指示是否需要包含声明服务的方法元数据 默认 : false
+        /// Gets or sets a value indicating whether method metadata for declared services needs to be included. 
+        /// Default: false
         /// </summary>
         bool IncludeMethodMetadata { get; set; }
 
@@ -63,7 +64,7 @@ namespace Feign
         TimeSpan? DiscoverServiceCacheTime { get; set; }
 
         /// <summary>
-        /// Is enable url encode (如 : RequestQuery,PathVariable)
+        /// Is enable url encode (like : RequestQuery,PathVariable)
         /// </summary>
         bool UseUrlEncode { get; set; }
 
@@ -74,7 +75,7 @@ namespace Feign
         DecompressionMethods? AutomaticDecompression { get; set; }
 
         /// <summary>
-        /// 默认HttpClientHandler的UseCookies值
+        /// HttpClient.Handler.UseCookies
         /// </summary>
         bool? UseCookies { get; set; }
 

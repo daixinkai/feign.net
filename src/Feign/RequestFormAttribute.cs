@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 请求参数将作为RequestForm传输
+    /// Request parameters will be transmitted as RequestForm
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
     public sealed class RequestFormAttribute : Attribute, IRequestParameter

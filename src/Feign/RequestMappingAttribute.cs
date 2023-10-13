@@ -5,7 +5,7 @@ using System.Text;
 namespace Feign
 {
     /// <summary>
-    /// 映射一个请求
+    /// Map a request
     /// </summary>
     public class RequestMappingAttribute : RequestMappingBaseAttribute
     {
@@ -21,12 +21,12 @@ namespace Feign
             Method = method;
         }
         /// <summary>
-        /// 获取或设置请求的http方法
+        /// Gets or sets the http method of the request
         /// </summary>
         public string Method { get; set; }
 
         /// <summary>
-        /// 获取请求的http方法
+        /// Gets the http method of the request
         /// </summary>
         public override string GetMethod()
         {

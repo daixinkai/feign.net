@@ -6,7 +6,7 @@ using System.Text;
 namespace Feign.Formatting
 {
     /// <summary>
-    /// 转换器集合
+    /// Converter collection
     /// </summary>
     public sealed class ConverterCollection : IEnumerable<IConverter>
     {
@@ -29,7 +29,7 @@ namespace Feign.Formatting
         }
 
         /// <summary>
-        /// 添加一个转换器
+        /// Add a converter
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TResult"></typeparam>
@@ -51,7 +51,7 @@ namespace Feign.Formatting
             }
         }
         /// <summary>
-        /// 查找指定类型的转换器
+        /// Find a converter for a specified type
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TResult"></typeparam>
@@ -62,7 +62,7 @@ namespace Feign.Formatting
             return converter == null ? null : (IConverter<TSource, TResult>)converter;
         }
         /// <summary>
-        /// 查找指定类型的转换器
+        /// Find a converter for a specified type
         /// </summary>
         /// <param name="sourceType"></param>
         /// <param name="resultType"></param>

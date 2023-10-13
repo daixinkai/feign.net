@@ -17,7 +17,7 @@ namespace Feign
     public static class FeignBuilderExtensions
     {
         /// <summary>
-        /// 添加默认FeignClients
+        /// Add default FeignClients
         /// </summary>
         /// <typeparam name="TFeignBuilder"></typeparam>
         /// <param name="feignBuilder"></param>
@@ -42,12 +42,12 @@ namespace Feign
             return feignBuilder;
         }
         /// <summary>
-        /// 添加FeignClients
+        /// Add FeignClients
         /// </summary>
         /// <typeparam name="TFeignBuilder"></typeparam>
         /// <param name="feignBuilder"></param>
-        /// <param name="assembly">要扫描的程序集</param>
-        /// <param name="lifetime">服务的生命周期</param>
+        /// <param name="assembly">Assemblies to scan</param>
+        /// <param name="lifetime">Service life cycle</param>
         /// <returns></returns>
         public static TFeignBuilder AddFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, Assembly? assembly, FeignClientLifetime lifetime)
             where TFeignBuilder : IFeignBuilder
@@ -80,7 +80,7 @@ namespace Feign
         }
 
         /// <summary>
-        /// 添加一个转换器
+        /// Add a converter
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TResult"></typeparam>
@@ -93,7 +93,7 @@ namespace Feign
             return feignBuilder;
         }
         /// <summary>
-        /// 添加<see cref="ILoggerFactory"/>
+        /// Add <see cref="ILoggerFactory"/>
         /// </summary>
         /// <typeparam name="TLoggerFactory"></typeparam>
         /// <param name="feignBuilder"></param>
@@ -105,7 +105,7 @@ namespace Feign
         }
 
         /// <summary>
-        /// 添加<see cref="IServiceDiscovery"/>
+        /// Add <see cref="IServiceDiscovery"/>
         /// </summary>
         /// <typeparam name="TServiceDiscovery"></typeparam>
         /// <param name="feignBuilder"></param>
@@ -116,7 +116,7 @@ namespace Feign
             return feignBuilder;
         }
         /// <summary>
-        /// 添加<see cref="ICacheProvider"/>
+        /// Add <see cref="ICacheProvider"/>
         /// </summary>
         /// <typeparam name="TCacheProvider"></typeparam>
         /// <param name="feignBuilder"></param>

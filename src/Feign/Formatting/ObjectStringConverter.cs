@@ -5,7 +5,7 @@ using System.Text;
 namespace Feign.Formatting
 {
     /// <summary>
-    /// 默认转换 object to string
+    /// default convert object to string
     /// </summary>
     public sealed class ObjectStringConverter : IConverter<object, string>
     {

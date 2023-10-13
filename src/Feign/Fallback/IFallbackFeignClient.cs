@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace Feign.Fallback
 {
     /// <summary>
-    /// 一个接口,表示支持降级操作的服务对象
+    /// An interface representing a service object that supports service
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IFallbackFeignClient<out T> : IFeignClient<T>
     {
         /// <summary>
-        /// 获取降级服务
+        /// Gets a fallback service
         /// </summary>
         T Fallback { get; }
     }

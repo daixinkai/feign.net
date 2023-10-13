@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 描述一个方法Id
+    /// Describe a method Id
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public sealed class MethodIdAttribute : Attribute
@@ -17,7 +17,7 @@ namespace Feign
             MethodId = methodId;
         }
         /// <summary>
-        /// 获取方法id
+        /// Gets the method Id
         /// </summary>
         public string MethodId { get; }
     }

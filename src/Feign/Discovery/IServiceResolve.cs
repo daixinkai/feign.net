@@ -5,12 +5,12 @@ using System.Text;
 namespace Feign.Discovery
 {
     /// <summary>
-    /// 一个接口,表示服务决定者
+    /// An interface that represents the service resolve
     /// </summary>
     public interface IServiceResolve
     {
         /// <summary>
-        /// 根据服务集合查找要使用的服务路径
+        /// Find the service path to use based on the service collection
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="services"></param>

@@ -52,19 +52,13 @@ namespace Feign
         public IList<FeignClientTypeInfo> Types { get; }
         public TimeSpan? DiscoverServiceCacheTime { get; set; }
 
-        /// <summary>
-        /// 默认HttpClientHandler的UseCookies值
-        /// </summary>
+        /// <inheritdoc/>
         public bool? UseCookies { get; set; }
 
-        /// <summary>
-        /// 是否启用编码Url (如 : RequestQuery,PathVariable)
-        /// </summary>
+        /// <inheritdoc/>
         public bool UseUrlEncode { get; set; }
 
-        /// <summary>
-        /// Gets or sets Load balancing policy.
-        /// </summary>
+        /// <inheritdoc/>
         public LoadBalancingPolicy LoadBalancingPolicy { get; set; }
 
     }

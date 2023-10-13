@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign.Internal
 {
     /// <summary>
-    /// 一个接口,表示请求映射
+    /// An interface representing request mapping
     /// </summary>
     internal interface IRequestMapping
     {

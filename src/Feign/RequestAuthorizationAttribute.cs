@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 将Authorization设置到请求头中
+    /// Sets Authorization to the request headers
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
     public class RequestAuthorizationAttribute : RequestHeaderBaseAttribute
@@ -35,12 +35,6 @@ namespace Feign
                 return new KeyValuePair<string, string>("Authorization", scheme + " " + value);
             }
             return new KeyValuePair<string, string>("Authorization", value);
-            //string[] values = value?.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            //if (values.Length != 2)
-            //{
-            //    throw new ArgumentException("value must be (scheme value) when Name is empty", nameof(value));
-            //}
-            //return new KeyValuePair<string, string>("Authorization", values[0] + " " + values[1]);
         }
 
         protected internal override LocalBuilder EmitNewRequestHeaderHandler(ILGenerator iLGenerator, LocalBuilder valueBuilder)

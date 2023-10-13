@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 namespace Feign.Formatting
 {
     /// <summary>
-    /// 支持 xml
+    /// xml
     /// </summary>
     public class XmlMediaTypeFormatter : IMediaTypeFormatter
     {

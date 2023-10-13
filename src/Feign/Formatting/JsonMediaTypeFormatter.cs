@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Feign.Formatting
 {
     /// <summary>
-    /// 处理 application/json
+    /// application/json
     /// </summary>
     public class JsonMediaTypeFormatter : IMediaTypeFormatter
     {

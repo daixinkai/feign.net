@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Feign.Proxy
 {
     /// <summary>
-    /// FeignHttpClient使用的消息处理程序
+    /// Message handler used by FeignHttpClient
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public class FeignProxyHttpClientHandler<TService> : HttpClientHandler where TService : class
@@ -62,7 +62,7 @@ namespace Feign.Proxy
             _logger = logger;
         }
         /// <summary>
-        /// 查找服务路径
+        /// Find service uri
         /// </summary>
         /// <param name="requestMessage"></param>
         /// <returns></returns>
@@ -109,7 +109,7 @@ namespace Feign.Proxy
 
                 if (requestContext.IsTerminated)
                 {
-                    //请求被终止
+                    //Request terminated
                     throw new TerminatedRequestException();
                 }
                 if (requestContext._cancellationTokenSource != null)

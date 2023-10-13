@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 请求参数将作为RequestBody传输
+    /// Request parameters will be transmitted as RequestBody
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
     public sealed class RequestBodyAttribute : Attribute, IRequestParameter

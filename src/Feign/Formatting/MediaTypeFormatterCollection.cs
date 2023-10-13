@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Feign.Formatting
 {
     /// <summary>
-    /// 媒体处理器集合
+    /// Media formatter collection
     /// </summary>
     public sealed class MediaTypeFormatterCollection : IEnumerable<IMediaTypeFormatter>
     {
@@ -28,7 +28,7 @@ namespace Feign.Formatting
         }
 
         /// <summary>
-        /// 添加一个媒体处理器
+        /// Add a media formatter
         /// </summary>
         /// <param name="formatter"></param>
         public void AddFormatter(IMediaTypeFormatter formatter)
@@ -47,7 +47,7 @@ namespace Feign.Formatting
             }
         }
         /// <summary>
-        /// 查找指定的媒体处理器
+        /// Find the specified media formatter
         /// </summary>
         /// <param name="mediaType"></param>
         /// <returns></returns>

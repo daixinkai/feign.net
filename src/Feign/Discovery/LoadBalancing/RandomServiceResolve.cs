@@ -6,7 +6,7 @@ using System.Text;
 namespace Feign.Discovery.LoadBalancing
 {
     /// <summary>
-    /// 随机服务决定
+    /// Random
     /// </summary>
     public class RandomServiceResolve : ServiceResolveBase
     {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 提供基本类，用于发送 HTTP 请求和接收来自通过 URI 确认的资源的 HTTP 响应。
+    /// Provides a base class for sending HTTP requests and receiving HTTP responses from a resource identified by a URI.
     /// </summary>
     public class FeignHttpClient : HttpClient
     {
@@ -17,7 +17,7 @@ namespace Feign
             Handler = handler;
         }
         /// <summary>
-        /// 获取用于处理请求的Handler
+        /// Gets or sets the inner handler which processes the HTTP response messages.
         /// </summary>
         public FeignDelegatingHandler Handler { get; }
 

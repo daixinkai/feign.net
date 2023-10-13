@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Feign.Formatting
 {
     /// <summary>
-    /// 媒体类型处理
+    /// Media type formatter
     /// </summary>
     public interface IMediaTypeFormatter
     {

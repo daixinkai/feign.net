@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// 将参数转换到请求头中
+    /// Convert parameters into request headers
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
     public class RequestHeaderAttribute : RequestHeaderBaseAttribute

@@ -41,7 +41,7 @@ namespace Feign
         #region Authorization
 
         /// <summary>
-        /// 添加授权
+        /// Add authorization
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <param name="feignClientPipeline"></param>
@@ -63,7 +63,7 @@ namespace Feign
             });
         }
         /// <summary>
-        /// 添加授权
+        /// Add authorization
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <param name="feignClientPipeline"></param>
@@ -86,7 +86,7 @@ namespace Feign
             });
         }
         /// <summary>
-        /// 添加授权
+        /// Add authorization
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <param name="feignClientPipeline"></param>
@@ -115,7 +115,7 @@ namespace Feign
 
 #if !NET45
         /// <summary>
-        /// 添加授权
+        /// Add authorization
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <param name="feignClientPipeline"></param>
@@ -142,7 +142,7 @@ namespace Feign
 
         #region Global
         /// <summary>
-        /// 添加全局授权
+        /// Add global authorization
         /// </summary>
         /// <param name="feignClientPipeline"></param>
         /// <param name="authenticationHeaderValue"></param>
@@ -153,7 +153,7 @@ namespace Feign
             return feignClientPipeline;
         }
         /// <summary>
-        /// 添加全局授权
+        /// Add global authorization
         /// </summary>
         /// <param name="feignClientPipeline"></param>
         /// <param name="authenticationHeaderValueAction"></param>
@@ -164,7 +164,7 @@ namespace Feign
             return feignClientPipeline;
         }
         /// <summary>
-        /// 添加全局授权
+        /// Add global authorization
         /// </summary>
         /// <param name="feignClientPipeline"></param>
         /// <param name="scheme"></param>
@@ -178,7 +178,7 @@ namespace Feign
 
 #if NETSTANDARD
         /// <summary>
-        /// 添加全局授权
+        /// Add global authorization
         /// </summary>
         /// <param name="feignClientPipeline"></param>
         /// <param name="schemeAndParameterFactory"></param>

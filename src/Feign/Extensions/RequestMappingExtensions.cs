@@ -44,7 +44,7 @@ namespace Feign
                 httpMethod == HttpMethod.Post
                 || httpMethod == HttpMethod.Put
                 || httpMethod == HttpMethod.Delete
-                //Patch也支持
+                //Patch also supports
                 || string.Equals(httpMethod.Method, "PATCH", StringComparison.OrdinalIgnoreCase)
                  ;
         }

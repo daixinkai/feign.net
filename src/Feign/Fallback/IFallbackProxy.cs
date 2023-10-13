@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign.Fallback
 {
     /// <summary>
-    /// 一个接口,表示服务降级代理描述对象
+    /// An interface that represents the service fallback proxy
     /// </summary>
     public interface IFallbackProxy
     {

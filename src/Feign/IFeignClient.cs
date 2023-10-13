@@ -22,11 +22,11 @@ namespace Feign
     public interface IFeignClient<out TService> : IFeignClient
     {
         /// <summary>
-        /// 获取服务对象
+        /// Gets the service object
         /// </summary>
         TService Service { get; }
         /// <summary>
-        /// 获取服务类型
+        /// Gets the service type
         /// </summary>
         Type ServiceType { get; }
     }

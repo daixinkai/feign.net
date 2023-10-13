@@ -7,7 +7,7 @@ using System.Text;
 namespace Feign
 {
     /// <summary>
-    /// 映射一个请求
+    /// Map a request
     /// </summary>
     [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public abstract class RequestMappingBaseAttribute : Attribute, IRequestMapping
@@ -20,30 +20,30 @@ namespace Feign
             Value = value;
         }
         /// <summary>
-        /// 获取或设置请求路径
+        /// Get or set the request path
         /// </summary>
         public string? Value { get; set; }
         /// <summary>
-        /// 获取或设置ContentType
+        /// Gets or sets the ContentType
         /// </summary>
         public string? ContentType { get; set; }
         /// <summary>
-        /// 获取或设置Accept
+        /// Gets or sets the Accept
         /// </summary>
         public string? Accept { get; set; }
 
         /// <summary>
-        /// 获取或设置HttpCompletionOption
+        /// Gets or sets the HttpCompletionOption
         /// </summary>
         public HttpCompletionOption CompletionOption { get; set; }
 
         ///// <summary>
-        ///// 获取或设置UriKind
+        ///// Gets or sets the UriKind
         ///// </summary>
         //public UriKind UriKind { get; set; }
 
         /// <summary>
-        /// 获取请求的http方法
+        /// Gets the http method of the request
         /// </summary>
         /// <returns></returns>
         public abstract string GetMethod();

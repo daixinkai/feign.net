@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign.Cache
 {
     /// <summary>
-    /// 默认缓存提供者,空实现
+    /// Default cache provider, empty implementation
     /// </summary>
     public class DefaultCacheProvider : ICacheProvider
     {
