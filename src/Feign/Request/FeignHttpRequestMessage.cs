@@ -27,7 +27,7 @@ namespace Feign.Request
             FeignClientRequest = feignClientRequest;
         }
         /// <summary>
-        /// 获取FeignClientHttp请求信息
+        /// Gets the FeignClientRequest
         /// </summary>
         public FeignClientHttpRequest FeignClientRequest { get; }
 

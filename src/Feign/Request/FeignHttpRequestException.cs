@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 请求过程中发生的错误
+    /// An error occurred during the request
     /// </summary>
     public class FeignHttpRequestException : HttpRequestException
     {
@@ -18,11 +18,11 @@ namespace Feign.Request
             RequestMessage = requestMessage;
         }
         /// <summary>
-        /// 获取服务对象
+        /// Gets the FeignClient
         /// </summary>
         public IFeignClient FeignClient { get; }
         /// <summary>
-        /// 获取请求信息
+        /// Gets the RequestMessage
         /// </summary>
         public FeignHttpRequestMessage RequestMessage { get; }
 

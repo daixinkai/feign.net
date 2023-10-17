@@ -16,7 +16,7 @@ namespace Feign.Proxy
     partial class FeignClientHttpProxy<TService>
     {
         /// <summary>
-        /// 获取响应结果
+        /// Get result
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="responseContext"></param>

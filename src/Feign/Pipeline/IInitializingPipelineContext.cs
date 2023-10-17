@@ -10,15 +10,18 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示初始化时提供的参数
+    /// An interface representing the initializing pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface IInitializingPipelineContext<out TService> : IFeignClientPipelineContext<TService>
     {
         /// <summary>
-        /// 获取HttpClient
+        /// Gets the HttpClient
         /// </summary>
         FeignHttpClient HttpClient { get; set; }
+        /// <summary>
+        /// Gets the Handler for HttpClient
+        /// </summary>
         HttpHandlerType? HttpHandler { get; }
     }
 }

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Feign.Proxy
 {
     /// <summary>
-    /// 支持服务降级的HttpProxy
+    /// HttpProxy with service fallback support
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     /// <typeparam name="TFallback"></typeparam>
@@ -36,7 +36,7 @@ namespace Feign.Proxy
             Fallback = fallback;
         }
         /// <summary>
-        /// 获取降级服务对象
+        /// Gets the Fallback object
         /// </summary>
         public virtual TService Fallback { get; }
 
@@ -179,7 +179,7 @@ namespace Feign.Proxy
             }
         }
         /// <summary>
-        /// 触发服务降级事件
+        /// invoke fallback
         /// </summary>
         /// <param name="request"></param>
         /// <param name="delegate"></param>

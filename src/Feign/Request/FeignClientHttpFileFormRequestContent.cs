@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 处理IHttpRequestFileForm
+    /// Processing IHttpRequestFileForm
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class FeignClientHttpFileFormRequestContent : FeignClientHttpRequestContent

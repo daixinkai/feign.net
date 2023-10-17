@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Feign.Proxy
 {
     /// <summary>
-    /// 默认的HttpProxy代理
+    /// Default HttpProxy
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
@@ -91,7 +91,7 @@ namespace Feign.Proxy
 
 
         /// <summary>
-        /// 全局pipeline
+        /// global pipeline
         /// </summary>
         internal readonly GlobalFeignClientPipeline? _globalFeignClientPipeline;
         /// <summary>
@@ -116,20 +116,20 @@ namespace Feign.Proxy
         protected virtual UriKind UriKind => UriKind.Relative;
 
         /// <summary>
-        /// 获取服务的 serviceId
+        /// Gets the serviceId
         /// </summary>
         public abstract string ServiceId { get; }
         /// <summary>
-        /// 是否响应终止的请求? 此值如果是false的话将继续往上层抛异常
+        /// Whether to respond to the terminated request? If this value is false, exceptions will continue to be thrown to the upper layer.
         /// </summary>
         protected virtual bool IsResponseTerminatedRequest => true;
 
         /// <summary>
-        /// 获取服务的base uri
+        /// Gets the base uri
         /// </summary>
         public virtual string? BaseUri { get { return null; } }
         /// <summary>
-        /// 获取服务的url
+        /// Gets the url
         /// </summary>
         public virtual string? Url { get { return null; } }
 

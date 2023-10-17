@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// byte[]类型的请求文件
+    /// byte[] request file
     /// </summary>
     public class ByteArrayHttpRequestFile : IHttpRequestFile, IMultipartFormData
     {

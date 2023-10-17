@@ -7,25 +7,25 @@ using System.Text;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示响应请求时提供的参数
+    /// An interface representing the receiving response pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface IReceivingResponsePipelineContext<out TService> : IFeignClientPipelineContext<TService>
     {
         /// <summary>
-        /// 获取请求
+        /// Gets the Request
         /// </summary>
         FeignClientHttpRequest Request { get; }
         /// <summary>
-        /// 获取响应信息
+        /// Gets the ResponseMessage
         /// </summary>
         HttpResponseMessage ResponseMessage { get; }
         /// <summary>
-        /// 获取返回的类型
+        /// Gets the ResultType
         /// </summary>
         Type ResultType { get; }
         /// <summary>
-        /// 获取或设置返回对象
+        /// Gets or sets the Result
         /// </summary>
         object? Result { get; set; }
 

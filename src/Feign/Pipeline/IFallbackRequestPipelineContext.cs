@@ -10,47 +10,47 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示服务降级时提供的参数
+    /// An interface representing the fallback request pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface IFallbackRequestPipelineContext<out TService> : IFeignClientPipelineContext<TService>
     {
         /// <summary>
-        /// 获取请求对象
+        /// Gets the Request
         /// </summary>
         FeignClientHttpRequest Request { get; }
         /// <summary>
-        /// 获取降级代理对象
+        /// Gets the FallbackProxy
         /// </summary>
         IFallbackProxy? FallbackProxy { get; }
         /// <summary>
-        /// 获取降级服务对象
+        /// Gets the Fallback object
         /// </summary>
         TService Fallback { get; }
         /// <summary>
-        /// 获取降级的服务方法
+        /// Gets the Fallback Method
         /// </summary>
         MethodInfo Method { get; }
         /// <summary>
-        /// 获取触发降级的错误
+        /// Gets the error that triggered the fallback
         /// </summary>
         Exception Exception { get; }
         /// <summary>
-        /// 获取请求的参数描述
+        /// Gets the Parameters
         /// </summary>
         /// <returns></returns>
         IDictionary<string, object> GetParameters();
         /// <summary>
-        /// 获取请求的参数类型
+        /// Gets the parameter type of the request
         /// </summary>
         /// <returns></returns>
         Type[] GetParameterTypes();
         /// <summary>
-        /// 获取一个值,指示是否终止降级
+        /// Gets a value indicating whether to terminate the fallback
         /// </summary>
         bool IsTerminated { get; }
         /// <summary>
-        /// 终止降级
+        /// Terminate fallback
         /// </summary>
         void Terminate();
 

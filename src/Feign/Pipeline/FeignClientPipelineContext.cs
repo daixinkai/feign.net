@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示服务事件参数
+    /// Representing the request pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
 //#if NET5_0_OR_GREATER
@@ -21,7 +21,7 @@ namespace Feign.Pipeline
             FeignClient = feignClient;
         }
         /// <summary>
-        /// 获取服务对象
+        /// Gets the service object
         /// </summary>
         public IFeignClient<TService> FeignClient { get; }
     }

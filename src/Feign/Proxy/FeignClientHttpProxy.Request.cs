@@ -126,7 +126,7 @@ namespace Feign.Proxy
         }
 
         /// <summary>
-        /// 确保响应状态正确
+        /// Ensure the response success
         /// </summary>
         /// <param name="responseMessage"></param>
         private async Task EnsureSuccessAsync(HttpResponseMessage responseMessage)

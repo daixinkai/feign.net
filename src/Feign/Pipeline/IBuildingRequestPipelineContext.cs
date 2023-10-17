@@ -8,25 +8,25 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示BuildingRequest阶段的事件参数
+    /// An interface representing the building request pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface IBuildingRequestPipelineContext<out TService> : IFeignClientPipelineContext<TService>
     {
         /// <summary>
-        /// 获取http method
+        /// Gets the http method
         /// </summary>
         string Method { get; }
         /// <summary>
-        /// 获取或设置请求路径
+        /// Gets or sets the RequestUri
         /// </summary>
         Uri? RequestUri { get; set; }
         /// <summary>
-        /// 获取请求头
+        /// Gets the headers
         /// </summary>
         IDictionary<string, string> Headers { get; }
         /// <summary>
-        /// 获取请求
+        /// Gets the request
         /// </summary>
         FeignClientHttpRequest Request { get; }
     }

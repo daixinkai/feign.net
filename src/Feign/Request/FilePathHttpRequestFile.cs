@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 文件路径请求文件
+    /// FilePath request file
     /// </summary>
     public class FilePathHttpRequestFile : StreamHttpRequestFile
     {

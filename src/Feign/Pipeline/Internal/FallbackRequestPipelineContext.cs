@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline.Internal
 {
     /// <summary>
-    /// 表示服务降级时提供的参数
+    /// Representing the fallback request pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
 
-//#if NET5_0_OR_GREATER
-//    internal record FallbackRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IFallbackRequestPipelineContext<TService>
-//#else
+    //#if NET5_0_OR_GREATER
+    //    internal record FallbackRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IFallbackRequestPipelineContext<TService>
+    //#else
     internal class FallbackRequestPipelineContext<TService> : FeignClientPipelineContext<TService>, IFallbackRequestPipelineContext<TService>
-//#endif
+    //#endif
     {
         internal FallbackRequestPipelineContext(
-            IFeignClient<TService> feignClient, 
-            FeignClientHttpRequest request, 
-            TService fallback, 
-            IFallbackProxy? fallbackProxy, 
+            IFeignClient<TService> feignClient,
+            FeignClientHttpRequest request,
+            TService fallback,
+            IFallbackProxy? fallbackProxy,
             MethodInfo? method,
             Exception exception
             ) : base(feignClient)
@@ -35,22 +35,14 @@ namespace Feign.Pipeline.Internal
             _method = method;
             Exception = exception;
         }
-        /// <summary>
-        /// 获取请求对象
-        /// </summary>
+        /// <inheritdoc/>
         public FeignClientHttpRequest Request { get; }
-        /// <summary>
-        /// 获取降级代理对象
-        /// </summary>
+        /// <inheritdoc/>
         public IFallbackProxy? FallbackProxy { get; }
-        /// <summary>
-        /// 获取降级服务对象
-        /// </summary>
+        /// <inheritdoc/>
         public TService Fallback { get; }
         private MethodInfo? _method;
-        /// <summary>
-        /// 获取降级的服务方法
-        /// </summary>
+        /// <inheritdoc/>
         public MethodInfo Method
         {
             get
@@ -62,35 +54,23 @@ namespace Feign.Pipeline.Internal
                 return _method;
             }
         }
-        /// <summary>
-        /// 获取触发降级的错误
-        /// </summary>
+        /// <inheritdoc/>
         public Exception Exception { get; }
-        /// <summary>
-        /// 获取请求的参数描述
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public IDictionary<string, object> GetParameters()
         {
             return FallbackProxy?.GetParameters() ?? new Dictionary<string, object>();
         }
-        /// <summary>
-        /// 获取请求的参数类型
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public Type[] GetParameterTypes()
         {
             return FallbackProxy?.GetParameterTypes() ?? Type.EmptyTypes;
         }
-        /// <summary>
-        /// 获取一个值,指示是否终止降级
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsTerminated => _isTerminated;
 
-        bool _isTerminated;
-        /// <summary>
-        /// 终止降级
-        /// </summary>
+        private bool _isTerminated;
+        /// <inheritdoc/>
         public void Terminate()
         {
             _isTerminated = true;

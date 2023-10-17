@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示Disposing事件提供的参数
+    /// An interface representing the disposing pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface IDisposingPipelineContext<out TService> : IFeignClientPipelineContext<TService>

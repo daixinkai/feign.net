@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Feign.Proxy
 {
     /// <summary>
-    /// 支持服务降级的HttpProxy
+    /// HttpProxy with service fallback factory support
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     /// <typeparam name="TFallbackFactory"></typeparam>

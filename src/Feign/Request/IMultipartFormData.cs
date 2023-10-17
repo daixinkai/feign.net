@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+    /// <summary>
+    /// Content-Type = multipart/form-data
+    /// </summary>
     public interface IMultipartFormData
     {
         /// <summary>

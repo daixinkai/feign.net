@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 文件流请求文件
+    /// Stream request file
     /// </summary>
     public class StreamHttpRequestFile : IHttpRequestFile, IMultipartFormData
     {

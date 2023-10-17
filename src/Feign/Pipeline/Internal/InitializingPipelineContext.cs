@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline.Internal
 {
     /// <summary>
-    /// 表示初始化时提供的参数
+    /// Representing the initializing pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     //#if NET5_0_OR_GREATER
@@ -23,9 +23,7 @@ namespace Feign.Pipeline.Internal
         {
             HttpClient = httpClient;
         }
-        /// <summary>
-        /// 获取或设置HttpClient
-        /// </summary>
+        /// <inheritdoc/>
         public FeignHttpClient HttpClient { get; set; }
 
         public HttpHandlerType? HttpHandler { get; internal set; }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// http请求表单
+    /// http Form
     /// </summary>
     public interface IHttpRequestForm
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline.Internal
 {
     /// <summary>
-    /// 表示Disposing事件提供的参数
+    /// Representing the disposing pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
 //#if NET5_0_OR_GREATER

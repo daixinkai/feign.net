@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 处理JSON
+    /// Processing JSON
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -31,7 +31,7 @@ namespace Feign.Request
             Type type = typeof(T);
             if (type == typeof(byte[]) || typeof(Stream).IsAssignableFrom(type))
             {
-                //throw new NotSupportedException($"不支持{type.FullName}类型的参数");
+                //throw new NotSupportedException($"Parameters of type {type.FullName} are not supported");
                 return null;
             }
             if (contentType == null)

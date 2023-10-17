@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 一个接口,表示含有多个请求文件表单
+    /// An interface that represents a form containing multiple request files
     /// </summary>
     public interface IHttpRequestFileForm : IHttpRequestForm, IMultipartFormData
     {
         /// <summary>
-        /// 获取请求文件
+        /// Gets request file collection
         /// </summary>
         IEnumerable<IHttpRequestFile>? RequestFiles { get; }
-
     }
 }

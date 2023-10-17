@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 一个FeignClientHttp请求
+    /// A FeignClientHttp request
     /// </summary>
     public class FeignClientHttpRequest
     {
@@ -34,62 +34,62 @@ namespace Feign.Request
             }
         }
         /// <summary>
-        /// 获取BaseUrl
+        /// Gets the BaseUrl
         /// </summary>
         public string BaseUrl { get; }
         /// <summary>
-        /// 获取映射的Uri
+        /// Gets the MappingUri
         /// </summary>
         public string MappingUri { get; }
         /// <summary>
-        /// 获取真实Uri
+        /// Gets the real Uri
         /// </summary>
         public string Uri { get; }
         /// <summary>
-        /// 获取或设置HttpMethod
+        /// Gets or sets the HttpMethod
         /// </summary>
         public string HttpMethod { get; set; }
         /// <summary>
-        /// 获取媒体类型
+        /// Gets the ContentType
         /// </summary>
         public MediaTypeHeaderValue? ContentType { get; }
         /// <summary>
-        /// 获取媒体类型
+        /// Gets the MediaType
         /// </summary>
         public string? MediaType { get; }
         /// <summary>
-        /// 获取或设置Headers
+        /// Gets or sets the Headers
         /// </summary>
         public string[]? Headers { get; set; }
         /// <summary>
-        /// 获取或设置Accept
+        /// Gets or sets the Accept
         /// </summary>
         public string? Accept { get; set; }
         /// <summary>
-        /// 获取或设置HttpCompletionOption
+        /// Gets or sets the HttpCompletionOption
         /// </summary>
         public HttpCompletionOption CompletionOption { get; set; }
         /// <summary>
-        /// 获取或设置RequestContent
+        /// Gets or sets the RequestContent
         /// </summary>
         public FeignClientHttpRequestContent? RequestContent { get; set; }
         /// <summary>
-        /// 是否特殊结果
+        /// Is it a special result?
         /// </summary>
         public bool IsSpecialResult { get; set; }
 
         /// <summary>
-        /// 获取或设置方法元数据
+        /// Gets or sets the Method metadata
         /// </summary>
         public FeignClientMethodInfo? Method { get; set; }
 
         /// <summary>
-        /// 获取或设置处理请求头
+        /// Gets or sets the RequestHeaderHandlers
         /// </summary>
         public List<IRequestHeaderHandler>? RequestHeaderHandlers { get; set; }
 
         /// <summary>
-        /// 获取随请求一起发送的HttpContent
+        /// Gets the HttpContent sent with the request
         /// </summary>
         /// <returns></returns>
         public HttpContent? GetHttpContent(IFeignOptions options)

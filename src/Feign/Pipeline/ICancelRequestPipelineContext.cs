@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示取消请求时提供的参数
+    /// An interface representing the cancel request pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface ICancelRequestPipelineContext<out TService> : IFeignClientPipelineContext<TService>
     {
         /// <summary>
-        /// 获取CancellationToken
+        /// Gets the CancellationToken
         /// </summary>
         CancellationToken CancellationToken { get; }
         /// <summary>
-        /// 获取请求
+        /// Gets the RequestMessage
         /// </summary>
         FeignHttpRequestMessage RequestMessage { get; }
     }

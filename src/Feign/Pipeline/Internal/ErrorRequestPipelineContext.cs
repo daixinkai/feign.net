@@ -7,7 +7,7 @@ using System.Text;
 namespace Feign.Pipeline.Internal
 {
     /// <summary>
-    /// 表示发生错误时提供的参数
+    /// Representing the error request pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
 //#if NET5_0_OR_GREATER
@@ -21,17 +21,11 @@ namespace Feign.Pipeline.Internal
             RequestMessage = requestMessage;
             Exception = exception;
         }
-        /// <summary>
-        /// 获取请求的RequestMessage
-        /// </summary>
+        /// <inheritdoc/>
         public FeignHttpRequestMessage RequestMessage { get; }
-        /// <summary>
-        /// 获取引发的错误
-        /// </summary>
+        /// <inheritdoc/>
         public Exception Exception { get; }
-        /// <summary>
-        /// 获取或设置一个值,表示此错误是否已经处理
-        /// </summary>
+        /// <inheritdoc/>
         public bool ExceptionHandled { get; set; }
     }
 }

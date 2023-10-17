@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Feign.Request
 {
     /// <summary>
-    /// 处理multipart/form-data
+    /// Processing multipart/form-data
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class FeignClientHttpMultipartFormRequestContent : FeignClientHttpRequestContent

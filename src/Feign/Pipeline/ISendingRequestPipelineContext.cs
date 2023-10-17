@@ -8,27 +8,27 @@ using System.Threading;
 namespace Feign.Pipeline
 {
     /// <summary>
-    /// 一个接口,表示SendingRequest事件提供的参数
+    /// An interface representing the sending request pipeline context
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     public interface ISendingRequestPipelineContext<out TService> : IFeignClientPipelineContext<TService>
     {
         /// <summary>
-        /// 获取请求
+        /// Gets the ResponseMessage
         /// </summary>
         FeignHttpRequestMessage RequestMessage { get; }
 
         /// <summary>
-        /// 获取 <see cref="System.Threading.CancellationTokenSource"/>
+        /// Gets the <see cref="System.Threading.CancellationTokenSource"/>
         /// </summary>
         CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
-        /// 获取一个值,指示是否终止请求
+        /// Gets a value indicating whether to terminate the request
         /// </summary>
         bool IsTerminated { get; }
         /// <summary>
-        /// 终止请求
+        /// Terminate  request
         /// </summary>
         void Terminate();
     }

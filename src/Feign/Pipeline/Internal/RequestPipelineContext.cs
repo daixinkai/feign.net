@@ -48,7 +48,7 @@ namespace Feign.Pipeline.Internal
         private bool _isTerminated;
         internal CancellationTokenSource? _cancellationTokenSource;
         /// <summary>
-        /// 获取一个值,指示是否终止请求
+        /// Gets a value indicating whether to terminate the request
         /// </summary>
         public bool IsTerminated => _isTerminated;
         public CancellationTokenSource CancellationTokenSource

@@ -30,17 +30,11 @@ namespace Feign.Pipeline.Internal
 
         public HttpResponseMessage ResponseMessage { get; set; }
 
-        /// <summary>
-        /// 获取返回的类型
-        /// </summary>
         public Type ResultType => typeof(TResult);
 
         internal bool _isSetResult;
 
         internal TResult? _result;
-        /// <summary>
-        /// 获取或设置返回对象
-        /// </summary>
         public object? Result
         {
             get
@@ -63,7 +57,7 @@ namespace Feign.Pipeline.Internal
         #endregion
 
         /// <summary>
-        /// 是否跳过释放响应
+        /// is skip release the response
         /// </summary>
         public bool SkipReleaseResponse { get; set; }
 

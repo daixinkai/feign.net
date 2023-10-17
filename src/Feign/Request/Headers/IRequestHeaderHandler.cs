@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Feign.Request.Headers
 {
     /// <summary>
-    /// 设置请求头
+    /// Sets the request header
     /// </summary>
     public interface IRequestHeaderHandler
     {
