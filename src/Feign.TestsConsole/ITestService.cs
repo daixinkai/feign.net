@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace Feign.TestsConsole
 {
     [FeignClient("test-service"
-        , Url = "http://localhost:62488")]
+        , Url = "http://localhost:62488"
+        , Configuration = null)]
     public interface ITestService
     {
         [GetMapping("html")]

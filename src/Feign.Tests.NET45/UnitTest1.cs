@@ -92,7 +92,7 @@ namespace Feign.Tests.NET45
 
             testService.PostValueAsync().Wait();
 
-            FilePathHttpRequestFile filePathRequestFile = new FilePathHttpRequestFile(@"E:\asdasdasd.txt");
+            FilePathHttpRequestFile filePathRequestFile;//= new FilePathHttpRequestFile(@"E:\asdasdasd.txt");
             filePathRequestFile = null;
 
             //string value1 = testService.UploadFileAsync(filePathRequestFile, "asdasd").Result;
@@ -104,10 +104,10 @@ namespace Feign.Tests.NET45
             {
                 Age = 1,
                 Name = "asd111",
-                File = new FilePathHttpRequestFile(@"E:\asdasdasd.txt")
-                {
-                    Name = "file"
-                }
+                //File = new FilePathHttpRequestFile(@"E:\asdasdasd.txt")
+                //{
+                //    Name = "file"
+                //}
             }).Result;
             Assert.IsNotNull(value2);
 

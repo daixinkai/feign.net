@@ -1,4 +1,5 @@
 ﻿using Feign.Cache;
+using Feign.Configuration;
 using Feign.Discovery;
 using Feign.Formatting;
 using Feign.Logging;
@@ -38,7 +39,8 @@ namespace Feign
             feignBuilder.AddLoggerFactory<DefaultLoggerFactory>();
             feignBuilder.AddCacheProvider<DefaultCacheProvider>();
             feignBuilder.AddServiceDiscovery<DefaultServiceDiscovery>();
-            feignBuilder.AddService<IFeignOptions>(feignBuilder.Options);
+            feignBuilder.AddService(feignBuilder.Options);
+            feignBuilder.AddService(typeof(FeignClientConfigureOptions<>), FeignClientLifetime.Singleton);
             return feignBuilder;
         }
         /// <summary>
@@ -74,6 +76,19 @@ namespace Feign
                 if (feignClientAttribute.FallbackFactory != null)
                 {
                     feignBuilder.AddService(feignClientAttribute.FallbackFactory, feignClientAttribute.Lifetime ?? lifetime);
+                }
+                //add configuration
+                if (feignClientAttribute.Configuration != null)
+                {
+                    var configurationType = feignClientAttribute.Configuration;
+                    if (typeof(IFeignClientConfiguration<>).MakeGenericType(serviceType).IsAssignableFrom(configurationType))
+                    {
+                        feignBuilder.AddService(typeof(IFeignClientConfiguration<>).MakeGenericType(serviceType), configurationType, FeignClientLifetime.Singleton);
+                    }
+                    else if (typeof(IFeignClientConfiguration).IsAssignableFrom(configurationType))
+                    {
+                        feignBuilder.AddService(typeof(IFeignClientConfiguration), configurationType, FeignClientLifetime.Singleton);
+                    }
                 }
             }
             return feignBuilder;

@@ -1,16 +1,12 @@
-﻿using Feign.Cache;
-using Feign.Discovery;
+﻿using Feign.Configuration;
 using Feign.Fallback;
 using Feign.Internal;
-using Feign.Logging;
 using Feign.Pipeline;
 using Feign.Pipeline.Internal;
 using Feign.Request;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Feign.Proxy
@@ -27,11 +23,9 @@ namespace Feign.Proxy
 
         public FallbackFeignClientHttpProxy(
             TFallback fallback,
-            IFeignOptions feignOptions,
-            IServiceDiscovery serviceDiscovery,
-            ICacheProvider? cacheProvider = null,
-            ILoggerFactory? loggerFactory = null)
-            : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+            FeignClientConfigureOptions<TService> configureOptions
+            )
+            : base(configureOptions)
         {
             Fallback = fallback;
         }
@@ -165,17 +159,17 @@ namespace Feign.Proxy
 
         protected internal virtual async ValueTask OnFallbackRequest(IFallbackRequestPipelineContext<TService> context)
         {
-            if (_serviceFeignClientPipeline != null)
+            if (_servicePipeline != null)
             {
-                await _serviceFeignClientPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
+                await _servicePipeline.FallbackRequestAsync(context).ConfigureAwait(false);
             }
-            if (_serviceIdFeignClientPipeline != null)
+            if (_serviceIdPipeline != null)
             {
-                await _serviceIdFeignClientPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
             }
-            if (_globalFeignClientPipeline != null)
+            if (_globalPipeline != null)
             {
-                await _globalFeignClientPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
+                await _globalPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
             }
         }
         /// <summary>

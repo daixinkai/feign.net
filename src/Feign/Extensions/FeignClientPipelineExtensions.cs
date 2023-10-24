@@ -12,32 +12,6 @@ namespace Feign
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class FeignClientPipelineExtensions
     {
-        /// <summary>
-        /// Gets the specified service Pipeline
-        /// </summary>
-        /// <param name="globalFeignClientPipeline"></param>
-        /// <param name="serviceId"></param>
-        /// <returns></returns>
-        public static IFeignClientPipeline<object> Service(this IGlobalFeignClientPipeline globalFeignClientPipeline, string serviceId)
-        {
-            if (string.IsNullOrWhiteSpace(serviceId))
-            {
-                throw new ArgumentException(nameof(serviceId));
-            }
-            return globalFeignClientPipeline.GetOrAddServicePipeline(serviceId);
-        }
-
-
-        /// <summary>
-        /// Gets the specified service Pipeline
-        /// </summary>
-        /// <param name="globalFeignClientPipeline"></param>
-        /// <returns></returns>
-        public static IFeignClientPipeline<TService> Service<TService>(this IGlobalFeignClientPipeline globalFeignClientPipeline)
-        {
-            return globalFeignClientPipeline.GetOrAddServicePipeline<TService>();
-        }
-
         #region Authorization
 
         /// <summary>

@@ -89,8 +89,7 @@ namespace Feign.Tests
             });
             feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
             {
-                ((HttpClientHandler)context.HttpClient.Handler.InnerHandler).AutomaticDecompression =
-                DecompressionMethods.None | DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                context.HttpHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             });
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseInitializing(context =>
             {
@@ -120,7 +119,7 @@ namespace Feign.Tests
                 IFeignClient<ITestService> feignClient = context.FeignClient;
                 ITestService service = feignClient.Service;
                 return TaskEx.CompletedValueTask;
-            });            
+            });
             feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseBuildingRequest(context =>
             {
                 var fallbackFeignClient = context.FeignClient.AsFallback();

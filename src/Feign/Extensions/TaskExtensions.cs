@@ -15,11 +15,11 @@ namespace Feign
             {
                 return task.Result;
             }
-            return task.ConfigureAwait(false).GetAwaiter().GetResult();
+            return task.ConfigureAwait(false).GetResult();
         }
 
         public static TResult GetResult<TResult>(this ConfiguredTaskAwaitable<TResult> configuredTaskAwaitable)
-        {
+        {            
             return configuredTaskAwaitable.GetAwaiter().GetResult();
         }
 

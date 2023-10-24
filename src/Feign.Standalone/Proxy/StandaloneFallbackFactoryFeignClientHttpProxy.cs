@@ -1,4 +1,5 @@
 ﻿using Feign.Cache;
+using Feign.Configuration;
 using Feign.Discovery;
 using Feign.Fallback;
 using Feign.Logging;
@@ -15,13 +16,8 @@ namespace Feign.Standalone.Proxy
         where TFallbackFactory : IFallbackFactory<TService>
         where TService : class
     {
-        public StandaloneFallbackFactoryFeignClientHttpProxy() : base(GetService<TFallbackFactory>(), GetService<IFeignOptions>(), GetService<IServiceDiscovery>(), GetService<ICacheProvider>(), GetService<ILoggerFactory>())
+        public StandaloneFallbackFactoryFeignClientHttpProxy() : base(FeignClients.Get<TFallbackFactory>(), FeignClients.CreateFeignClientConfigureOptions<TService>())
         {
-        }
-
-        protected static T GetService<T>()
-        {
-            return FeignClients._standaloneFeignBuilder.GetService<T>();
         }
 
     }

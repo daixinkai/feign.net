@@ -1,4 +1,5 @@
 ﻿using Feign.Cache;
+using Feign.Configuration;
 using Feign.Discovery;
 using Feign.Logging;
 using Feign.Proxy;
@@ -12,14 +13,8 @@ namespace Feign.Standalone.Proxy
 {
     public abstract class StandaloneFeignClientHttpProxy<TService> : FeignClientHttpProxy<TService> where TService : class
     {
-        public StandaloneFeignClientHttpProxy() : base(GetService<IFeignOptions>(), GetService<IServiceDiscovery>(), GetService<ICacheProvider>(), GetService<ILoggerFactory>())
+        public StandaloneFeignClientHttpProxy() : base(FeignClients.CreateFeignClientConfigureOptions<TService>())
         {
         }
-
-        protected static T GetService<T>()
-        {
-            return FeignClients._standaloneFeignBuilder.GetService<T>();
-        }
-
     }
 }

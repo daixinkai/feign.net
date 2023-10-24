@@ -1,12 +1,5 @@
-﻿using Feign.Cache;
-using Feign.Discovery;
+﻿using Feign.Configuration;
 using Feign.Fallback;
-using Feign.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
@@ -20,10 +13,8 @@ namespace Feign.Proxy
     {
         public FallbackFactoryFeignClientHttpProxy(
             TFallbackFactory fallbackFactory,
-            IFeignOptions feignOptions,
-            IServiceDiscovery serviceDiscovery,
-            ICacheProvider? cacheProvider,
-            ILoggerFactory? loggerFactory) : base(GetFallback(fallbackFactory), feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+            FeignClientConfigureOptions<TService> configureOptions
+            ) : base(GetFallback(fallbackFactory), configureOptions)
         {
             FallbackFactory = fallbackFactory;
         }

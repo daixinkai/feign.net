@@ -1,7 +1,14 @@
 ﻿using Feign.Cache;
+using Feign.Configuration;
+using Feign.Discovery;
 using Feign.Logging;
+using Feign.Proxy;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Feign.Standalone
 {
@@ -9,15 +16,23 @@ namespace Feign.Standalone
     {
         static FeignClients()
         {
-            _standaloneFeignBuilder = new StandaloneFeignBuilder();
+            s_standaloneFeignBuilder = new StandaloneFeignBuilder();
         }
-        internal static readonly StandaloneFeignBuilder _standaloneFeignBuilder;
 
-        public static IStandaloneFeignBuilder StandaloneFeignBuilder { get { return _standaloneFeignBuilder; } }
+
+        private static readonly StandaloneFeignBuilder s_standaloneFeignBuilder;
+
+        internal static FeignClientConfigureOptions<TService> CreateFeignClientConfigureOptions<TService>()
+        {
+            return new FeignClientConfigureOptions<TService>(Get<IFeignOptions>(), Get<IServiceDiscovery>(), Get<ICacheProvider>(), Get<ILoggerFactory>(), Get<IFeignClientConfiguration>(), Get<IFeignClientConfiguration<TService>>());
+        }
+
+
+        public static IStandaloneFeignBuilder StandaloneFeignBuilder => s_standaloneFeignBuilder;
 
         public static TService Get<TService>()
         {
-            return _standaloneFeignBuilder.GetService<TService>();
+            return s_standaloneFeignBuilder.GetService<TService>();
         }
 
         public static IStandaloneFeignBuilder AddFeignClients()
@@ -44,7 +59,7 @@ namespace Feign.Standalone
                 throw new NotSupportedException(nameof(options.Lifetime) + " can not be FeignClientLifetime.Scoped!");
             }
 
-            StandaloneFeignBuilder feignBuilder = _standaloneFeignBuilder;
+            StandaloneFeignBuilder feignBuilder = s_standaloneFeignBuilder;
 
             feignBuilder.Options = options;
             if (options.Assemblies.Count == 0)

@@ -15,8 +15,12 @@ namespace Feign.Pipeline.Internal
             _serviceIdPipelineMap.TryGetValue(serviceId, out var serviceFeignClientPipeline);
             return serviceFeignClientPipeline;
         }
-        public ServiceIdFeignClientPipeline GetOrAddServicePipeline(string serviceId)
+        public ServiceIdFeignClientPipeline Service(string serviceId)
         {
+            if (string.IsNullOrWhiteSpace(serviceId))
+            {
+                throw new ArgumentException(nameof(serviceId));
+            }
             if (_serviceIdPipelineMap.TryGetValue(serviceId, out var serviceFeignClientPipeline))
             {
                 return serviceFeignClientPipeline;
@@ -31,36 +35,24 @@ namespace Feign.Pipeline.Internal
             _serviceTypePipelineMap.TryGetValue(typeof(TService), out var serviceFeignClientPipeline);
             return serviceFeignClientPipeline as ServiceFeignClientPipeline<TService>;
         }
-        public ServiceFeignClientPipeline<TService> GetOrAddServicePipeline<TService>()
+        public ServiceFeignClientPipeline<TService> Service<TService>()
         {
             if (_serviceTypePipelineMap.TryGetValue(typeof(TService), out var serviceFeignClientPipeline))
             {
                 return (ServiceFeignClientPipeline<TService>)serviceFeignClientPipeline;
             }
-
             var temp = new ServiceFeignClientPipeline<TService>();
             serviceFeignClientPipeline = (IServiceFeignClientPipeline<object>)temp;
             _serviceTypePipelineMap[typeof(TService)] = serviceFeignClientPipeline;
             return (ServiceFeignClientPipeline<TService>)serviceFeignClientPipeline;
         }
-
-        IFeignClientPipeline<object>? IGlobalFeignClientPipeline.GetServicePipeline(string serviceId)
+        IFeignClientPipeline<object> IGlobalFeignClientPipeline.Service(string serviceId)
         {
-            return GetServicePipeline(serviceId);
+            return Service(serviceId);
         }
-
-        IFeignClientPipeline<object> IGlobalFeignClientPipeline.GetOrAddServicePipeline(string serviceId)
+        IFeignClientPipeline<TService> IGlobalFeignClientPipeline.Service<TService>()
         {
-            return GetOrAddServicePipeline(serviceId);
-        }
-        IFeignClientPipeline<TService>? IGlobalFeignClientPipeline.GetServicePipeline<TService>()
-        {
-            return GetServicePipeline<TService>();
-        }
-
-        IFeignClientPipeline<TService> IGlobalFeignClientPipeline.GetOrAddServicePipeline<TService>()
-        {
-            return GetOrAddServicePipeline<TService>();
+            return Service<TService>();
         }
     }
 }

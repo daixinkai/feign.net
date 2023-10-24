@@ -237,5 +237,37 @@ namespace Feign.Pipeline.Internal
             }
         }
 
+
+        public bool HasMiddleware()
+        {
+            return _buildingRequestMiddlewares.Count > 0
+                || _cancelRequestMiddlewares.Count > 0
+                || _disposingMiddlewares.Count > 0
+                || _errorRequestMiddlewares.Count > 0
+                || _fallbackRequestMiddlewares.Count > 0
+                || _initializingMiddlewares.Count > 0
+                || _receivingResponseMiddlewares.Count > 0
+                || _receivedResponseMiddlewares.Count > 0
+                || _sendingRequestMiddlewares.Count > 0;
+        }
+
+        public void Add(FeignClientPipelineBase<TService>? pipeline)
+        {
+            if (pipeline == null)
+            {
+                return;
+            }
+            _buildingRequestMiddlewares.AddRange(pipeline._buildingRequestMiddlewares);
+            _cancelRequestMiddlewares.AddRange(pipeline._cancelRequestMiddlewares);
+            _disposingMiddlewares.AddRange(pipeline._disposingMiddlewares);
+            _errorRequestMiddlewares.AddRange(pipeline._errorRequestMiddlewares);
+            _fallbackRequestMiddlewares.AddRange(pipeline._fallbackRequestMiddlewares);
+            _initializingMiddlewares.AddRange(pipeline._initializingMiddlewares);
+            _receivingResponseMiddlewares.AddRange(pipeline._receivingResponseMiddlewares);
+            _receivedResponseMiddlewares.AddRange(pipeline._receivedResponseMiddlewares);
+            _sendingRequestMiddlewares.AddRange(pipeline._sendingRequestMiddlewares);
+        }
+
+
     }
 }

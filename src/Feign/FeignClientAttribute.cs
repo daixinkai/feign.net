@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Feign.Configuration;
 
 namespace Feign
 {
@@ -51,9 +53,14 @@ namespace Feign
         /// </summary>
         public Type? Fallback { get; set; }
         /// <summary>
-        /// gets or sets the service fallback factory type
+        /// <para>gets or sets the service fallback factory type</para>
+        /// <para><see cref="Fallback.IFallbackFactory{T}"/></para>
         /// </summary>
         public Type? FallbackFactory { get; set; }
+        /// <summary>
+        /// A custom <see cref="IFeignClientConfiguration"/> or <see cref="IFeignClientConfiguration{T}"/> class for the feign client. 
+        /// </summary>
+        public Type? Configuration { get; set; }
 
     }
 }

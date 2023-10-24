@@ -1,14 +1,9 @@
-﻿using Feign.Cache;
+﻿using Feign.Configuration;
 using Feign.Discovery;
 using Feign.Internal;
 using Feign.Logging;
 using Feign.Pipeline.Internal;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Feign.Proxy
 {
@@ -18,39 +13,64 @@ namespace Feign.Proxy
     /// <typeparam name="TService"></typeparam>
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
     {
-        public FeignClientHttpProxy(
-            IFeignOptions feignOptions,
-            IServiceDiscovery serviceDiscovery,
-            ICacheProvider? cacheProvider,
-            ILoggerFactory? loggerFactory
-            )
+        public FeignClientHttpProxy(FeignClientConfigureOptions<TService> configureOptions)
         {
-            FeignOptions = feignOptions;
-            _globalFeignClientPipeline = FeignOptions.FeignClientPipeline as GlobalFeignClientPipeline;
-            _serviceIdFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline(ServiceId);
-            _serviceFeignClientPipeline = _globalFeignClientPipeline?.GetServicePipeline<TService>();
-            _logger = loggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
-            var serviceDiscoveryHttpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, serviceDiscovery, cacheProvider, _logger);
+            FeignOptions = configureOptions.FeignOptions;
+
+            _globalPipeline = FeignOptions.FeignClientPipeline as GlobalFeignClientPipeline;
+            _serviceIdPipeline = _globalPipeline?.GetServicePipeline(ServiceId);
+            _servicePipeline = _globalPipeline?.GetServicePipeline<TService>();
+
+            _logger = configureOptions.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
+
+            var httpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, configureOptions.ServiceDiscovery, configureOptions.CacheProvider, _logger);
             if (FeignOptions.AutomaticDecompression.HasValue)
             {
-                serviceDiscoveryHttpClientHandler.AutomaticDecompression = FeignOptions.AutomaticDecompression.Value;
+                httpClientHandler.AutomaticDecompression = FeignOptions.AutomaticDecompression.Value;
             }
             if (FeignOptions.UseCookies.HasValue)
             {
-                serviceDiscoveryHttpClientHandler.UseCookies = FeignOptions.UseCookies.Value;
+                httpClientHandler.UseCookies = FeignOptions.UseCookies.Value;
             }
-            //serviceDiscoveryHttpClientHandler.ShouldResolveService = string.IsNullOrWhiteSpace(Url);
-            serviceDiscoveryHttpClientHandler.ShouldResolveService = Url == null;
-            serviceDiscoveryHttpClientHandler.AllowAutoRedirect = false;
-            HttpClient = new FeignHttpClient(new FeignDelegatingHandler(serviceDiscoveryHttpClientHandler));
-            string baseUrl = serviceDiscoveryHttpClientHandler.ShouldResolveService ? (ServiceId ?? "") : Url!;
+            httpClientHandler.ShouldResolveService = Url == null;
+            httpClientHandler.AllowAutoRedirect = false;
+            HttpClient = new FeignHttpClient(new FeignDelegatingHandler(httpClientHandler));
+            //string baseUrl = httpClientHandler.ShouldResolveService ? (ServiceId ?? "") : Url!;
+            string baseUrl = httpClientHandler.ShouldResolveService ? ServiceId : Url!;
 
             BaseUrl = BuildBaseUrl(baseUrl);
 
             Origin = $"{s_httpScheme}://{ServiceId}";
+
+            #region Configuration
+            if (configureOptions.ServiceConfiguration != null)
+            {
+                var servicePipeline = new ServiceFeignClientPipeline<TService>();
+                var context = new FeignClientConfigurationContext<TService>(this, servicePipeline, HttpClient, httpClientHandler.HttpHandler);
+                configureOptions.ServiceConfiguration.Configure(context);
+                if (servicePipeline.HasMiddleware())
+                {
+                    servicePipeline.Add(_servicePipeline);
+                    _servicePipeline = servicePipeline;
+                }
+            }
+            if (configureOptions.Configuration != null)
+            {
+                var serviceIdPipeline = new ServiceIdFeignClientPipeline(ServiceId);
+                var context = new FeignClientConfigurationContext(this, serviceIdPipeline, HttpClient, httpClientHandler.HttpHandler);
+                configureOptions.Configuration.Configure(context);
+                if (serviceIdPipeline.HasMiddleware())
+                {
+                    serviceIdPipeline.Add(_serviceIdPipeline);
+                    _serviceIdPipeline = serviceIdPipeline;
+                }
+            }
+            #endregion
+
+
             var initializingContext = new InitializingPipelineContext<TService>(this, HttpClient)
             {
-                HttpHandler = serviceDiscoveryHttpClientHandler.HttpHandler
+                HttpHandler = httpClientHandler.HttpHandler
             };
             OnInitializing(initializingContext);
             HttpClient = initializingContext.HttpClient;
@@ -93,15 +113,15 @@ namespace Feign.Proxy
         /// <summary>
         /// global pipeline
         /// </summary>
-        internal readonly GlobalFeignClientPipeline? _globalFeignClientPipeline;
+        internal readonly GlobalFeignClientPipeline? _globalPipeline;
         /// <summary>
         /// serviceId pipeline
         /// </summary>
-        internal readonly ServiceIdFeignClientPipeline? _serviceIdFeignClientPipeline;
+        internal readonly ServiceIdFeignClientPipeline? _serviceIdPipeline;
         /// <summary>
         /// TService pipeline
         /// </summary>
-        internal readonly ServiceFeignClientPipeline<TService>? _serviceFeignClientPipeline;
+        internal readonly ServiceFeignClientPipeline<TService>? _servicePipeline;
 
         private readonly ILogger? _logger;
 
@@ -109,9 +129,9 @@ namespace Feign.Proxy
 
         protected internal IFeignOptions FeignOptions { get; private set; }
 
-        TService IFeignClient<TService>.Service { get { return (this as TService)!; } }
+        TService IFeignClient<TService>.Service => (this as TService)!;
 
-        Type IFeignClient<TService>.ServiceType { get { return typeof(TService); } }
+        Type IFeignClient<TService>.ServiceType => typeof(TService);
 
         protected virtual UriKind UriKind => UriKind.Relative;
 
@@ -127,11 +147,11 @@ namespace Feign.Proxy
         /// <summary>
         /// Gets the base uri
         /// </summary>
-        public virtual string? BaseUri { get { return null; } }
+        public virtual string? BaseUri => null;
         /// <summary>
         /// Gets the url
         /// </summary>
-        public virtual string? Url { get { return null; } }
+        public virtual string? Url => null;
 
         protected string BaseUrl { get; }
 
