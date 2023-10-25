@@ -205,19 +205,17 @@ namespace Feign.Reflection
             {
                 return null;
             }
-            Type? serviceConfigurationType = null;
             Type? configurationType = null;
+            Type? serviceConfigurationType = null;
             if (typeof(IFeignClientConfiguration<>).MakeGenericType(serviceType).IsAssignableFrom(feignClientAttribute.Configuration))
             {
                 serviceConfigurationType = feignClientAttribute.Configuration;
-                //feignBuilder.AddService(typeof(IFeignClientConfiguration<>).MakeGenericType(serviceType), feignClientAttribute.Configuration, FeignClientLifetime.Singleton);
             }
             if (typeof(IFeignClientConfiguration).IsAssignableFrom(feignClientAttribute.Configuration))
             {
                 configurationType = feignClientAttribute.Configuration;
-                //feignBuilder.AddService(typeof(IFeignClientConfiguration), feignClientAttribute.Configuration, FeignClientLifetime.Singleton);
             }
-            return FeignClientHttpProxyOptionsBuilder.BuildType(_dynamicAssembly.ModuleBuilder, _guid, serviceType, serviceConfigurationType, configurationType);
+            return FeignClientHttpProxyOptionsBuilder.BuildType(_dynamicAssembly.ModuleBuilder, _guid, serviceType, configurationType, serviceConfigurationType);
         }
 
         /// <summary>

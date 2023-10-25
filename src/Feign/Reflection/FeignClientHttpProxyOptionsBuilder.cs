@@ -6,12 +6,13 @@ using System.Reflection.Emit;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Feign.Configuration;
 
 namespace Feign.Reflection
 {
     internal class FeignClientHttpProxyOptionsBuilder
     {
-        public static Type BuildType(ModuleBuilder moduleBuilder, string guid, Type serviceType, Type? serviceConfigurationType, Type? configurationType)
+        public static Type BuildType(ModuleBuilder moduleBuilder, string guid, Type serviceType, Type? configurationType, Type? serviceConfigurationType)
         {
             var parentType = typeof(FeignClientHttpProxyOptions<>).MakeGenericType(serviceType);
             //创建类型
@@ -27,12 +28,19 @@ namespace Feign.Reflection
             TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, Type.EmptyTypes);
             List<Type?> parameterTypes = parentType.GetFirstConstructor().GetParameters().Select(s => s.ParameterType).ToList()!;
             parameterTypes[parameterTypes.Count - 2] = configurationType;
-            parameterTypes[parameterTypes.Count - 1] = serviceConfigurationType;
-            BuildFirstConstructor(typeBuilder, parentType, parameterTypes.ToArray());
+            if (configurationType == null || configurationType != serviceConfigurationType)
+            {
+                parameterTypes[parameterTypes.Count - 1] = serviceConfigurationType;
+            }
+            else
+            {
+                parameterTypes[parameterTypes.Count - 1] = null;
+            }
+            BuildFirstConstructor(typeBuilder, parentType, parameterTypes.ToArray(), configurationType, serviceConfigurationType);
             return typeBuilder.CreateTypeInfo()!.AsType();
         }
 
-        private static void BuildFirstConstructor(TypeBuilder typeBuilder, Type parentType, Type?[] arguments)
+        private static void BuildFirstConstructor(TypeBuilder typeBuilder, Type parentType, Type?[] arguments, Type? configurationType, Type? serviceConfigurationType)
         {
             ConstructorInfo baseConstructorInfo = parentType.GetFirstConstructor();
             var baseParameters = baseConstructorInfo.GetParameters();
@@ -42,6 +50,7 @@ namespace Feign.Reflection
                CallingConventions.Standard,
                parameters!);
             int index = 0;
+            List<Type> types = new List<Type>();
             for (int i = 0; i < arguments.Length; i++)
             {
                 if (arguments[i] == null)
@@ -52,16 +61,26 @@ namespace Feign.Reflection
                 index++;
             }
             ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
-            CallBaseTypeConstructor(constructorIlGenerator, baseConstructorInfo, arguments);
+            CallBaseTypeConstructor(constructorIlGenerator, baseConstructorInfo, arguments, configurationType, serviceConfigurationType);
             constructorIlGenerator.Emit(OpCodes.Ret);
         }
 
-        private static void CallBaseTypeConstructor(ILGenerator constructorIlGenerator, ConstructorInfo baseTypeConstructor, Type?[] arguments)
+        private static void CallBaseTypeConstructor(ILGenerator constructorIlGenerator, ConstructorInfo baseTypeConstructor, Type?[] arguments, Type? configurationType, Type? serviceConfigurationType)
         {
             constructorIlGenerator.Emit(OpCodes.Ldarg_0);
             int index = 1;
-            for (int i = 1; i <= baseTypeConstructor.GetParameters().Length; i++)
+            var parameters = baseTypeConstructor.GetParameters();
+            for (int i = 1; i <= parameters.Length; i++)
             {
+                var parameter = parameters[i - 1];
+                if (parameter.ParameterType == typeof(IFeignClientConfiguration) || (parameter.ParameterType.IsGenericType && parameter.ParameterType.GetGenericTypeDefinition() == typeof(IFeignClientConfiguration<>)))
+                {
+                    if (configurationType != null && configurationType == serviceConfigurationType)
+                    {
+                        constructorIlGenerator.EmitLdarg(index);
+                        continue;
+                    }
+                }
                 if (arguments[i - 1] == null)
                 {
                     constructorIlGenerator.Emit(OpCodes.Ldnull);
