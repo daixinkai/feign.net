@@ -266,7 +266,7 @@ namespace Feign.Reflection
 #if USE_VALUE_TASK
             if (feignClientMethodInfo.MethodMetadata!.IsValueTaskMethod())
             {
-                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType, feignClientMethodInfo.ResultType);
+                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType);
             }
 #endif
             iLGenerator.Emit(OpCodes.Ret);
@@ -277,13 +277,12 @@ namespace Feign.Reflection
         /// </summary>
         /// <param name="iLGenerator"></param>
         /// <param name="returnType"></param>
-        /// <param name="resultType"></param>
-        protected void EmitTaskToValueTask(ILGenerator iLGenerator, Type returnType, Type? resultType)
+        protected void EmitTaskToValueTask(ILGenerator iLGenerator, Type returnType)
         {
             ConstructorInfo constructorInfo;
             if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
             {
-                resultType ??= returnType.GetGenericArguments()[0];
+                var resultType = returnType.GetGenericArguments()[0];
                 constructorInfo = typeof(ValueTask<>).MakeGenericType(resultType).GetConstructor(new Type[] { typeof(Task<>).MakeGenericType(resultType) })!;
             }
             else

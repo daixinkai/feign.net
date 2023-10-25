@@ -71,7 +71,7 @@ namespace Feign.Reflection
 #if USE_VALUE_TASK
             if (feignClientMethodInfo.MethodMetadata!.IsValueTaskMethod())
             {
-                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType, feignClientMethodInfo.ResultType);
+                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType);
             }
 #endif
             iLGenerator.Emit(OpCodes.Ret);
