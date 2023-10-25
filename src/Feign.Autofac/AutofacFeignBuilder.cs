@@ -42,20 +42,41 @@ namespace Feign.Autofac
         }
         public void AddService(Type serviceType, FeignClientLifetime lifetime)
         {
-            var registerBuilder = ContainerBuilder.RegisterType(serviceType);
-            switch (lifetime)
+            if (serviceType.IsGenericType && serviceType.IsGenericTypeDefinition)
             {
-                case FeignClientLifetime.Singleton:
-                    registerBuilder.SingleInstance();
-                    break;
-                case FeignClientLifetime.Scoped:
-                    registerBuilder.InstancePerLifetimeScope();
-                    break;
-                case FeignClientLifetime.Transient:
-                    registerBuilder.InstancePerDependency();
-                    break;
-                default:
-                    break;
+                var registerBuilder = ContainerBuilder.RegisterGeneric(serviceType).AsSelf();
+                switch (lifetime)
+                {
+                    case FeignClientLifetime.Singleton:
+                        registerBuilder.SingleInstance();
+                        break;
+                    case FeignClientLifetime.Scoped:
+                        registerBuilder.InstancePerLifetimeScope();
+                        break;
+                    case FeignClientLifetime.Transient:
+                        registerBuilder.InstancePerDependency();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                var registerBuilder = ContainerBuilder.RegisterType(serviceType).AsSelf();
+                switch (lifetime)
+                {
+                    case FeignClientLifetime.Singleton:
+                        registerBuilder.SingleInstance();
+                        break;
+                    case FeignClientLifetime.Scoped:
+                        registerBuilder.InstancePerLifetimeScope();
+                        break;
+                    case FeignClientLifetime.Transient:
+                        registerBuilder.InstancePerDependency();
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         public void AddService<TService>(TService service) where TService : class

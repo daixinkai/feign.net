@@ -50,7 +50,6 @@ namespace Feign.Tests.NET45
             });
 
             IContainer container = containerBuilder.Build();
-
             using (ILifetimeScope lifetimeScope = container.BeginLifetimeScope())
             {
                 ITestService testService = lifetimeScope.Resolve<ITestService>();
