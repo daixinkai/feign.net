@@ -10,6 +10,9 @@ namespace Feign.TestWeb
         //[GetMapping("/")]
         [ResultType(typeof(QueryResult<>))]
         [Headers("methodHeader:true")]
-        Task<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([RequestQuery] string id, [RequestQuery] int[] values);
+        ValueTask<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([RequestQuery] string id, [RequestQuery] int[] values);
+        [ResultType(typeof(QueryResult<>))]
+        [Headers("methodHeader:true")]
+        IQueryResult<TestServiceParam> GetQueryResultValue([RequestQuery] string id, [RequestQuery] int[] values);
     }
 }

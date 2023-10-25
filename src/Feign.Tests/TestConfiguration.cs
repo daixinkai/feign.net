@@ -11,12 +11,18 @@ namespace Feign.Tests
     {
         public void Configure(FeignClientConfigurationContext<ITestControllerService> context)
         {
-
+            context.Pipeline.Authorization(feignClient =>
+            {
+                return null;
+            });
         }
 
         public void Configure(FeignClientConfigurationContext context)
         {
-            
+            context.Pipeline.Authorization(feignClient =>
+            {
+                return null;
+            });
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Feign.CastleWindsor
         }
 
 
-        void RemoveService(Type serviceType)
+        private void RemoveService(Type serviceType)
         {
             if (!WindsorContainer.Kernel.HasComponent(serviceType))
             {
@@ -64,8 +64,8 @@ namespace Feign.CastleWindsor
             WindsorContainer.Kernel.RemoveComponent(serviceType);
         }
 
-        ComponentRegistration<T> Lifestyle<T>(ComponentRegistration<T> registration, FeignClientLifetime lifetime)
-            where T : class
+        private ComponentRegistration<T> Lifestyle<T>(ComponentRegistration<T> registration, FeignClientLifetime lifetime)
+              where T : class
         {
             switch (lifetime)
             {

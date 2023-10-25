@@ -30,16 +30,22 @@ namespace Feign.Reflection
         protected override MethodInfo GetInvokeMethod(Type serviceType, RequestMappingBaseAttribute requestMapping, Type? returnType, bool async)
         {
             MethodInfo httpClientMethod;
-            bool isGeneric = !(returnType == null || returnType == typeof(void) || returnType == typeof(Task));
+            bool isGeneric = returnType != null && returnType != typeof(void) && returnType != typeof(Task)
+#if USE_VALUE_TASK
+                && returnType != typeof(ValueTask)
+#endif
+                ;
             if (isGeneric)
             {
-                //httpClientMethod = async ? FallbackFeignClientHttpProxy<object, object>.HTTP_SEND_ASYNC_GENERIC_METHOD_FALLBACK : FallbackFeignClientHttpProxy<object, object>.HTTP_SEND_GENERIC_METHOD_FALLBACK;
-                httpClientMethod = async ? FallbackFeignClientHttpProxy<object, object>.GetHttpSendAsyncGenericFallbackMethod(serviceType, serviceType) : FallbackFeignClientHttpProxy<object, object>.GetHttpSendGenericFallbackMethod(serviceType, serviceType);
+                httpClientMethod = async ?
+                    FallbackFeignClientHttpProxy<object, object>.GetHttpSendAsyncGenericFallbackMethod(serviceType, serviceType)
+                    : FallbackFeignClientHttpProxy<object, object>.GetHttpSendGenericFallbackMethod(serviceType, serviceType);
             }
             else
             {
-                //httpClientMethod = async ? FallbackFeignClientHttpProxy<object, object>.HTTP_SEND_ASYNC_METHOD_FALLBACK : FallbackFeignClientHttpProxy<object, object>.HTTP_SEND_METHOD_FALLBACK;
-                httpClientMethod = async ? FallbackFeignClientHttpProxy<object, object>.GetHttpSendAsyncFallbackMethod(serviceType, serviceType) : FallbackFeignClientHttpProxy<object, object>.GetHttpSendFallbackMethod(serviceType, serviceType);
+                httpClientMethod = async ?
+                    FallbackFeignClientHttpProxy<object, object>.GetHttpSendAsyncFallbackMethod(serviceType, serviceType)
+                    : FallbackFeignClientHttpProxy<object, object>.GetHttpSendFallbackMethod(serviceType, serviceType);
             }
             if (isGeneric)
             {
@@ -62,10 +68,16 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ldloc, feignClientRequest);
             iLGenerator.Emit(OpCodes.Ldloc, fallbackDelegate);
             iLGenerator.Emit(OpCodes.Call, invokeMethod);
+#if USE_VALUE_TASK
+            if (feignClientMethodInfo.MethodMetadata!.IsValueTaskMethod())
+            {
+                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType);
+            }
+#endif
             iLGenerator.Emit(OpCodes.Ret);
         }
         /// <summary>
-        /// 这里需要生成降级方法委托
+        /// Generate fallback method delegate
         /// </summary>
         /// <param name="typeBuilder"></param>
         /// <param name="iLGenerator"></param>
@@ -86,7 +98,7 @@ namespace Feign.Reflection
 
             int bindingFlagsValue = 0;
             foreach (var item in Enum.GetValues(typeof(BindingFlags)))
-            {
+            {                
                 bindingFlagsValue += item!.GetHashCode();
             }
             var delegateConstructor = delegateType.GetConstructors((BindingFlags)bindingFlagsValue)[0];

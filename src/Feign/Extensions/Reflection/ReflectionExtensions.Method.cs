@@ -20,12 +20,15 @@ namespace Feign
             return method.ReturnType == typeof(Task) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task<>);
         }
 
-//#if NETSTANDARD2_1 || NETCOREAPP3_1_OR_GREATER
-//        public static bool IsValueTaskMethod(this MethodInfo method)
-//        {
-//            return method.ReturnType == typeof(ValueTask) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>);
-//        }
-//#endif
+
+        public static bool IsValueTaskMethod(this MethodInfo method)
+        {
+#if USE_VALUE_TASK
+            return method.ReturnType == typeof(ValueTask) || method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>);
+#else
+            return false;
+#endif
+        }
 
         public static MethodInfo[] GetMethodsIncludingBaseInterfaces(this Type type)
         {

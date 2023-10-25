@@ -10,8 +10,8 @@ namespace Feign.Proxy
     partial class FeignClientHttpProxy<TService>
     {
 
-        protected internal virtual async ValueTask OnBuildingRequestAsync(IBuildingRequestPipelineContext<TService> context)
-        {
+        protected internal virtual async Task OnBuildingRequestAsync(IBuildingRequestPipelineContext<TService> context)
+        {            
             if (_servicePipeline != null)
             {
                 await _servicePipeline.BuildingRequestAsync(context).ConfigureAwait(false);
@@ -25,7 +25,7 @@ namespace Feign.Proxy
                 await _globalPipeline.BuildingRequestAsync(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask OnSendingRequestAsync(ISendingRequestPipelineContext<TService> context)
+        protected internal virtual async Task OnSendingRequestAsync(ISendingRequestPipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
@@ -40,7 +40,7 @@ namespace Feign.Proxy
                 await _globalPipeline.SendingRequestAsync(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask OnCancelRequestAsync(ICancelRequestPipelineContext<TService> context)
+        protected internal virtual async Task OnCancelRequestAsync(ICancelRequestPipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
@@ -55,7 +55,7 @@ namespace Feign.Proxy
                 await _globalPipeline.CancelRequestAsync(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask OnErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
+        protected internal virtual async Task OnErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
@@ -70,7 +70,7 @@ namespace Feign.Proxy
                 await _globalPipeline.ErrorRequestAsync(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask OnReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
+        protected internal virtual async Task OnReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
@@ -85,7 +85,7 @@ namespace Feign.Proxy
                 await _globalPipeline.ReceivingResponseAsync(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask OnReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
+        protected internal virtual async Task OnReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {

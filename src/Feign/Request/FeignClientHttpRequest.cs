@@ -17,7 +17,7 @@ namespace Feign.Request
     /// </summary>
     public class FeignClientHttpRequest
     {
-        public FeignClientHttpRequest(string baseUrl, string mappingUri, string uri, string httpMethod, string contentType)
+        public FeignClientHttpRequest(string baseUrl, string? mappingUri, string uri, string httpMethod, string? contentType)
         {
             BaseUrl = baseUrl;
             MappingUri = mappingUri;
@@ -40,7 +40,7 @@ namespace Feign.Request
         /// <summary>
         /// Gets the MappingUri
         /// </summary>
-        public string MappingUri { get; }
+        public string? MappingUri { get; }
         /// <summary>
         /// Gets the real Uri
         /// </summary>

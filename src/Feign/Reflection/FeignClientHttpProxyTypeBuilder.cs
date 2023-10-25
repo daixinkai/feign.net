@@ -212,7 +212,7 @@ namespace Feign.Reflection
                 serviceConfigurationType = feignClientAttribute.Configuration;
                 //feignBuilder.AddService(typeof(IFeignClientConfiguration<>).MakeGenericType(serviceType), feignClientAttribute.Configuration, FeignClientLifetime.Singleton);
             }
-            else if (typeof(IFeignClientConfiguration).IsAssignableFrom(feignClientAttribute.Configuration))
+            if (typeof(IFeignClientConfiguration).IsAssignableFrom(feignClientAttribute.Configuration))
             {
                 configurationType = feignClientAttribute.Configuration;
                 //feignBuilder.AddService(typeof(IFeignClientConfiguration), feignClientAttribute.Configuration, FeignClientLifetime.Singleton);

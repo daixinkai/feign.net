@@ -101,7 +101,7 @@ namespace Feign.Pipeline.Internal
             return this;
         }
 
-        protected internal virtual async ValueTask BuildingRequestAsync(IBuildingRequestPipelineContext<TService> context)
+        protected internal virtual async Task BuildingRequestAsync(IBuildingRequestPipelineContext<TService> context)
         {
             if (!Enabled)
             {
@@ -116,7 +116,7 @@ namespace Feign.Pipeline.Internal
                 await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask SendingRequestAsync(ISendingRequestPipelineContext<TService> context)
+        protected internal virtual async Task SendingRequestAsync(ISendingRequestPipelineContext<TService> context)
         {
             if (!Enabled)
             {
@@ -131,7 +131,7 @@ namespace Feign.Pipeline.Internal
                 await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask CancelRequestAsync(ICancelRequestPipelineContext<TService> context)
+        protected internal virtual async Task CancelRequestAsync(ICancelRequestPipelineContext<TService> context)
         {
             if (!Enabled)
             {
@@ -146,7 +146,7 @@ namespace Feign.Pipeline.Internal
                 await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask ErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
+        protected internal virtual async Task ErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
         {
             if (!Enabled)
             {
@@ -161,7 +161,7 @@ namespace Feign.Pipeline.Internal
                 await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask ReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
+        protected internal virtual async Task ReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
         {
             if (!Enabled)
             {
@@ -176,7 +176,7 @@ namespace Feign.Pipeline.Internal
                 await middleware.Invoke(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual async ValueTask ReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
+        protected internal virtual async Task ReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
         {
             if (!Enabled)
             {
@@ -221,7 +221,7 @@ namespace Feign.Pipeline.Internal
                 middleware.Invoke(context);
             }
         }
-        protected internal virtual async ValueTask FallbackRequestAsync(IFallbackRequestPipelineContext<TService> context)
+        protected internal virtual async Task FallbackRequestAsync(IFallbackRequestPipelineContext<TService> context)
         {
             if (!Enabled)
             {

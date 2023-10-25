@@ -136,13 +136,13 @@ namespace Feign.Reflection
         /// <returns></returns>
         protected MethodInfo GetInvokeMethod(Type serviceType, MethodInfo method, RequestMappingBaseAttribute requestMapping)
         {
-            return GetInvokeMethod(serviceType, requestMapping, GetReturnType(method), method.IsTaskMethod());
+            return GetInvokeMethod(serviceType, requestMapping, GetReturnType(method), method.IsTaskMethod() || method.IsValueTaskMethod());
         }
 
         private static Type GetReturnType(MethodInfo method)
         {
             Type returnType;
-            if (method.IsTaskMethod() && method.ReturnType.IsGenericType)
+            if ((method.IsTaskMethod() || method.IsValueTaskMethod()) && method.ReturnType.IsGenericType)
             {
                 returnType = method.ReturnType.GenericTypeArguments[0];
             }
@@ -156,14 +156,22 @@ namespace Feign.Reflection
         protected virtual MethodInfo GetInvokeMethod(Type serviceType, RequestMappingBaseAttribute requestMapping, Type? returnType, bool async)
         {
             MethodInfo httpClientMethod;
-            bool isGeneric = !(returnType == null || returnType == typeof(void) || returnType == typeof(Task));
+            bool isGeneric = returnType != null && returnType != typeof(void) && returnType != typeof(Task)
+#if USE_VALUE_TASK
+                && returnType != typeof(ValueTask)
+#endif
+                ;
             if (isGeneric)
             {
-                httpClientMethod = async ? FeignClientHttpProxy<object>.GetHttpSendAsyncGenericMethod(serviceType) : FeignClientHttpProxy<object>.GetHttpSendGenericMethod(serviceType);
+                httpClientMethod = async ?
+                    FeignClientHttpProxy<object>.GetHttpSendAsyncGenericMethod(serviceType)
+                    : FeignClientHttpProxy<object>.GetHttpSendGenericMethod(serviceType);
             }
             else
             {
-                httpClientMethod = async ? FeignClientHttpProxy<object>.GetHttpSendAsyncMethod(serviceType) : FeignClientHttpProxy<object>.GetHttpSendMethod(serviceType);
+                httpClientMethod = async ?
+                    FeignClientHttpProxy<object>.GetHttpSendAsyncMethod(serviceType)
+                    : FeignClientHttpProxy<object>.GetHttpSendMethod(serviceType);
             }
             if (isGeneric)
             {
@@ -255,9 +263,35 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ldarg_0);  //this
             iLGenerator.Emit(OpCodes.Ldloc, feignClientRequest);
             iLGenerator.Emit(OpCodes.Call, invokeMethod);
+#if USE_VALUE_TASK
+            if (feignClientMethodInfo.MethodMetadata!.IsValueTaskMethod())
+            {
+                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType);
+            }
+#endif
             iLGenerator.Emit(OpCodes.Ret);
         }
-
+#if USE_VALUE_TASK
+        /// <summary>
+        /// new ValueTask(task)
+        /// </summary>
+        /// <param name="iLGenerator"></param>
+        /// <param name="returnType"></param>
+        protected void EmitTaskToValueTask(ILGenerator iLGenerator, Type returnType)
+        {
+            ConstructorInfo constructorInfo;
+            if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
+            {
+                var resultType = returnType.GetGenericArguments()[0];
+                constructorInfo = typeof(ValueTask<>).MakeGenericType(resultType).GetConstructor(new Type[] { typeof(Task<>).MakeGenericType(resultType) })!;
+            }
+            else
+            {
+                constructorInfo = typeof(ValueTask).GetConstructor(new Type[] { typeof(Task) })!;
+            }
+            iLGenerator.Emit(OpCodes.Newobj, constructorInfo);
+        }
+#endif
         /// <summary>
         /// 定义用于Send方法的FeignClientHttpRequest
         /// </summary>

@@ -156,7 +156,7 @@ namespace Feign.Proxy
         }
         #endregion
 
-        protected internal virtual async ValueTask OnFallbackRequest(IFallbackRequestPipelineContext<TService> context)
+        protected internal virtual async Task OnFallbackRequest(IFallbackRequestPipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {

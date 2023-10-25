@@ -43,7 +43,7 @@ namespace Feign
         /// <param name="feignClientPipeline"></param>
         /// <param name="authenticationHeaderValueAction"></param>
         /// <returns></returns>
-        public static IFeignClientPipeline<TService> Authorization<TService>(this IFeignClientPipeline<TService> feignClientPipeline, Func<IFeignClient<TService>, AuthenticationHeaderValue> authenticationHeaderValueAction)
+        public static IFeignClientPipeline<TService> Authorization<TService>(this IFeignClientPipeline<TService> feignClientPipeline, Func<IFeignClient<TService>, AuthenticationHeaderValue?> authenticationHeaderValueAction)
         {
             if (authenticationHeaderValueAction == null)
             {
@@ -54,7 +54,10 @@ namespace Feign
                 if (!context.Headers.ContainsKey("Authorization"))
                 {
                     var authenticationHeaderValue = authenticationHeaderValueAction.Invoke(context.FeignClient);
-                    context.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
+                    if (authenticationHeaderValue != null)
+                    {
+                        context.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
+                    }
                 }
                 return TaskEx.CompletedValueTask;
             });

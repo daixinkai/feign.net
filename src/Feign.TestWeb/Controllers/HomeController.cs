@@ -55,8 +55,9 @@ namespace Feign.TestWeb.Controllers
 
             //var t = await testControllerService.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });       
 
-
-            var t = await testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });
+            var tt = testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });
+            var t = await tt;
+            var ttt = testServiceClient.GetQueryResultValue("1", new int[] { 1, 2, 3 });
             return new JsonResult(t);
 
 

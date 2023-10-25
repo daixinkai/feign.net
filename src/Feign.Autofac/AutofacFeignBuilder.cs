@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Autofac;
 using Autofac.Builder;
-using Feign.Formatting;
 using Feign.Reflection;
 
 namespace Feign.Autofac
@@ -24,59 +23,20 @@ namespace Feign.Autofac
 
         public void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
-            var registerBuilder = ContainerBuilder.RegisterType(implType).As(serviceType);
-            switch (lifetime)
-            {
-                case FeignClientLifetime.Singleton:
-                    registerBuilder.SingleInstance();
-                    break;
-                case FeignClientLifetime.Scoped:
-                    registerBuilder.InstancePerLifetimeScope();
-                    break;
-                case FeignClientLifetime.Transient:
-                    registerBuilder.InstancePerDependency();
-                    break;
-                default:
-                    break;
-            }
+            var registerBuilder = ContainerBuilder.RegisterType(implType).As(serviceType);            
+            SetLifetime(registerBuilder, lifetime);
         }
         public void AddService(Type serviceType, FeignClientLifetime lifetime)
         {
             if (serviceType.IsGenericType && serviceType.IsGenericTypeDefinition)
             {
                 var registerBuilder = ContainerBuilder.RegisterGeneric(serviceType).AsSelf();
-                switch (lifetime)
-                {
-                    case FeignClientLifetime.Singleton:
-                        registerBuilder.SingleInstance();
-                        break;
-                    case FeignClientLifetime.Scoped:
-                        registerBuilder.InstancePerLifetimeScope();
-                        break;
-                    case FeignClientLifetime.Transient:
-                        registerBuilder.InstancePerDependency();
-                        break;
-                    default:
-                        break;
-                }
+                SetLifetime(registerBuilder, lifetime);
             }
             else
             {
                 var registerBuilder = ContainerBuilder.RegisterType(serviceType).AsSelf();
-                switch (lifetime)
-                {
-                    case FeignClientLifetime.Singleton:
-                        registerBuilder.SingleInstance();
-                        break;
-                    case FeignClientLifetime.Scoped:
-                        registerBuilder.InstancePerLifetimeScope();
-                        break;
-                    case FeignClientLifetime.Transient:
-                        registerBuilder.InstancePerDependency();
-                        break;
-                    default:
-                        break;
-                }
+                SetLifetime(registerBuilder, lifetime);
             }
         }
         public void AddService<TService>(TService service) where TService : class
@@ -95,6 +55,24 @@ namespace Feign.Autofac
         public void AddOrUpdateService<TService>(TService service) where TService : class
         {
             AddService(service);
+        }
+
+        private void SetLifetime<TLimit, TActivatorData, TRegistrationStyle>(IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> registration, FeignClientLifetime lifetime)
+        {
+            switch (lifetime)
+            {
+                case FeignClientLifetime.Singleton:
+                    registration.SingleInstance();
+                    break;
+                case FeignClientLifetime.Scoped:
+                    registration.InstancePerLifetimeScope();
+                    break;
+                case FeignClientLifetime.Transient:
+                    registration.InstancePerDependency();
+                    break;
+                default:
+                    break;
+            }
         }
 
     }
