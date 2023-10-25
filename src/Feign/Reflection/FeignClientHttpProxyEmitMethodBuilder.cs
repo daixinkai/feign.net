@@ -266,7 +266,7 @@ namespace Feign.Reflection
 #if USE_VALUE_TASK
             if (feignClientMethodInfo.MethodMetadata!.IsValueTaskMethod())
             {
-                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType);
+                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType, feignClientMethodInfo.ResultType);
             }
 #endif
             iLGenerator.Emit(OpCodes.Ret);
@@ -277,12 +277,13 @@ namespace Feign.Reflection
         /// </summary>
         /// <param name="iLGenerator"></param>
         /// <param name="returnType"></param>
-        protected void EmitTaskToValueTask(ILGenerator iLGenerator, Type returnType)
+        /// <param name="resultType"></param>
+        protected void EmitTaskToValueTask(ILGenerator iLGenerator, Type returnType, Type? resultType)
         {
             ConstructorInfo constructorInfo;
             if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
             {
-                var resultType = returnType.GetGenericArguments()[0];
+                resultType ??= returnType.GetGenericArguments()[0];
                 constructorInfo = typeof(ValueTask<>).MakeGenericType(resultType).GetConstructor(new Type[] { typeof(Task<>).MakeGenericType(resultType) })!;
             }
             else
@@ -511,6 +512,7 @@ namespace Feign.Reflection
                     iLGenerator.EmitType(resultType);
                     iLGenerator.EmitSetProperty(typeof(FeignClientMethodInfo).GetRequiredProperty("ResultType"));
                 }
+                feignClientMethodInfo.ResultType = resultType;
             }
             #endregion
 

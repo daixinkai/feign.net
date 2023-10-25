@@ -71,7 +71,7 @@ namespace Feign.Reflection
 #if USE_VALUE_TASK
             if (feignClientMethodInfo.MethodMetadata!.IsValueTaskMethod())
             {
-                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType);
+                EmitTaskToValueTask(iLGenerator, feignClientMethodInfo.MethodMetadata!.ReturnType, feignClientMethodInfo.ResultType);
             }
 #endif
             iLGenerator.Emit(OpCodes.Ret);
@@ -98,7 +98,7 @@ namespace Feign.Reflection
 
             int bindingFlagsValue = 0;
             foreach (var item in Enum.GetValues(typeof(BindingFlags)))
-            {                
+            {
                 bindingFlagsValue += item!.GetHashCode();
             }
             var delegateConstructor = delegateType.GetConstructors((BindingFlags)bindingFlagsValue)[0];
