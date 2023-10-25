@@ -22,9 +22,9 @@ namespace Feign.Standalone
 
         private static readonly StandaloneFeignBuilder s_standaloneFeignBuilder;
 
-        internal static FeignClientConfigureOptions<TService> CreateFeignClientConfigureOptions<TService>()
+        internal static FeignClientHttpProxyOptions<TService> CreateFeignClientConfigureOptions<TService>()
         {
-            return new FeignClientConfigureOptions<TService>(Get<IFeignOptions>(), Get<IServiceDiscovery>(), Get<ICacheProvider>(), Get<ILoggerFactory>(), Get<IFeignClientConfiguration>(), Get<IFeignClientConfiguration<TService>>());
+            return new FeignClientHttpProxyOptions<TService>(Get<IFeignOptions>(), Get<IServiceDiscovery>(), Get<ICacheProvider>(), Get<ILoggerFactory>(), Get<IFeignClientConfiguration>(), Get<IFeignClientConfiguration<TService>>());
         }
 
 

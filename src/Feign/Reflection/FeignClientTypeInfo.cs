@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Feign.Reflection
 {
     /// <summary>
-    /// 描述一个代理类型
+    /// Describes an agent type
     /// </summary>
     public class FeignClientTypeInfo
     {
@@ -19,19 +19,23 @@ namespace Feign.Reflection
         }
         public FeignClientAttribute FeignClient { get; }
         /// <summary>
-        /// 获取服务类型
+        /// Gets service type
         /// </summary>
         public Type ServiceType { get; }
         /// <summary>
-        /// 获取或设置父类型
+        /// Gets or sets the parent type
         /// </summary>
         public Type? ParentType { get; set; }
         /// <summary>
-        /// 获取或设置生成的类型
+        /// Gets or sets the generated type
         /// </summary>
         public Type? BuildType { get; set; }
         /// <summary>
-        /// 获取方法集合
+        /// Gets or sets the ProxyOptionsType
+        /// </summary>
+        public FeignClientProxyOptionsTypeInfo? ProxyOptionsType { get; set; }
+        /// <summary>
+        /// Gets method collection
         /// </summary>
         public List<FeignClientMethodInfo> Methods { get; }
 

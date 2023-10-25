@@ -1,13 +1,14 @@
 ﻿using Feign.Cache;
+using Feign.Configuration;
 using Feign.Discovery;
 using Feign.Logging;
 using System;
 
-namespace Feign.Configuration
+namespace Feign.Proxy
 {
-    public class FeignClientConfigureOptions<TService>
+    public class FeignClientHttpProxyOptions<TService>
     {
-        public FeignClientConfigureOptions(
+        public FeignClientHttpProxyOptions(
             IFeignOptions feignOptions,
             IServiceDiscovery serviceDiscovery,
             ICacheProvider? cacheProvider,

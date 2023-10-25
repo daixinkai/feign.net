@@ -1,5 +1,4 @@
-﻿using Feign.Configuration;
-using Feign.Fallback;
+﻿using Feign.Fallback;
 
 namespace Feign.Proxy
 {
@@ -13,8 +12,8 @@ namespace Feign.Proxy
     {
         public FallbackFactoryFeignClientHttpProxy(
             TFallbackFactory fallbackFactory,
-            FeignClientConfigureOptions<TService> configureOptions
-            ) : base(GetFallback(fallbackFactory), configureOptions)
+            FeignClientHttpProxyOptions<TService> options
+            ) : base(GetFallback(fallbackFactory), options)
         {
             FallbackFactory = fallbackFactory;
         }

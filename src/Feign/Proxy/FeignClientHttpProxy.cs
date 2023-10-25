@@ -13,17 +13,17 @@ namespace Feign.Proxy
     /// <typeparam name="TService"></typeparam>
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
     {
-        public FeignClientHttpProxy(FeignClientConfigureOptions<TService> configureOptions)
+        public FeignClientHttpProxy(FeignClientHttpProxyOptions<TService> options)
         {
-            FeignOptions = configureOptions.FeignOptions;
+            FeignOptions = options.FeignOptions;
 
             _globalPipeline = FeignOptions.FeignClientPipeline as GlobalFeignClientPipeline;
             _serviceIdPipeline = _globalPipeline?.GetServicePipeline(ServiceId);
             _servicePipeline = _globalPipeline?.GetServicePipeline<TService>();
 
-            _logger = configureOptions.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
+            _logger = options.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
 
-            var httpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, configureOptions.ServiceDiscovery, configureOptions.CacheProvider, _logger);
+            var httpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, options.ServiceDiscovery, options.CacheProvider, _logger);
             if (FeignOptions.AutomaticDecompression.HasValue)
             {
                 httpClientHandler.AutomaticDecompression = FeignOptions.AutomaticDecompression.Value;
@@ -43,22 +43,22 @@ namespace Feign.Proxy
             Origin = $"{s_httpScheme}://{ServiceId}";
 
             #region Configuration
-            if (configureOptions.ServiceConfiguration != null)
+            if (options.ServiceConfiguration != null)
             {
                 var servicePipeline = new ServiceFeignClientPipeline<TService>();
                 var context = new FeignClientConfigurationContext<TService>(this, servicePipeline, HttpClient, httpClientHandler.HttpHandler);
-                configureOptions.ServiceConfiguration.Configure(context);
+                options.ServiceConfiguration.Configure(context);
                 if (servicePipeline.HasMiddleware())
                 {
                     servicePipeline.Add(_servicePipeline);
                     _servicePipeline = servicePipeline;
                 }
             }
-            if (configureOptions.Configuration != null)
+            if (options.Configuration != null)
             {
                 var serviceIdPipeline = new ServiceIdFeignClientPipeline(ServiceId);
                 var context = new FeignClientConfigurationContext(this, serviceIdPipeline, HttpClient, httpClientHandler.HttpHandler);
-                configureOptions.Configuration.Configure(context);
+                options.Configuration.Configure(context);
                 if (serviceIdPipeline.HasMiddleware())
                 {
                     serviceIdPipeline.Add(_serviceIdPipeline);

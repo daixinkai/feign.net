@@ -1,18 +1,15 @@
-﻿using Feign.Proxy;
-using Feign.Request;
+﻿using Feign.Configuration;
+using Feign.Proxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Feign.Reflection
 {
     /// <summary>
-    /// 默认的代理类型生成器
+    /// Default proxy type generator
     /// </summary>
     public class FeignClientHttpProxyTypeBuilder : IFeignClientTypeBuilder
     {
@@ -42,35 +39,37 @@ namespace Feign.Reflection
 
         public FeignClientTypeInfo? Build(Type serviceType)
         {
-            //校验一下是否可以生成代理类型
+            // Check whether the proxy type can be generated
             if (!NeedBuildType(serviceType))
             {
                 return null;
             }
-            //获取一下描述特性
+
+            // get Attribute
 
             FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttributeIncludingBaseInterfaces<FeignClientAttribute>()!;
+
 
             IMethodBuilder methodBuilder;
 
             Type parentType;
             if (feignClientAttribute.Fallback != null)
             {
-                //此服务支持服务降级
+                // This service supports service fallback
                 methodBuilder = _fallbackMethodBuilder;
                 parentType = typeof(FallbackFeignClientHttpProxy<,>);
                 parentType = parentType.MakeGenericType(serviceType, feignClientAttribute.Fallback);
             }
             else if (feignClientAttribute.FallbackFactory != null)
             {
-                //此服务支持服务降级(降级服务由factory提供)
+                // This service supports service fallback(from fallback factory)
                 methodBuilder = _fallbackMethodBuilder;
                 parentType = typeof(FallbackFactoryFeignClientHttpProxy<,>);
                 parentType = parentType.MakeGenericType(serviceType, feignClientAttribute.FallbackFactory);
             }
             else
             {
-                //默认的服务
+                //default service
                 methodBuilder = _methodBuilder;
                 parentType = typeof(FeignClientHttpProxy<>);
                 parentType = parentType.MakeGenericType(serviceType);
@@ -82,7 +81,9 @@ namespace Feign.Reflection
                 ParentType = parentType
             };
 
-            //创建类型
+            var feignClientHttpProxyOptionsType = BuildFeignClientHttpProxyOptionsType(serviceType, feignClientAttribute);
+
+            //new type
             TypeAttributes typeAttributes = TypeAttributes.Public |
                      TypeAttributes.Class |
                      TypeAttributes.AutoClass |
@@ -92,30 +93,42 @@ namespace Feign.Reflection
 
             TypeBuilder typeBuilder = _dynamicAssembly.DefineType(GetTypeFullName(serviceType), typeAttributes, parentType, new Type[] { serviceType });
 
-            //写入构造函数
-            typeBuilder.BuildFirstConstructor(parentType);
+            // write Constructor
+            if (feignClientHttpProxyOptionsType == null)
+            {
+                typeBuilder.BuildFirstConstructor(parentType);
+            }
+            else
+            {
+                feignClientTypeInfo.ProxyOptionsType = new FeignClientProxyOptionsTypeInfo(feignClientHttpProxyOptionsType, feignClientAttribute.Configuration!);
+                typeBuilder.BuildFirstConstructor(parentType, new Dictionary<Type, Type>
+                {
+                    [typeof(FeignClientHttpProxyOptions<>).MakeGenericType(serviceType)] = feignClientHttpProxyOptionsType
+                });
+            }
 
-            //写入serviceId
+
+            // write serviceId
             typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("ServiceId"), iLGenerator =>
             {
                 iLGenerator.EmitStringValue(feignClientAttribute.Name);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
-            //写入baseUri
+            // write baseUri
             typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("BaseUri"), iLGenerator =>
             {
                 var value = serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value;
                 iLGenerator.EmitStringValue(value);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
-            //重写UriKind
+            // override UriKind
             typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("UriKind", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
             {
                 iLGenerator.EmitEnumValue(feignClientAttribute.UriKind);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
 
-            // 写入url
+            // write url
             if (feignClientAttribute.Url != null)
             {
                 typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("Url"), iLGenerator =>
@@ -132,7 +145,7 @@ namespace Feign.Reflection
                 }, null);
             }
 
-            //headers
+            // headers
             if (serviceType.IsDefined(typeof(HeadersAttribute), true))
             {
                 var headersAttribute = serviceType.GetCustomAttribute<HeadersAttribute>();
@@ -159,14 +172,14 @@ namespace Feign.Reflection
 
             foreach (var method in serviceType.GetMethodsIncludingBaseInterfaces())
             {
-                //生成方法
+                // build method
                 var buildMethod = methodBuilder.BuildMethod(typeBuilder, serviceType, method, feignClientAttribute);
                 feignClientTypeInfo.Methods.Add(buildMethod);
             }
 
             foreach (var property in serviceType.GetPropertiesIncludingBaseInterfaces())
             {
-                //写入自动属性
+                // write auto property
                 //typeBuilder.DefineAutoProperty(serviceType, property);
                 typeBuilder.DefineExplicitAutoProperty(property);
             }
@@ -180,6 +193,33 @@ namespace Feign.Reflection
 
             return feignClientTypeInfo;
         }
+
+
+        private Type? BuildFeignClientHttpProxyOptionsType(Type serviceType, FeignClientAttribute feignClientAttribute)
+        {
+            if (feignClientAttribute.Configuration == null)
+            {
+                return null;
+            }
+            if (feignClientAttribute.Configuration.IsInterface || feignClientAttribute.Configuration.IsAbstract /*|| !feignClientAttribute.Configuration.IsPublic*/)
+            {
+                return null;
+            }
+            Type? serviceConfigurationType = null;
+            Type? configurationType = null;
+            if (typeof(IFeignClientConfiguration<>).MakeGenericType(serviceType).IsAssignableFrom(feignClientAttribute.Configuration))
+            {
+                serviceConfigurationType = feignClientAttribute.Configuration;
+                //feignBuilder.AddService(typeof(IFeignClientConfiguration<>).MakeGenericType(serviceType), feignClientAttribute.Configuration, FeignClientLifetime.Singleton);
+            }
+            else if (typeof(IFeignClientConfiguration).IsAssignableFrom(feignClientAttribute.Configuration))
+            {
+                configurationType = feignClientAttribute.Configuration;
+                //feignBuilder.AddService(typeof(IFeignClientConfiguration), feignClientAttribute.Configuration, FeignClientLifetime.Singleton);
+            }
+            return FeignClientHttpProxyOptionsBuilder.BuildType(_dynamicAssembly.ModuleBuilder, _guid, serviceType, serviceConfigurationType, configurationType);
+        }
+
         /// <summary>
         /// 获取服务的父类型
         /// </summary>

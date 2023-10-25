@@ -69,17 +69,12 @@ namespace Feign
 
         public static bool IsDefinedIncludingBaseInterfaces<T>(this Type type)
         {
-            return type.IsDefined(typeof(T)) || type.GetInterfaces().Any(s => IsDefinedIncludingBaseInterfaces<T>(s));
+            return type.IsDefined(typeof(T)) || type.GetInterfaces().Any(IsDefinedIncludingBaseInterfaces<T>);
         }
 
         public static void BuildFirstConstructor(this TypeBuilder typeBuilder, Type parentType)
         {
             ConstructorInfo baseConstructorInfo = GetFirstConstructor(parentType);
-            typeBuilder.BuildCallBaseTypeConstructor(baseConstructorInfo);
-        }
-
-        public static void BuildCallBaseTypeConstructor(this TypeBuilder typeBuilder, ConstructorInfo baseConstructorInfo)
-        {
             var parameters = baseConstructorInfo.GetParameters();
             var parameterTypes = parameters.Select(s => s.ParameterType).ToArray();
             ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
@@ -90,11 +85,34 @@ namespace Feign
             {
                 constructorBuilder.DefineParameter(i + 1, ParameterAttributes.None, parameters[i].Name);
             }
-
             ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
             constructorIlGenerator.CallBaseTypeConstructor(baseConstructorInfo);
             constructorIlGenerator.Emit(OpCodes.Ret);
+        }
 
+        public static void BuildFirstConstructor(this TypeBuilder typeBuilder, Type parentType, Dictionary<Type, Type> replaceArguments)
+        {
+            ConstructorInfo baseConstructorInfo = GetFirstConstructor(parentType);
+            var parameters = baseConstructorInfo.GetParameters();
+            var parameterTypes = parameters.Select(s =>
+            {
+                if (replaceArguments.TryGetValue(s.ParameterType, out var parameterType))
+                {
+                    return parameterType;
+                }
+                return s.ParameterType;
+            }).ToArray();
+            ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
+               MethodAttributes.Public,
+               CallingConventions.Standard,
+               parameterTypes);
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                constructorBuilder.DefineParameter(i + 1, ParameterAttributes.None, parameters[i].Name);
+            }
+            ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
+            constructorIlGenerator.CallBaseTypeConstructor(baseConstructorInfo);
+            constructorIlGenerator.Emit(OpCodes.Ret);
         }
 
         public static MethodInfo GetRequiredMethod(this Type type, string name)
