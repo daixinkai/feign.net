@@ -22,7 +22,7 @@ namespace Feign.Proxy
 
         public FallbackFeignClientHttpProxy(
             TFallback fallback,
-            FeignClientHttpProxyOptions<TService> options
+            FeignClientHttpProxyOptions options
             )
             : base(options)
         {

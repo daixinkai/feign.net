@@ -13,7 +13,7 @@ namespace Feign.Proxy
     /// <typeparam name="TService"></typeparam>
     public abstract partial class FeignClientHttpProxy<TService> : IFeignClient<TService>, IDisposable where TService : class
     {
-        public FeignClientHttpProxy(FeignClientHttpProxyOptions<TService> options)
+        public FeignClientHttpProxy(FeignClientHttpProxyOptions options)
         {
             FeignOptions = options.FeignOptions;
 
@@ -43,11 +43,11 @@ namespace Feign.Proxy
             Origin = $"{s_httpScheme}://{ServiceId}";
 
             #region Configuration
-            if (options.ServiceConfiguration != null)
+            if (options is FeignClientHttpProxyOptions<TService> serviceOptions && serviceOptions.ServiceConfiguration != null)
             {
                 var servicePipeline = new ServiceFeignClientPipeline<TService>();
                 var context = new FeignClientConfigurationContext<TService>(this, servicePipeline, HttpClient, httpClientHandler.HttpHandler);
-                options.ServiceConfiguration.Configure(context);
+                serviceOptions.ServiceConfiguration.Configure(context);
                 if (servicePipeline.HasMiddleware())
                 {
                     servicePipeline.Add(_servicePipeline);

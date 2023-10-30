@@ -12,7 +12,7 @@ namespace Feign.Proxy
     {
         public FallbackFactoryFeignClientHttpProxy(
             TFallbackFactory fallbackFactory,
-            FeignClientHttpProxyOptions<TService> options
+            FeignClientHttpProxyOptions options
             ) : base(GetFallback(fallbackFactory), options)
         {
             FallbackFactory = fallbackFactory;

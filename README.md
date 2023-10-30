@@ -2,9 +2,9 @@
 
 *spring cloud feign for .net*
 
-## feign.net是一个spring cloud feign组件的c#移植版
+## feign.net is a c# transplant of spring cloud feign component
 
-### 定义服务 : 
+### Define services : 
 
 ```csharp
     [FeignClient("test-service", UriKind = UriKind.RelativeOrAbsolute)]
@@ -14,7 +14,7 @@
     {
         string Name { get; set; }
         /// <summary>
-        /// async get一个请求
+        /// async get
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -24,13 +24,13 @@
         [MethodId("GetAsync")]
         Task<string> GetAsync([PathVariable("id")] int id, [RequestQuery] string name);
         /// <summary>
-        /// 获取流
+        /// get Stream
         /// </summary>
         /// <returns></returns>
         [GetMapping("stream")]
         Task<Stream> GetStreamAsync();
         /// <summary>
-        /// 获取buffer
+        /// get buffer
         /// </summary>
         /// <param name="authorization">sample: scheme parameter</param>
         /// <param name="header">sample: name:value</param>
@@ -38,14 +38,14 @@
         [GetMapping("stream")]
         Task<byte[]> GetBufferAsync([RequestAuthorization] string authorization, [RequestHeader] string header);
         /// <summary>
-        /// 获取HttpResponseMessage
+        /// get HttpResponseMessage
         /// </summary>
         /// <returns></returns>
         [GetMapping("stream")]
         Task<HttpResponseMessage> GetHttpResponseMessageAsync();
 
         /// <summary>
-        /// 以json的方式post一个请求
+        /// post a json request
         /// </summary>
         /// <param name="id"></param>
         /// <param name="param"></param>
@@ -55,7 +55,7 @@
         string PostJson([PathVariable] int id, [RequestBody] TestServiceParam param);
 
         /// <summary>
-        /// 以form表单的方式post一个请求
+        /// post a form request
         /// </summary>
         /// <param name="id"></param>
         /// <param name="param"></param>
@@ -65,7 +65,7 @@
         string PostForm(int id, [RequestForm] TestServiceParam param);
 
         /// <summary>
-        /// 上传2个文件
+        /// upload 2 files
         /// </summary>
         /// <param name="file1"></param>
         /// <param name="file2"></param>
@@ -74,7 +74,7 @@
         string UploadFile(IHttpRequestFile file1, IHttpRequestFile file2);
 
         /// <summary>
-        /// 上传多个文件
+        /// upload multiple files
         /// </summary>
         /// <param name="file1"></param>
         /// <param name="file2"></param>
@@ -85,7 +85,7 @@
     }
 ```
 
-## Emit代理类生成代码
+## Emit proxy class generates code
 <details>
 <summary>TestService_Proxy</summary>
 
@@ -334,7 +334,7 @@
 ```
 </details>
 
-## 支持继承父接口服务 : 
+## Support inheriting parent interface services : 
 
 ```csharp
     [FeignClient("test-service", Url = "http://testservice.xx.com")]
@@ -342,7 +342,7 @@
     public interface ITestParentService<TModel>
     {
         /// <summary>
-        /// async get一个请求
+        /// async get
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -356,7 +356,7 @@
     }
 ```
 
-### 使用服务,这里以asp.net core为例
+### Using services, here we take asp.net core as an example
 
 ```csharp
 
@@ -409,39 +409,27 @@
 ```csharp
 
     /// <summary>
-    /// 全局Pipeline
+    /// Global Pipeline
     /// </summary>
     public interface IGlobalFeignClientPipeline : IFeignClientPipeline<object>
     {
         /// <summary>
-        /// 获取指定的服务Pipeline
+        /// Get the specified service Pipeline
         /// </summary>
         /// <param name="serviceId"></param>
         /// <returns></returns>
-        IFeignClientPipeline<object> GetServicePipeline(string serviceId);
+        IFeignClientPipeline<object> Service(string serviceId);
         /// <summary>
-        /// 获取指定的服务Pipeline
-        /// </summary>
-        /// <param name="serviceId"></param>
-        /// <returns></returns>
-        IFeignClientPipeline<object> GetOrAddServicePipeline(string serviceId);
-        /// <summary>
-        /// 获取指定的服务Pipeline
+        /// Get the specified service Pipeline
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <returns></returns>
-        IFeignClientPipeline<TService> GetServicePipeline<TService>();
-        /// <summary>
-        /// 获取指定的服务Pipeline
-        /// </summary>
-        /// <typeparam name="TService"></typeparam>
-        /// <returns></returns>
-        IFeignClientPipeline<TService> GetOrAddServicePipeline<TService>();
+        IFeignClientPipeline<TService> Service<TService>();
     }
 
 ```
 
-关于管道的详细说明请参考文档 https://github.com/daixinkai/feign.net/wiki/Pipeline
+For detailed instructions on pipelines, please refer to the documentation. https://github.com/daixinkai/feign.net/wiki/Pipeline
 
 
 # Usage

@@ -103,7 +103,7 @@ namespace Feign.Reflection
                 feignClientTypeInfo.ProxyOptionsType = new FeignClientProxyOptionsTypeInfo(feignClientHttpProxyOptionsType, feignClientAttribute.Configuration!);
                 typeBuilder.BuildFirstConstructor(parentType, new Dictionary<Type, Type>
                 {
-                    [typeof(FeignClientHttpProxyOptions<>).MakeGenericType(serviceType)] = feignClientHttpProxyOptionsType
+                    [typeof(FeignClientHttpProxyOptions)] = feignClientHttpProxyOptionsType
                 });
             }
 
@@ -185,13 +185,13 @@ namespace Feign.Reflection
             }
 
 
-
             var typeInfo = typeBuilder.CreateTypeInfo();
             Type type = typeInfo!.AsType();
 
             feignClientTypeInfo.BuildType = type;
 
             return feignClientTypeInfo;
+
         }
 
 

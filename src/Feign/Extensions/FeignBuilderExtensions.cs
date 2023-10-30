@@ -41,7 +41,7 @@ namespace Feign
             feignBuilder.AddCacheProvider<DefaultCacheProvider>();
             feignBuilder.AddServiceDiscovery<DefaultServiceDiscovery>();
             feignBuilder.AddService(feignBuilder.Options);
-            feignBuilder.AddService(typeof(FeignClientHttpProxyOptions<>), FeignClientLifetime.Singleton);
+            feignBuilder.AddService(typeof(FeignClientHttpProxyOptions), FeignClientLifetime.Singleton);
             return feignBuilder;
         }
         /// <summary>
