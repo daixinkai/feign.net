@@ -100,12 +100,6 @@ namespace Feign.Proxy
                 await _globalPipeline.ReceivedResponseAsync(context).ConfigureAwait(false);
             }
         }
-        protected internal virtual void OnInitializing(IInitializingPipelineContext<TService> context)
-        {
-            _servicePipeline?.Initializing(context);
-            _serviceIdPipeline?.Initializing(context);
-            _globalPipeline?.Initializing(context);
-        }
         protected internal virtual void OnDisposing(IDisposingPipelineContext<TService> context)
         {
             _servicePipeline?.Disposing(context);
@@ -113,5 +107,15 @@ namespace Feign.Proxy
             _globalPipeline?.Disposing(context);
         }
 
+        /// <summary>
+        /// https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2214
+        /// </summary>
+        /// <param name="context"></param>
+        private void OnInitializing(IInitializingPipelineContext<TService> context)
+        {
+            _servicePipeline?.Initializing(context);
+            _serviceIdPipeline?.Initializing(context);
+            _globalPipeline?.Initializing(context);
+        }
     }
 }
