@@ -13,13 +13,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.16.1" />
+
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+	<PackageReference Include="AngleSharp" Version="0.16.1" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
-  
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net46'">
+  	<PackageReference Include="AngleSharp" Version="1.0.7" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Feign\Feign.csproj" />

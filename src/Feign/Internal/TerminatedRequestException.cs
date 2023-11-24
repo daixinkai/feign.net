@@ -22,8 +22,5 @@ namespace Feign.Internal
         {
         }
 
-        protected TerminatedRequestException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }
