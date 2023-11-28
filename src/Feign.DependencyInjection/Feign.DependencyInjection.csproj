@@ -3,8 +3,9 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1;net6.0;net7.0;net8.0;</TargetFrameworks>
 		<PackageId>Feign.DependencyInjection</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Authors>daixinkai</Authors>
-		<Version>1.5.1-beta1</Version>
+		<Version>1.5.1</Version>
 		<Description>feign for Microsoft.Extensions.DependencyInjection</Description>
 		<PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>

@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;</TargetFrameworks>
-    <Version>1.2.5</Version>
+    <Version>1.5.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
     <Authors>daixinkai</Authors>
     <PackageId>Feign.Steeltoe</PackageId>
     <Description>feign Steeltoe Component</Description>
