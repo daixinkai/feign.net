@@ -4,6 +4,10 @@ global using HttpHandlerType = System.Net.Http.SocketsHttpHandler;
 global using HttpHandlerType = System.Net.Http.HttpClientHandler;
 #endif
 
+#if NET8_0_OR_GREATER
+global using System.Collections.Frozen;
+#endif
+
 #if USE_SYSTEM_TEXT_JSON
 global using System.Text.Json;
 global using JsonProviderType = Feign.Formatting.SystemTextJsonProvider;

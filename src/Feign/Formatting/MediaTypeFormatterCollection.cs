@@ -14,7 +14,12 @@ namespace Feign.Formatting
     public sealed class MediaTypeFormatterCollection : IEnumerable<IMediaTypeFormatter>
     {
 
-        private System.Collections.Concurrent.ConcurrentDictionary<string, IMediaTypeFormatter> _map = new System.Collections.Concurrent.ConcurrentDictionary<string, IMediaTypeFormatter>();
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, IMediaTypeFormatter> _map = new();
+
+#if NET8_0_OR_GREATER
+        private FrozenDictionary<string, IMediaTypeFormatter> _frozenMap = FrozenDictionary<string, IMediaTypeFormatter>.Empty;
+        private void SyncFrozenMap() => _frozenMap = _map.ToFrozenDictionary();
+#endif
 
 
         public IEnumerator<IMediaTypeFormatter> GetEnumerator()
@@ -45,6 +50,9 @@ namespace Feign.Formatting
             {
                 _map.TryAdd(formatter.MediaType, formatter);
             }
+#if NET8_0_OR_GREATER
+            SyncFrozenMap();
+#endif
         }
         /// <summary>
         /// Find the specified media formatter
@@ -57,7 +65,11 @@ namespace Feign.Formatting
             {
                 return null;
             }
+#if NET8_0_OR_GREATER
+            _frozenMap.TryGetValue(mediaType, out var formatter);
+#else
             _map.TryGetValue(mediaType, out var formatter);
+#endif
             return formatter;
         }
 

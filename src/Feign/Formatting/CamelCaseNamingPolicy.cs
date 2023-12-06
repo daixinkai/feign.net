@@ -8,6 +8,9 @@ namespace Feign.Formatting
 {
     public class CamelCaseNamingPolicy : NamingPolicy
     {
+#if USE_SYSTEM_TEXT_JSON
+        public override string ConvertName(string name) => JsonNamingPolicy.CamelCase.ConvertName(name);
+#else
         public override string ConvertName(string name)
         {
             if (string.IsNullOrEmpty(name) || !char.IsUpper(name[0]))
@@ -61,5 +64,7 @@ char[] chars
                 chars[i] = char.ToLowerInvariant(chars[i]);
             }
         }
+#endif
+
     }
 }

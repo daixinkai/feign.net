@@ -17,17 +17,9 @@ namespace Feign
         {
             Assemblies = new List<Assembly>();
             Converters = new ConverterCollection();
-            //Converters.AddConverter(new ClassToStringConverter<string>());
-            //Converters.AddConverter(new StructToStringConverter<int>());
-            //Converters.AddConverter(new StructToStringConverter<long>());
-            Converters.AddConverter(new ObjectStringConverter());
+            AddDefaultConverters();
             MediaTypeFormatters = new MediaTypeFormatterCollection();
-            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(this));
-            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(Constants.MediaTypes.TEXT_JSON, this));
-            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter());
-            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter(Constants.MediaTypes.TEXT_XML));
-            MediaTypeFormatters.AddFormatter(new FormUrlEncodedMediaTypeFormatter());
-            MediaTypeFormatters.AddFormatter(new MultipartFormDataMediaTypeFormatter());
+            AddDefaultFormatters();
             FeignClientPipeline = new GlobalFeignClientPipeline();
             Lifetime = FeignClientLifetime.Singleton;
             Types = new List<FeignClientTypeInfo>();
@@ -36,6 +28,36 @@ namespace Feign
             JsonProvider = new JsonProviderType();
             LoadBalancingPolicy = LoadBalancingPolicy.Random;
         }
+
+        private void AddDefaultConverters()
+        {
+            Converters.AddConverter(new StringToStringConverter());
+            Converters.AddConverter(new BooleanToStringConverter());
+            Converters.AddConverter(new StructToStringConverter<byte>());
+            Converters.AddConverter(new StructToStringConverter<char>());
+            Converters.AddConverter(new StructToStringConverter<decimal>());
+            Converters.AddConverter(new StructToStringConverter<double>());
+            Converters.AddConverter(new StructToStringConverter<float>());
+            Converters.AddConverter(new StructToStringConverter<int>());
+            Converters.AddConverter(new StructToStringConverter<long>());
+            Converters.AddConverter(new StructToStringConverter<sbyte>());
+            Converters.AddConverter(new StructToStringConverter<short>());
+            Converters.AddConverter(new StructToStringConverter<uint>());
+            Converters.AddConverter(new StructToStringConverter<ulong>());
+            Converters.AddConverter(new StructToStringConverter<ushort>());
+            Converters.AddConverter(new ObjectStringConverter());
+        }
+
+        private void AddDefaultFormatters()
+        {
+            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(this));
+            MediaTypeFormatters.AddFormatter(new JsonMediaTypeFormatter(Constants.MediaTypes.TEXT_JSON, this));
+            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter());
+            MediaTypeFormatters.AddFormatter(new XmlMediaTypeFormatter(Constants.MediaTypes.TEXT_XML));
+            MediaTypeFormatters.AddFormatter(new FormUrlEncodedMediaTypeFormatter());
+            MediaTypeFormatters.AddFormatter(new MultipartFormDataMediaTypeFormatter());
+        }
+
         public IList<Assembly> Assemblies { get; }
         public ConverterCollection Converters { get; }
         public MediaTypeFormatterCollection MediaTypeFormatters { get; }

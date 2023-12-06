@@ -31,4 +31,15 @@ namespace Feign.Formatting
         }
     }
 
+    internal class BooleanToStringConverter : IConverter<bool, string>
+    {
+        public string? Convert(bool value)
+            => value ? "true" : "false";
+    }
+
+    internal class StringToStringConverter : IConverter<string, string>
+    {
+        public string? Convert(string? value) => value;
+    }
+
 }
