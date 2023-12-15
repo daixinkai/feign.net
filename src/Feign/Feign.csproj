@@ -17,10 +17,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'!='net45' AND '$(TargetFramework)'!='netstandard2.0'">
-	<DefineConstants>USE_SYSTEM_TEXT_JSON;USE_VALUE_TASK;</DefineConstants>
+	<DefineConstants>USE_SYSTEM_TEXT_JSON;USE_VALUE_TASK;USE_CONFIGUREAWAIT_FALSE;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='netstandard2.0'">
+	<DefineConstants>USE_CONFIGUREAWAIT_FALSE</DefineConstants>
 	<NoWarn>1701;1702;1591;8602;8604</NoWarn>
   </PropertyGroup>
 

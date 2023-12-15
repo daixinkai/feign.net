@@ -64,7 +64,11 @@ namespace Feign.Proxy
         {
             try
             {
-                await SendAsync(request).ConfigureAwait(false);
+                await SendAsync(request)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             catch (TerminatedRequestException)
             {
@@ -76,19 +80,31 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex).ConfigureAwait(false);
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 if (invokeFallbackRequestResult)
                 {
                     throw;
                 }
-                await fallback.Invoke().ConfigureAwait(false);
+                await fallback.Invoke()
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected virtual async Task<TResult?> SendAsync<TResult>(FeignClientHttpRequest request, Func<Task<TResult>> fallback)
         {
             try
             {
-                return await SendAsync<TResult>(request).ConfigureAwait(false);
+                return await SendAsync<TResult>(request)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             catch (TerminatedRequestException)
             {
@@ -100,12 +116,20 @@ namespace Feign.Proxy
                 {
                     throw;
                 }
-                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex).ConfigureAwait(false);
+                bool invokeFallbackRequestResult = await InvokeFallbackRequestPipeline(request, fallback, ex)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 if (invokeFallbackRequestResult)
                 {
                     throw;
                 }
-                return await fallback.Invoke().ConfigureAwait(false);
+                return await fallback.Invoke()
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected virtual void Send(FeignClientHttpRequest request, Action fallback)
@@ -160,15 +184,27 @@ namespace Feign.Proxy
         {
             if (_servicePipeline != null)
             {
-                await _servicePipeline.FallbackRequestAsync(context).ConfigureAwait(false);
+                await _servicePipeline.FallbackRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_serviceIdPipeline != null)
             {
-                await _serviceIdPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.FallbackRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_globalPipeline != null)
             {
-                await _globalPipeline.FallbackRequestAsync(context).ConfigureAwait(false);
+                await _globalPipeline.FallbackRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         /// <summary>
@@ -191,7 +227,11 @@ namespace Feign.Proxy
             {
                 context = new FallbackRequestPipelineContext<TService>(this, request, Fallback, fallbackProxy, null, exception);
             }
-            await OnFallbackRequest(context).ConfigureAwait(false);
+            await OnFallbackRequest(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             return context.IsTerminated;
         }
 

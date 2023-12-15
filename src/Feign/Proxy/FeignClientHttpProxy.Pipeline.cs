@@ -14,90 +14,162 @@ namespace Feign.Proxy
         {            
             if (_servicePipeline != null)
             {
-                await _servicePipeline.BuildingRequestAsync(context).ConfigureAwait(false);
+                await _servicePipeline.BuildingRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_serviceIdPipeline != null)
             {
-                await _serviceIdPipeline.BuildingRequestAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.BuildingRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_globalPipeline != null)
             {
-                await _globalPipeline.BuildingRequestAsync(context).ConfigureAwait(false);
+                await _globalPipeline.BuildingRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task OnSendingRequestAsync(ISendingRequestPipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
-                await _servicePipeline.SendingRequestAsync(context).ConfigureAwait(false);
+                await _servicePipeline.SendingRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_serviceIdPipeline != null)
             {
-                await _serviceIdPipeline.SendingRequestAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.SendingRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_globalPipeline != null)
             {
-                await _globalPipeline.SendingRequestAsync(context).ConfigureAwait(false);
+                await _globalPipeline.SendingRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task OnCancelRequestAsync(ICancelRequestPipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
-                await _servicePipeline.CancelRequestAsync(context).ConfigureAwait(false);
+                await _servicePipeline.CancelRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_serviceIdPipeline != null)
             {
-                await _serviceIdPipeline.CancelRequestAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.CancelRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_globalPipeline != null)
             {
-                await _globalPipeline.CancelRequestAsync(context).ConfigureAwait(false);
+                await _globalPipeline.CancelRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task OnErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
-                await _servicePipeline.ErrorRequestAsync(context).ConfigureAwait(false);
+                await _servicePipeline.ErrorRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_serviceIdPipeline != null)
             {
-                await _serviceIdPipeline.ErrorRequestAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.ErrorRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_globalPipeline != null)
             {
-                await _globalPipeline.ErrorRequestAsync(context).ConfigureAwait(false);
+                await _globalPipeline.ErrorRequestAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task OnReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
-                await _servicePipeline.ReceivingResponseAsync(context).ConfigureAwait(false);
+                await _servicePipeline.ReceivingResponseAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_serviceIdPipeline != null)
             {
-                await _serviceIdPipeline.ReceivingResponseAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.ReceivingResponseAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_globalPipeline != null)
             {
-                await _globalPipeline.ReceivingResponseAsync(context).ConfigureAwait(false);
+                await _globalPipeline.ReceivingResponseAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task OnReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
         {
             if (_servicePipeline != null)
             {
-                await _servicePipeline.ReceivedResponseAsync(context).ConfigureAwait(false);
+                await _servicePipeline.ReceivedResponseAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_serviceIdPipeline != null)
             {
-                await _serviceIdPipeline.ReceivedResponseAsync(context).ConfigureAwait(false);
+                await _serviceIdPipeline.ReceivedResponseAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             if (_globalPipeline != null)
             {
-                await _globalPipeline.ReceivedResponseAsync(context).ConfigureAwait(false);
+                await _globalPipeline.ReceivedResponseAsync(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual void OnDisposing(IDisposingPipelineContext<TService> context)

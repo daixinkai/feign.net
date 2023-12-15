@@ -70,6 +70,10 @@ namespace Feign.Request
         /// </summary>
         public HttpCompletionOption CompletionOption { get; set; }
         /// <summary>
+        /// whether 404s should be decoded instead of throwing FeignExceptions
+        /// </summary>
+        public bool Dismiss404 { get; set; }
+        /// <summary>
         /// Gets or sets the RequestContent
         /// </summary>
         public FeignClientHttpRequestContent? RequestContent { get; set; }

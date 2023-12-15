@@ -16,7 +16,11 @@ namespace Feign
             if (cacheProvider != null)
             {
                 // check the cache for existing service instances
-                var services = await cacheProvider.GetAsync<List<SerializableServiceInstance>>(serviceInstancesKeyPrefix + serviceId).ConfigureAwait(false);
+                var services = await cacheProvider.GetAsync<List<SerializableServiceInstance>>(serviceInstancesKeyPrefix + serviceId)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 if (services != null && services.Count > 0)
                 {
                     return services.ToList<IServiceInstance>();
@@ -28,7 +32,11 @@ namespace Feign
             if (cacheProvider != null)
             {
                 List<SerializableServiceInstance> cacheValue = instances.Select(SerializableServiceInstance.FromServiceInstance).ToList();
-                await cacheProvider.SetAsync(serviceInstancesKeyPrefix + serviceId, cacheValue, time).ConfigureAwait(false);
+                await cacheProvider.SetAsync(serviceInstancesKeyPrefix + serviceId, cacheValue, time)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
 
             return instances;

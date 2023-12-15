@@ -89,10 +89,10 @@ namespace Feign.Reflection
 
         public FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute)
         {
-            return BuildMethod(typeBuilder, serviceType, method, GetRequestMappingAttribute(method));
+            return BuildMethod(typeBuilder, serviceType, method, feignClientAttribute, GetRequestMappingAttribute(method));
         }
 
-        private FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, RequestMappingBaseAttribute? requestMapping)
+        private FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute, RequestMappingBaseAttribute? requestMapping)
         {
             FeignClientMethodInfo feignClientMethodInfo = new()
             {
@@ -118,7 +118,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ldstr, uri);
             iLGenerator.Emit(OpCodes.Stloc, local_Uri);
             List<EmitRequestContent> emitRequestContents = EmitParameter(typeBuilder, requestMapping, iLGenerator, method, local_Uri);
-            EmitCallMethod(typeBuilder, methodBuilder, iLGenerator, serviceType, feignClientMethodInfo, requestMapping, local_Uri, emitRequestContents);
+            EmitCallMethod(typeBuilder, methodBuilder, iLGenerator, serviceType, feignClientMethodInfo, feignClientAttribute, requestMapping, local_Uri, emitRequestContents);
             methodBuilder.CopyCustomAttributes(method);
             return feignClientMethodInfo;
         }
@@ -247,10 +247,11 @@ namespace Feign.Reflection
         /// <param name="iLGenerator"></param>
         /// <param name="serviceType"></param>
         /// <param name="feignClientMethodInfo"></param>
+        /// <param name="feignClientAttribute"></param>
         /// <param name="requestMapping"></param>
         /// <param name="uri"></param>
         /// <param name="emitRequestContents"></param>
-        protected virtual void EmitCallMethod(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, FeignClientMethodInfo feignClientMethodInfo, RequestMappingBaseAttribute requestMapping, LocalBuilder uri, List<EmitRequestContent>? emitRequestContents)
+        protected virtual void EmitCallMethod(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, FeignClientMethodInfo feignClientMethodInfo, FeignClientAttribute feignClientAttribute, RequestMappingBaseAttribute requestMapping, LocalBuilder uri, List<EmitRequestContent>? emitRequestContents)
         {
             //得到Send方法
             var invokeMethod = GetInvokeMethod(serviceType, feignClientMethodInfo.MethodMetadata!, requestMapping);
@@ -259,7 +260,7 @@ namespace Feign.Reflection
                 throw new NotSupportedException("RequestBody or RequestForm is not supported");
             }
             //定义请求的详情 FeignClientHttpRequest
-            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo);
+            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo, feignClientAttribute);
             iLGenerator.Emit(OpCodes.Ldarg_0);  //this
             iLGenerator.Emit(OpCodes.Ldloc, feignClientRequest);
             iLGenerator.Emit(OpCodes.Call, invokeMethod);
@@ -302,8 +303,9 @@ namespace Feign.Reflection
         /// <param name="requestMapping"></param>
         /// <param name="emitRequestContents"></param>
         /// <param name="feignClientMethodInfo"></param>
+        /// <param name="feignClientAttribute"></param>
         /// <returns></returns>
-        protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent>? emitRequestContents, FeignClientMethodInfo feignClientMethodInfo)
+        protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent>? emitRequestContents, FeignClientMethodInfo feignClientMethodInfo, FeignClientAttribute feignClientAttribute)
         {
             Type returnType = GetReturnType(feignClientMethodInfo.MethodMetadata!);
             var feignClientMethodInfoLocalBuilder = DefineFeignClientMethodInfo(typeBuilder, iLGenerator, feignClientMethodInfo, returnType);
@@ -400,6 +402,16 @@ namespace Feign.Reflection
                 }
             }
 
+            #endregion
+
+            #region FeignClientHttpRequest.Dismiss404
+            //Dismiss404
+            if (feignClientAttribute.Dismiss404)
+            {
+                iLGenerator.Emit(OpCodes.Dup);
+                iLGenerator.Emit(OpCodes.Ldc_I4_1);
+                iLGenerator.EmitSetProperty(typeof(FeignClientHttpRequest).GetRequiredProperty("Dismiss404"));
+            }
             #endregion
 
             #region FeignClientHttpRequest.IsSpecialResult

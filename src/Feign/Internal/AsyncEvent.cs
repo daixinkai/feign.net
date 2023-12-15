@@ -49,7 +49,11 @@
 //            var handlers = _handlersForInvoke;
 //            foreach (var handler in handlers)
 //            {
-//                await handler.InvokeAsync(eventArgs).ConfigureAwait(false);
+//                await handler.InvokeAsync(eventArgs)
+//#if USE_CONFIGUREAWAIT_FALSE
+//                  .ConfigureAwait(false)
+//#endif
+//                  ;
 //            }
 //        }
 
@@ -63,7 +67,11 @@
 
 //            try
 //            {
-//                await InvokeAsync(eventArgs).ConfigureAwait(false);
+//                await InvokeAsync(eventArgs)
+//#if USE_CONFIGUREAWAIT_FALSE
+//                  .ConfigureAwait(false)
+//#endif
+//                  ;
 //            }
 //            catch //(Exception exception)
 //            {

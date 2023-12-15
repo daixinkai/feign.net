@@ -14,6 +14,7 @@ namespace Feign.Tests
     //, Url = "http://www.baidu.com/"
     , Url = "https://www.jd.com/"
     //, Configuration = typeof(TestConfiguration)
+    , Dismiss404 = true
     )]
     [NonFeignClient]
     public interface ITestParentService<TModel>

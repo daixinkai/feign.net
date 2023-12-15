@@ -21,10 +21,18 @@ namespace Feign.Formatting
         {
             if (encoding == Encoding.UTF8)
             {
-                return await JsonSerializer.DeserializeAsync<TResult>(stream, _jsonSerializerOptions);
+                return await JsonSerializer.DeserializeAsync<TResult>(stream, _jsonSerializerOptions)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             Memory<byte> buffer = new();
-            await stream.ReadAsync(buffer).ConfigureAwait(false);
+            await stream.ReadAsync(buffer)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             string json = EncodingEx.GetRequiredEncoding(encoding).GetString(buffer.ToArray());
             return JsonSerializer.Deserialize<TResult>(json, _jsonSerializerOptions);
         }
@@ -33,10 +41,18 @@ namespace Feign.Formatting
         {
             if (encoding == Encoding.UTF8)
             {
-                return await JsonSerializer.DeserializeAsync(stream, type, _jsonSerializerOptions);
+                return await JsonSerializer.DeserializeAsync(stream, type, _jsonSerializerOptions)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             Memory<byte> buffer = new();
-            await stream.ReadAsync(buffer).ConfigureAwait(false);
+            await stream.ReadAsync(buffer)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                 ;
             string json = EncodingEx.GetRequiredEncoding(encoding).GetString(buffer.ToArray());
             return JsonSerializer.Deserialize(json, type, _jsonSerializerOptions);
         }

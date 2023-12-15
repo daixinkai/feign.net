@@ -61,6 +61,10 @@ namespace Feign
         /// A custom <see cref="IFeignClientConfiguration"/> or <see cref="IFeignClientConfiguration{T}"/> class for the feign client. 
         /// </summary>
         public Type? Configuration { get; set; }
+        /// <summary>
+        /// whether 404s should be decoded instead of throwing FeignExceptions
+        /// </summary>
+        public bool Dismiss404 { get; set; }
 
     }
 }

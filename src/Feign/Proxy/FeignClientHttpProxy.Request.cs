@@ -42,20 +42,32 @@ namespace Feign.Proxy
 
         protected virtual async Task SendAsync(FeignClientHttpRequest request)
         {
-            HttpResponseMessage? response = await GetResponseMessageAsync(request).ConfigureAwait(false);
+            HttpResponseMessage? response = await GetResponseMessageAsync(request)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             if (response == null)
             {
                 return;
             }
             using (response)
             {
-                await EnsureSuccessAsync(response).ConfigureAwait(false);
+                await EnsureSuccessAsync(request, response)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
 
         }
         protected virtual async Task<TResult?> SendAsync<TResult>(FeignClientHttpRequest request)
         {
-            HttpResponseMessage? response = await GetResponseMessageAsync(request).ConfigureAwait(false);
+            HttpResponseMessage? response = await GetResponseMessageAsync(request)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             if (response == null)
             {
                 return default;
@@ -63,7 +75,11 @@ namespace Feign.Proxy
             var responseContext = new ResponsePipelineContext<TService, TResult>(this, request, response);
             try
             {
-                return await GetResultAsync(responseContext).ConfigureAwait(false);
+                return await GetResultAsync(responseContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             finally
             {
@@ -96,7 +112,11 @@ namespace Feign.Proxy
                             httpRequestMessage.Content = httpContent;
                         }
                     }
-                    return await HttpClient.SendAsync(httpRequestMessage, request.CompletionOption).ConfigureAwait(false);
+                    return await HttpClient.SendAsync(httpRequestMessage, request.CompletionOption)
+#if USE_CONFIGUREAWAIT_FALSE
+                        .ConfigureAwait(false)
+#endif
+                        ;
                 }
             }
             catch (TerminatedRequestException)
@@ -115,7 +135,11 @@ namespace Feign.Proxy
             {
                 #region ErrorRequest
                 ErrorRequestPipelineContext<TService> errorContext = new(this, httpRequestMessage, ex);
-                await OnErrorRequestAsync(errorContext).ConfigureAwait(false);
+                await OnErrorRequestAsync(errorContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 if (errorContext.ExceptionHandled)
                 {
                     return null;
@@ -128,12 +152,23 @@ namespace Feign.Proxy
         /// <summary>
         /// Ensure the response success
         /// </summary>
+        /// <param name="request"></param>
         /// <param name="responseMessage"></param>
-        private async Task EnsureSuccessAsync(HttpResponseMessage responseMessage)
+        /// <returns></returns>
+        /// <exception cref="FeignHttpRequestException"></exception>
+        private async Task EnsureSuccessAsync(FeignClientHttpRequest request, HttpResponseMessage responseMessage)
         {
             if (!responseMessage.IsSuccessStatusCode)
             {
-                string content = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                if (request.Dismiss404 && responseMessage.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return;
+                }
+                string content = await responseMessage.Content.ReadAsStringAsync()
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 _logger?.LogError($"request on \"{responseMessage.RequestMessage!.RequestUri}\" status code : " + responseMessage.StatusCode.GetHashCode() + " content : " + content);
                 throw new FeignHttpRequestException(this,
                     (FeignHttpRequestMessage)responseMessage.RequestMessage!,

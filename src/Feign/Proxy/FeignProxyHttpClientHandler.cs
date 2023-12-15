@@ -93,7 +93,11 @@ namespace Feign.Proxy
                 var requestContext = new RequestPipelineContext<TService>(_feignClient, request, cancellationToken);
 
                 #region BuildingRequest                
-                await _feignClient.OnBuildingRequestAsync(requestContext).ConfigureAwait(false);
+                await _feignClient.OnBuildingRequestAsync(requestContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 request.RequestUri = requestContext.RequestUri;
                 if (requestContext.Headers != null && requestContext.Headers.Count > 0)
                 {
@@ -103,9 +107,17 @@ namespace Feign.Proxy
                     }
                 }
                 #endregion
-                request.RequestUri = await LookupRequestUriAsync(request).ConfigureAwait(false);
+                request.RequestUri = await LookupRequestUriAsync(request)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 #region SendingRequest
-                await _feignClient.OnSendingRequestAsync(requestContext).ConfigureAwait(false);
+                await _feignClient.OnSendingRequestAsync(requestContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
 
                 if (requestContext.IsTerminated)
                 {
@@ -131,10 +143,18 @@ namespace Feign.Proxy
                 #endregion
 
                 #region CannelRequest
-                await _feignClient.OnCancelRequestAsync(requestContext).ConfigureAwait(false);
+                await _feignClient.OnCancelRequestAsync(requestContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 #endregion
 
-                return await base.SendAsync(request, requestContext.CancellationToken).ConfigureAwait(false);
+                return await base.SendAsync(request, requestContext.CancellationToken)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
             catch (Exception e)
             {

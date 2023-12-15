@@ -113,7 +113,11 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _buildingRequestMiddlewares)
             {
-                await middleware.Invoke(context).ConfigureAwait(false);
+                await middleware.Invoke(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task SendingRequestAsync(ISendingRequestPipelineContext<TService> context)
@@ -128,7 +132,11 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _sendingRequestMiddlewares)
             {
-                await middleware.Invoke(context).ConfigureAwait(false);
+                await middleware.Invoke(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task CancelRequestAsync(ICancelRequestPipelineContext<TService> context)
@@ -143,7 +151,11 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _cancelRequestMiddlewares)
             {
-                await middleware.Invoke(context).ConfigureAwait(false);
+                await middleware.Invoke(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task ErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
@@ -158,7 +170,11 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _errorRequestMiddlewares)
             {
-                await middleware.Invoke(context).ConfigureAwait(false);
+                await middleware.Invoke(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task ReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
@@ -173,7 +189,11 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _receivingResponseMiddlewares)
             {
-                await middleware.Invoke(context).ConfigureAwait(false);
+                await middleware.Invoke(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual async Task ReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
@@ -188,7 +208,11 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _receivedResponseMiddlewares)
             {
-                await middleware.Invoke(context).ConfigureAwait(false);
+                await middleware.Invoke(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
         protected internal virtual void Initializing(IInitializingPipelineContext<TService> context)
@@ -233,7 +257,11 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _fallbackRequestMiddlewares)
             {
-                await middleware.Invoke(context).ConfigureAwait(false);
+                await middleware.Invoke(context)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
             }
         }
 

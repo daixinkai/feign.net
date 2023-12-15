@@ -29,17 +29,33 @@ namespace Feign.Proxy
             }
 
             #region ReceivingResponse
-            await OnReceivingResponseAsync(responseContext).ConfigureAwait(false);
+            await OnReceivingResponseAsync(responseContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             if (responseContext._isSetResult)
             {
-                await OnReceivedResponseAsync(responseContext).ConfigureAwait(false);
+                await OnReceivedResponseAsync(responseContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                    .ConfigureAwait(false)
+#endif
+                    ;
                 return responseContext.GetResult();
             }
             #endregion
 
-            var result = await GetResultInternalAsync(responseContext).ConfigureAwait(false);
+            var result = await GetResultInternalAsync(responseContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             responseContext._result = result;
-            await OnReceivedResponseAsync(responseContext).ConfigureAwait(false);
+            await OnReceivedResponseAsync(responseContext)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             return result;
         }
 
@@ -52,10 +68,18 @@ namespace Feign.Proxy
                 responseContext.SkipReleaseResponse = true;
                 return (TResult)(object)responseMessage;
             }
-            await EnsureSuccessAsync(responseMessage).ConfigureAwait(false);
+            await EnsureSuccessAsync(request, responseMessage)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             if (request.IsSpecialResult)
             {
-                var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage).ConfigureAwait(false);
+                var specialResult = await SpecialResults.GetSpecialResultAsync<TResult>(responseMessage)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
                 if (specialResult.IsSpecialResult)
                 {
                     return specialResult.Result;
@@ -74,15 +98,31 @@ namespace Feign.Proxy
                      new HttpRequestException($"Content type '{responseMessage.Content.Headers.ContentType?.ToString()}' not supported"));
             }
 
-            using var stream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using var stream = await responseMessage.Content.ReadAsStreamAsync()
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             if (stream.CanSeek)
             {
-                return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method!.ResultType).ConfigureAwait(false);
+                return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, stream, responseMessage.Content.Headers.ContentType, request.Method!.ResultType)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             }
             using Stream seekStream = new MemoryStream();
-            await stream.CopyToAsync(seekStream).ConfigureAwait(false);
+            await stream.CopyToAsync(seekStream)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             seekStream.Seek(0, SeekOrigin.Begin);
-            return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method!.ResultType).ConfigureAwait(false);
+            return await GetResultAsyncInternal<TResult>(mediaTypeFormatter, seekStream, responseMessage.Content.Headers.ContentType, request.Method!.ResultType)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
 
         }
 

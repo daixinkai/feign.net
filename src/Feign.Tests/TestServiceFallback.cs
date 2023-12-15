@@ -22,6 +22,7 @@ namespace Feign.Tests
 
         public TestServiceFallback() : base()
         {
+
         }
 
 
@@ -46,7 +47,8 @@ namespace Feign.Tests
         {
             FeignClientHttpRequest feignClientHttpRequest = new FeignClientHttpRequest(null, null, null, null, null)
             {
-                CompletionOption = HttpCompletionOption.ResponseHeadersRead
+                CompletionOption = HttpCompletionOption.ResponseHeadersRead,
+                Dismiss404 = true
             };
             var r = feignClientHttpRequest.ContentType;
             //HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead;
