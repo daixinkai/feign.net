@@ -15,6 +15,9 @@ namespace Feign.Proxy
         static SpecialResults()
         {
             s_handlers.Add(typeof(Task), SpecialResultHandler<Task>.FromResult(response => TaskEx.CompletedTask));
+#if USE_VALUE_TASK
+            s_handlers.Add(typeof(ValueTask), SpecialResultHandler<ValueTask>.FromResult(response => default));
+#endif
             s_handlers.Add(typeof(string), SpecialResultHandler<string>.FromTaskResult(response => response.Content.ReadAsStringAsync()));
             s_handlers.Add(typeof(Stream), SpecialResultHandler<Stream>.FromTaskResult(response => response.Content.ReadAsStreamAsync()));
             s_handlers.Add(typeof(byte[]), SpecialResultHandler<byte[]>.FromTaskResult(response => response.Content.ReadAsByteArrayAsync()));
@@ -78,22 +81,49 @@ namespace Feign.Proxy
     {
         public bool IsSpecialResult { get; set; }
         public TResult Result { get; set; }
-        public static async Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource>(Task<TSource> task)
+        //        public static async Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource>(Task<TSource> task)
+        //        {
+        //            SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
+        //            {
+        //                IsSpecialResult = true
+        //            };
+        //            object? result = await task
+        //#if USE_CONFIGUREAWAIT_FALSE
+        //                .ConfigureAwait(false)
+        //#endif
+        //                ;
+        //            specialResult.Result = (TResult)result!;
+        //            return specialResult;
+        //        }
+        public static async Task<SpecialResult<TResult>> GetSpecialResultAsync(Task<TResult> task)
         {
             SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
             {
                 IsSpecialResult = true
             };
-            specialResult.Result = (TResult)(object)(await task.ConfigureAwait(false))!;
+            specialResult.Result = await task
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+                ;
             return specialResult;
         }
-        public static Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource>(TSource result)
+        //public static Task<SpecialResult<TResult>> GetSpecialResultAsync<TSource>(TSource result)
+        //{
+        //    SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
+        //    {
+        //        IsSpecialResult = true
+        //    };
+        //    specialResult.Result = (TResult)(object)result!;
+        //    return Task.FromResult(specialResult);
+        //}
+        public static Task<SpecialResult<TResult>> GetSpecialResultAsync(TResult result)
         {
             SpecialResult<TResult> specialResult = new SpecialResult<TResult>()
             {
                 IsSpecialResult = true
             };
-            specialResult.Result = (TResult)(object)result!;
+            specialResult.Result = result;
             return Task.FromResult(specialResult);
         }
     }
