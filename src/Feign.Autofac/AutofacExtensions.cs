@@ -34,9 +34,7 @@ namespace Autofac
             {
                 options = new FeignOptions();
             }
-            AutofacFeignBuilder feignBuilder = new AutofacFeignBuilder();
-            feignBuilder.ContainerBuilder = containerBuilder;
-            feignBuilder.Options = options;
+            AutofacFeignBuilder feignBuilder = new AutofacFeignBuilder(options, containerBuilder);
             feignBuilder.AddDefaultFeignClients();
             return feignBuilder;
         }

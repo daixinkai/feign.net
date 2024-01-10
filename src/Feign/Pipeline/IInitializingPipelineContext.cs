@@ -22,6 +22,6 @@ namespace Feign.Pipeline
         /// <summary>
         /// Gets the Handler for HttpClient
         /// </summary>
-        HttpHandlerType? HttpHandler { get; }
+        HttpHandlerType HttpHandler { get; }
     }
 }

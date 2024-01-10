@@ -76,7 +76,7 @@ namespace Feign
         {
             ConstructorInfo baseConstructorInfo = GetFirstConstructor(parentType);
             var parameters = baseConstructorInfo.GetParameters();
-            var parameterTypes = parameters.Select(s => s.ParameterType).ToArray();
+            var parameterTypes = parameters.Select(static s => s.ParameterType).ToArray();
             ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
                MethodAttributes.Public,
                CallingConventions.Standard,

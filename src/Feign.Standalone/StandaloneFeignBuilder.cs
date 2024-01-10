@@ -9,17 +9,12 @@ using System.Threading.Tasks;
 
 namespace Feign.Standalone
 {
-    internal class StandaloneFeignBuilder : IStandaloneFeignBuilder
+    internal class StandaloneFeignBuilder : DefaultFeignBuilderBase, IStandaloneFeignBuilder
     {
-        public StandaloneFeignBuilder()
+        public StandaloneFeignBuilder(IFeignOptions options) : base(options)
         {
-            TypeBuilder = new StandaloneFeignClientHttpProxyTypeBuilder();
             Services = new ServiceCollection();
         }
-
-        public FeignOptions Options { get; set; }
-
-        public IFeignClientTypeBuilder TypeBuilder { get; }
 
         public ServiceCollection Services { get; }
 
@@ -44,30 +39,28 @@ namespace Feign.Standalone
             return (TService)service;
         }
 
-        IFeignOptions IFeignBuilder.Options => Options;
-
-        public void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             Services.AddOrUpdate(new ServiceDescriptor(serviceType, implType, lifetime));
         }
-        public void AddService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, FeignClientLifetime lifetime)
         {
             Services.AddOrUpdate(new ServiceDescriptor(serviceType, serviceType, lifetime));
         }
-        public void AddService<TService>(TService service) where TService : class
+        public override void AddService<TService>(TService service)
         {
             Services.AddOrUpdate(new ServiceDescriptor(typeof(TService), service));
         }
 
-        public void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             Services.AddOrUpdate(new ServiceDescriptor(serviceType, implType, lifetime));
         }
-        public void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
         {
             Services.AddOrUpdate(new ServiceDescriptor(serviceType, serviceType, lifetime));
         }
-        public void AddOrUpdateService<TService>(TService service) where TService : class
+        public override void AddOrUpdateService<TService>(TService service)
         {
             Services.AddOrUpdate(new ServiceDescriptor(typeof(TService), service));
         }

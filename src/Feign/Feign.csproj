@@ -13,16 +13,16 @@
     <PackageId>Feign</PackageId>
     <Description>spring cloud feign for .net</Description>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+	<DefineConstants>USE_CONFIGUREAWAIT_FALSE;</DefineConstants>
     <NoWarn>1701;1702;1591</NoWarn>	
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'!='net45' AND '$(TargetFramework)'!='netstandard2.0'">
-	<DefineConstants>USE_SYSTEM_TEXT_JSON;USE_VALUE_TASK;USE_CONFIGUREAWAIT_FALSE;</DefineConstants>
+	<DefineConstants>$(DefineConstants);USE_SYSTEM_TEXT_JSON;USE_VALUE_TASK;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='netstandard2.0'">
-	<DefineConstants>USE_CONFIGUREAWAIT_FALSE</DefineConstants>
-	<NoWarn>1701;1702;1591;8602;8604</NoWarn>
+	<NoWarn>$(NoWarn);8602;8604</NoWarn>
   </PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">	  

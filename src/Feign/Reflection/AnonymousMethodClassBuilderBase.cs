@@ -89,11 +89,11 @@ namespace Feign.Reflection
 
         protected static ConstructorBuilder CreateConstructor(TypeBuilder typeBuilder, List<FieldBuilder> fieldBuilders)
         {
-            List<Type> types = fieldBuilders.Select(s => s.FieldType).ToList();
+            List<Type> types = fieldBuilders.Select(static s => s.FieldType).ToList();
             ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
                MethodAttributes.Public,
                CallingConventions.Standard,
-               fieldBuilders.Select(s => s.FieldType).ToArray());
+               fieldBuilders.Select(static s => s.FieldType).ToArray());
 
             for (int i = 0; i < fieldBuilders.Count; i++)
             {

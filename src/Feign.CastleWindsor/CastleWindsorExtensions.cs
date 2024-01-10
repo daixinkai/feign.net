@@ -40,10 +40,7 @@ namespace Castle.Windsor
                 options = new FeignOptions();
             }
 
-            CastleWindsorFeignBuilder feignBuilder = new CastleWindsorFeignBuilder();
-
-            feignBuilder.WindsorContainer = windsorContainer;
-            feignBuilder.Options = options;
+            CastleWindsorFeignBuilder feignBuilder = new CastleWindsorFeignBuilder(options, windsorContainer);
             feignBuilder.AddDefaultFeignClients();
             return feignBuilder;
         }

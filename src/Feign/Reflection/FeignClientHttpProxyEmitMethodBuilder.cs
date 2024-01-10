@@ -392,7 +392,7 @@ namespace Feign.Reflection
                 var methodHeaders = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<HeadersAttribute>()!.Headers;
                 if (methodHeaders != null)
                 {
-                    headers.AddRange(methodHeaders.Select(s => new EmitConstantStringValue(s)));
+                    headers.AddRange(methodHeaders.Select(static s => new EmitConstantStringValue(s)));
                 }
                 if (headers.Count > 0)
                 {
@@ -558,10 +558,10 @@ namespace Feign.Reflection
             {
                 return methodInfo.Name;
             }
-            return methodInfo.Name + "(" + string.Join(",", methodInfo.GetParameters().Select(s => GetTypeName(s.ParameterType))) + ")";
+            return methodInfo.Name + "(" + string.Join(",", methodInfo.GetParameters().Select(static s => GetTypeName(s.ParameterType))) + ")";
         }
 
-        private string GetTypeName(Type type)
+        private static string GetTypeName(Type type)
         {
             if (type.IsNullableType())
             {

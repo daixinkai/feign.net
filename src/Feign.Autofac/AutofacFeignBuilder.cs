@@ -7,26 +7,22 @@ using Feign.Reflection;
 
 namespace Feign.Autofac
 {
-    sealed class AutofacFeignBuilder : IAutofacFeignBuilder
+    internal sealed class AutofacFeignBuilder : DefaultFeignBuilderBase, IAutofacFeignBuilder
     {
 
-        public AutofacFeignBuilder()
+        public AutofacFeignBuilder(IFeignOptions options, ContainerBuilder containerBuilder) : base(options)
         {
-            TypeBuilder = new FeignClientHttpProxyTypeBuilder();
+            ContainerBuilder = containerBuilder;
         }
-
-        public IFeignOptions Options { get; set; }
 
         public ContainerBuilder ContainerBuilder { get; set; }
 
-        public IFeignClientTypeBuilder TypeBuilder { get; }
-
-        public void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
-            var registerBuilder = ContainerBuilder.RegisterType(implType).As(serviceType);            
+            var registerBuilder = ContainerBuilder.RegisterType(implType).As(serviceType);
             SetLifetime(registerBuilder, lifetime);
         }
-        public void AddService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, FeignClientLifetime lifetime)
         {
             if (serviceType.IsGenericType && serviceType.IsGenericTypeDefinition)
             {
@@ -39,20 +35,20 @@ namespace Feign.Autofac
                 SetLifetime(registerBuilder, lifetime);
             }
         }
-        public void AddService<TService>(TService service) where TService : class
+        public override void AddService<TService>(TService service)
         {
             ContainerBuilder.RegisterInstance(service).As<TService>();
         }
 
-        public void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             AddService(serviceType, implType, lifetime);
         }
-        public void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
         {
             AddService(serviceType, lifetime);
         }
-        public void AddOrUpdateService<TService>(TService service) where TService : class
+        public override void AddOrUpdateService<TService>(TService service)
         {
             AddService(service);
         }

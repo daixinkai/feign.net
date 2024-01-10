@@ -8,56 +8,54 @@ using Feign.Reflection;
 
 namespace Feign.CastleWindsor
 {
-    internal sealed class CastleWindsorFeignBuilder : ICastleWindsorFeignBuilder
+    internal sealed class CastleWindsorFeignBuilder : DefaultFeignBuilderBase, ICastleWindsorFeignBuilder
     {
 
-        public CastleWindsorFeignBuilder()
+        public CastleWindsorFeignBuilder(IFeignOptions options, IWindsorContainer windsorContainer) : base(options)
         {
-            TypeBuilder = new FeignClientHttpProxyTypeBuilder();
+            WindsorContainer = windsorContainer;
         }
 
-        public IFeignOptions Options { get; set; }
+        public IWindsorContainer WindsorContainer { get; }
 
-        public IWindsorContainer WindsorContainer { get; set; }
-
-        public IFeignClientTypeBuilder TypeBuilder { get; }
-
-        public void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             var registration = Component.For(serviceType).ImplementedBy(implType);
             WindsorContainer.Register(Lifestyle(registration, lifetime));
         }
-        public void AddService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, FeignClientLifetime lifetime)
         {
             var registration = Component.For(serviceType);
             WindsorContainer.Register(Lifestyle(registration, lifetime));
         }
-        public void AddService<TService>(TService service) where TService : class
+        public override void AddService<TService>(TService service)
         {
             var registration = Component.For<TService>().Instance(service);
             WindsorContainer.Register(registration);
         }
 
-        public void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             RemoveService(serviceType);
             AddService(serviceType, implType, lifetime);
         }
-        public void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
         {
             RemoveService(serviceType);
             AddService(serviceType, lifetime);
         }
-        public void AddOrUpdateService<TService>(TService service) where TService : class
+        public override void AddOrUpdateService<TService>(TService service)
         {
             RemoveService(typeof(TService));
             AddService(service);
         }
 
 
+        private bool HasService(Type serviceType) => WindsorContainer.Kernel.HasComponent(serviceType);
+
         private void RemoveService(Type serviceType)
         {
-            if (!WindsorContainer.Kernel.HasComponent(serviceType))
+            if (!HasService(serviceType))
             {
                 return;
             }

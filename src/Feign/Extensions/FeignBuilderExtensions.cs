@@ -41,6 +41,19 @@ namespace Feign
             feignBuilder.AddCacheProvider<DefaultCacheProvider>();
             feignBuilder.AddServiceDiscovery<DefaultServiceDiscovery>();
             feignBuilder.AddService(feignBuilder.Options);
+            //if (feignBuilder.Options.Lifetime != FeignClientLifetime.Singleton
+            //    || feignBuilder.Options.Types.Any(static s => s.FeignClient.Lifetime.HasValue && s.FeignClient.Lifetime.Value != FeignClientLifetime.Singleton))
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
+            //foreach (var type in feignBuilder.Options.Types)
+            //{
+            //    var lifetime = type.FeignClient.Lifetime ?? feignBuilder.Options.Lifetime;
+            //}
             feignBuilder.AddService(typeof(FeignClientHttpProxyOptions), FeignClientLifetime.Singleton);
             return feignBuilder;
         }

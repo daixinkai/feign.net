@@ -28,22 +28,22 @@ namespace Feign.Proxy
 
 #if NETCOREAPP2_1_OR_GREATER
 
-        private static readonly Func<HttpClientHandler, SocketsHttpHandler>? SocketsHttpHandlerGetter = CreateSocketsHttpHandlerGetter();
+        private static readonly Func<HttpClientHandler, SocketsHttpHandler> SocketsHttpHandlerGetter = CreateSocketsHttpHandlerGetter();
 
-        private static Func<HttpClientHandler, SocketsHttpHandler>? CreateSocketsHttpHandlerGetter()
+        private static Func<HttpClientHandler, SocketsHttpHandler> CreateSocketsHttpHandlerGetter()
         {
             var fieldInfo = typeof(HttpClientHandler).GetField("_underlyingHandler", BindingFlags.Instance | BindingFlags.NonPublic);
             if (fieldInfo == null || fieldInfo.FieldType != typeof(SocketsHttpHandler))
             {
-                return null;
+                fieldInfo = typeof(HttpClientHandler).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).First(s => s.FieldType == typeof(SocketsHttpHandler));
             }
             ParameterExpression instance = Expression.Parameter(typeof(HttpClientHandler));
             Expression body = Expression.Field(instance, fieldInfo);
             return Expression.Lambda<Func<HttpClientHandler, SocketsHttpHandler>>(body, instance).Compile();
         }
 
-        internal SocketsHttpHandler? HttpHandler
-                    => SocketsHttpHandlerGetter?.Invoke(this);
+        internal SocketsHttpHandler HttpHandler
+                    => SocketsHttpHandlerGetter.Invoke(this);
 #else
         internal HttpClientHandler HttpHandler
             => this;

@@ -31,20 +31,20 @@ namespace Feign
 
         private void AddDefaultConverters()
         {
-            Converters.AddConverter(new StringToStringConverter());
-            Converters.AddConverter(new BooleanToStringConverter());
-            Converters.AddConverter(new StructToStringConverter<byte>());
-            Converters.AddConverter(new StructToStringConverter<char>());
-            Converters.AddConverter(new StructToStringConverter<decimal>());
-            Converters.AddConverter(new StructToStringConverter<double>());
-            Converters.AddConverter(new StructToStringConverter<float>());
-            Converters.AddConverter(new StructToStringConverter<int>());
-            Converters.AddConverter(new StructToStringConverter<long>());
-            Converters.AddConverter(new StructToStringConverter<sbyte>());
-            Converters.AddConverter(new StructToStringConverter<short>());
-            Converters.AddConverter(new StructToStringConverter<uint>());
-            Converters.AddConverter(new StructToStringConverter<ulong>());
-            Converters.AddConverter(new StructToStringConverter<ushort>());
+            Converters.AddConverter(new StringToStringConverter(), false);
+            Converters.AddConverter(new BooleanToStringConverter(), false);
+            Converters.AddConverter(new StructToStringConverter<byte>(), false);
+            Converters.AddConverter(new StructToStringConverter<char>(), false);
+            Converters.AddConverter(new StructToStringConverter<decimal>(), false);
+            Converters.AddConverter(new StructToStringConverter<double>(), false);
+            Converters.AddConverter(new StructToStringConverter<float>(), false);
+            Converters.AddConverter(new StructToStringConverter<int>(), false);
+            Converters.AddConverter(new StructToStringConverter<long>(), false);
+            Converters.AddConverter(new StructToStringConverter<sbyte>(), false);
+            Converters.AddConverter(new StructToStringConverter<short>(), false);
+            Converters.AddConverter(new StructToStringConverter<uint>(), false);
+            Converters.AddConverter(new StructToStringConverter<ulong>(), false);
+            Converters.AddConverter(new StructToStringConverter<ushort>(), false);
             Converters.AddConverter(new ObjectStringConverter());
         }
 

@@ -10,9 +10,6 @@ namespace Feign.Discovery
     {
         public IList<string>? Services => null;
 
-        public IList<IServiceInstance>? GetServiceInstances(string serviceId)
-        {
-            return null;
-        }
+        public IList<IServiceInstance>? GetServiceInstances(string serviceId) => null;
     }
 }

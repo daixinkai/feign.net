@@ -14,13 +14,7 @@ namespace Feign.Standalone
 {
     public static class FeignClients
     {
-        static FeignClients()
-        {
-            s_standaloneFeignBuilder = new StandaloneFeignBuilder();
-        }
-
-
-        private static readonly StandaloneFeignBuilder s_standaloneFeignBuilder;
+        private static StandaloneFeignBuilder s_standaloneFeignBuilder;
 
         internal static FeignClientHttpProxyOptions<TService> CreateFeignClientConfigureOptions<TService>()
         {
@@ -62,9 +56,8 @@ namespace Feign.Standalone
                 throw new NotSupportedException(nameof(options.Lifetime) + " can not be FeignClientLifetime.Scoped!");
             }
 
+            s_standaloneFeignBuilder = new StandaloneFeignBuilder(options);
             StandaloneFeignBuilder feignBuilder = s_standaloneFeignBuilder;
-
-            feignBuilder.Options = options;
             if (options.Assemblies.Count == 0)
             {
                 feignBuilder.AddFeignClients(Assembly.GetEntryAssembly(), options.Lifetime);

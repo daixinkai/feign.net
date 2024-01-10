@@ -19,14 +19,15 @@ namespace Feign.Pipeline.Internal
     internal class InitializingPipelineContext<TService> : FeignClientPipelineContext<TService>, IInitializingPipelineContext<TService>
     //#endif
     {
-        internal InitializingPipelineContext(IFeignClient<TService> feignClient, FeignHttpClient httpClient) : base(feignClient)
+        internal InitializingPipelineContext(IFeignClient<TService> feignClient, FeignHttpClient httpClient, HttpHandlerType httpHandler) : base(feignClient)
         {
             HttpClient = httpClient;
+            HttpHandler = httpHandler;
         }
         /// <inheritdoc/>
         public FeignHttpClient HttpClient { get; set; }
 
-        public HttpHandlerType? HttpHandler { get; internal set; }
+        public HttpHandlerType HttpHandler { get; }
 
     }
 }

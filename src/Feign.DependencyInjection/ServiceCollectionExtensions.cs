@@ -34,9 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options = new FeignOptions();
             }
 
-            DependencyInjectionFeignBuilder feignBuilder = new DependencyInjectionFeignBuilder();
-            feignBuilder.Services = services;
-            feignBuilder.Options = options;
+            DependencyInjectionFeignBuilder feignBuilder = new DependencyInjectionFeignBuilder(options, services);
             feignBuilder.AddDefaultFeignClients()
             .AddLoggerFactory<LoggerFactory>()
             .AddCacheProvider<JsonCacheProvider>()

@@ -81,7 +81,7 @@ namespace Feign.Reflection
             ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
                MethodAttributes.Public,
                CallingConventions.Standard,
-               constructorParameters.Distinct().Select(s => s.Type).ToArray());
+               constructorParameters.Distinct().Select(static s => s.Type).ToArray());
 
             int index = 0;
             foreach (var key in constructorParameters.Distinct())

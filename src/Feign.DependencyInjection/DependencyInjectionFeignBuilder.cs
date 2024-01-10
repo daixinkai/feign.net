@@ -9,21 +9,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Feign.DependencyInjection
 {
-    internal sealed class DependencyInjectionFeignBuilder : IDependencyInjectionFeignBuilder
+    internal sealed class DependencyInjectionFeignBuilder : DefaultFeignBuilderBase, IDependencyInjectionFeignBuilder
     {
 
-        public DependencyInjectionFeignBuilder()
+        public DependencyInjectionFeignBuilder(IFeignOptions options, IServiceCollection services) : base(options)
         {
-            TypeBuilder = new FeignClientHttpProxyTypeBuilder();
+            Services = services;
         }
 
-        public IFeignOptions Options { get; set; }
+        public IServiceCollection Services { get; }
 
-        public IServiceCollection Services { get; set; }
-
-        public IFeignClientTypeBuilder TypeBuilder { get; }
-
-        public void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             switch (lifetime)
             {
@@ -40,7 +36,7 @@ namespace Feign.DependencyInjection
                     break;
             }
         }
-        public void AddService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddService(Type serviceType, FeignClientLifetime lifetime)
         {
             switch (lifetime)
             {
@@ -58,22 +54,22 @@ namespace Feign.DependencyInjection
             }
         }
 
-        public void AddService<TService>(TService service) where TService : class
+        public override void AddService<TService>(TService service)
         {
-            Services.AddSingleton(service);
+            Services.TryAddSingleton(service);
         }
 
-        public void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             RemoveService(serviceType);
             AddService(serviceType, implType, lifetime);
         }
-        public void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
+        public override void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
         {
             RemoveService(serviceType);
             AddService(serviceType, lifetime);
         }
-        public void AddOrUpdateService<TService>(TService service) where TService : class
+        public override void AddOrUpdateService<TService>(TService service)
         {
             RemoveService(typeof(TService));
             AddService(service);

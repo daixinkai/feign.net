@@ -46,6 +46,15 @@ namespace Feign.Formatting
         /// <typeparam name="TResult"></typeparam>
         /// <param name="converter"></param>
         public void AddConverter<TSource, TResult>(IConverter<TSource, TResult> converter)
+            => AddConverter(converter, true);
+        /// <summary>
+        /// Add a converter
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="converter"></param>
+        /// <param name="completed"></param>
+        internal void AddConverter<TSource, TResult>(IConverter<TSource, TResult> converter, bool completed)
         {
 #if NET45
             var key = Tuple.Create(typeof(TSource), typeof(TResult));
@@ -61,9 +70,13 @@ namespace Feign.Formatting
                 _map.TryAdd(key, converter);
             }
 #if NET8_0_OR_GREATER
-            SyncFrozenMap();
+            if (completed)
+            {
+                SyncFrozenMap();
+            }
 #endif
         }
+
         /// <summary>
         /// Find a converter for a specified type
         /// </summary>
@@ -111,13 +124,6 @@ namespace Feign.Formatting
                 }
                 return ConvertDefaultValue<TResult>(value);
             }
-            ////TODO : optimize
-            //object? convertValue = converter.GetType().GetRequiredMethod("Convert").Invoke(converter, new[] { value });
-            //if (convertValue == null)
-            //{
-            //    return default;
-            //}
-            //return (TResult)convertValue;
             return InvokeConvert<TResult>(converter, value);
         }
 

@@ -12,7 +12,7 @@ namespace Feign.Tests
 {
     internal class TestFeignClientHttpProxyOptions : FeignClientHttpProxyOptions<ITestControllerService>
     {
-        public TestFeignClientHttpProxyOptions(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory, TestConfiguration configuration) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+        public TestFeignClientHttpProxyOptions(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider cacheProvider, ILoggerFactory loggerFactory, TestConfiguration configuration) : base( feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
         {
             //Configuration = configuration;
             //ServiceConfiguration = configuration;
