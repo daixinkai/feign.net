@@ -27,7 +27,7 @@ namespace Feign.Formatting
 #endif
                     ;
             }
-            Memory<byte> buffer = new();
+            Memory<byte> buffer = new(new byte[stream.Length]);
             await stream.ReadAsync(buffer)
 #if USE_CONFIGUREAWAIT_FALSE
                 .ConfigureAwait(false)
@@ -47,7 +47,7 @@ namespace Feign.Formatting
 #endif
                     ;
             }
-            Memory<byte> buffer = new();
+            Memory<byte> buffer = new(new byte[stream.Length]);
             await stream.ReadAsync(buffer)
 #if USE_CONFIGUREAWAIT_FALSE
                 .ConfigureAwait(false)
