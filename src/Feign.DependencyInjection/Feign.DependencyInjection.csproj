@@ -5,7 +5,7 @@
 		<PackageId>Feign.DependencyInjection</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Authors>daixinkai</Authors>
-		<Version>1.5.1</Version>
+		<Version>1.5.2</Version>
 		<Description>feign for Microsoft.Extensions.DependencyInjection</Description>
 		<PackageProjectUrl>https://github.com/daixinkai/feign.net</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
