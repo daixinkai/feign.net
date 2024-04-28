@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Steeltoe.Discovery.Abstractions" Version="3.2.5" />
+    <PackageReference Include="Steeltoe.Discovery.Abstractions" Version="3.2.6" />
   </ItemGroup>
 
   <ItemGroup>

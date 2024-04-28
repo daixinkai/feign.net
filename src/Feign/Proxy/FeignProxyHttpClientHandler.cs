@@ -150,11 +150,13 @@ namespace Feign.Proxy
                     ;
                 #endregion
 
-                return await base.SendAsync(request, requestContext.CancellationToken)
+                request.ResponseMessage = await base.SendAsync(request, requestContext.CancellationToken)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
                     ;
+
+                return request.ResponseMessage;
             }
             catch (Exception e)
             {

@@ -31,5 +31,8 @@ namespace Feign.Request
         /// </summary>
         public FeignClientHttpRequest FeignClientRequest { get; }
 
+
+        public HttpResponseMessage? ResponseMessage { get; internal set; }
+
     }
 }

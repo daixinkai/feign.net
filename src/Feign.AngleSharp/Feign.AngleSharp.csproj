@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net46'">
-  	<PackageReference Include="AngleSharp" Version="1.0.7" />
+  	<PackageReference Include="AngleSharp" Version="1.1.2" />
   </ItemGroup>
 
   <ItemGroup>
