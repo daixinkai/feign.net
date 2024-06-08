@@ -35,7 +35,7 @@ namespace Feign.Proxy
             var fieldInfo = typeof(HttpClientHandler).GetField("_underlyingHandler", BindingFlags.Instance | BindingFlags.NonPublic);
             if (fieldInfo == null || fieldInfo.FieldType != typeof(SocketsHttpHandler))
             {
-                fieldInfo = typeof(HttpClientHandler).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).First(s => s.FieldType == typeof(SocketsHttpHandler));
+                fieldInfo = typeof(HttpClientHandler).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).First(static s => s.FieldType == typeof(SocketsHttpHandler));
             }
             ParameterExpression instance = Expression.Parameter(typeof(HttpClientHandler));
             Expression body = Expression.Field(instance, fieldInfo);

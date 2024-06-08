@@ -175,24 +175,54 @@ namespace Feign
             }
         }
 
+        //        /// <summary>
+        //        /// like new string[]{"1","2","3","4"}
+        //        /// </summary>
+        //        /// <param name="iLGenerator"></param>
+        //        /// <param name="list"></param>
+        //        public static void EmitStringArray(this ILGenerator iLGenerator, IEnumerable<IEmitValue<string>> list)
+        //        {
+        //            int count = list.Count();
+        //#if !NET45
+        //            if (count == 0)
+        //            {
+        //                iLGenerator.Emit(OpCodes.Call, typeof(Array).GetRequiredMethod("Empty").MakeGenericMethod(typeof(string)));
+        //                return;
+        //            }
+        //#endif
+
+        //            iLGenerator.EmitInt32Value(count);
+        //            iLGenerator.Emit(OpCodes.Newarr, typeof(string));
+        //            int index = 0;
+        //            foreach (var item in list)
+        //            {
+        //                iLGenerator.Emit(OpCodes.Dup);
+        //                iLGenerator.EmitInt32Value(index);
+        //                item.Emit(iLGenerator);
+        //                iLGenerator.Emit(OpCodes.Stelem_Ref);
+        //                index++;
+        //            }
+
+        //        }
+
         /// <summary>
-        /// like new string[]{"1","2","3","4"}
+        /// like new T[]{"1","2","3","4"}
         /// </summary>
         /// <param name="iLGenerator"></param>
         /// <param name="list"></param>
-        public static void EmitStringArray(this ILGenerator iLGenerator, IEnumerable<IEmitValue<string>> list)
+        public static void EmitNewArray<T>(this ILGenerator iLGenerator, IEnumerable<IEmitValue<T>> list)
         {
             int count = list.Count();
 #if !NET45
             if (count == 0)
             {
-                iLGenerator.Emit(OpCodes.Call, typeof(Array).GetRequiredMethod("Empty").MakeGenericMethod(typeof(string)));
+                iLGenerator.Emit(OpCodes.Call, typeof(Array).GetRequiredMethod("Empty").MakeGenericMethod(typeof(T)));
                 return;
             }
 #endif
 
             iLGenerator.EmitInt32Value(count);
-            iLGenerator.Emit(OpCodes.Newarr, typeof(string));
+            iLGenerator.Emit(OpCodes.Newarr, typeof(T));
             int index = 0;
             foreach (var item in list)
             {

@@ -10,14 +10,6 @@ namespace Feign
 {
     internal static class RequestMappingExtensions
     {
-        public static bool IsHttpMethod(this IRequestMapping requestMapping, HttpMethod httpMethod)
-        {
-            if (requestMapping == null)
-            {
-                return false;
-            }
-            return string.Equals(httpMethod.Method, requestMapping.GetMethod(), StringComparison.OrdinalIgnoreCase);
-        }
 
         public static bool IsHttpMethod(this IRequestMapping requestMapping, string httpMethod)
         {
@@ -28,24 +20,23 @@ namespace Feign
             return string.Equals(httpMethod, requestMapping.GetMethod(), StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool IsHttpMethod(this IRequestMapping requestMapping, HttpMethod httpMethod)
+            => IsHttpMethod(requestMapping, httpMethod.Method);
+
         public static bool IsSupportRequestContent(this IRequestMapping requestMapping)
-        {
-            return
-                requestMapping.IsHttpMethod(HttpMethod.Post) ||
-                requestMapping.IsHttpMethod(HttpMethod.Put) ||
-                requestMapping.IsHttpMethod(HttpMethod.Delete) ||
-                requestMapping.IsHttpMethod("PATCH")
-                ;
-        }
+            => IsSupportContent(requestMapping.GetMethod());
 
         public static bool IsSupportContent(this HttpMethod httpMethod)
+            => IsSupportContent(httpMethod.Method);
+
+        private static bool IsSupportContent(string httpMethod)
         {
             return
-                httpMethod == HttpMethod.Post
-                || httpMethod == HttpMethod.Put
-                || httpMethod == HttpMethod.Delete
+                string.Equals(httpMethod, "POST", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(httpMethod, "PUT", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(httpMethod, "DELETE", StringComparison.OrdinalIgnoreCase)
                 //Patch also supports
-                || string.Equals(httpMethod.Method, "PATCH", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(httpMethod, "PATCH", StringComparison.OrdinalIgnoreCase)
                  ;
         }
 

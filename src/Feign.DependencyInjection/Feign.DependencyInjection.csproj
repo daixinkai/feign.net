@@ -4,6 +4,8 @@
 		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1;net6.0;net7.0;net8.0;</TargetFrameworks>
 		<PackageId>Feign.DependencyInjection</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<LangVersion>10.0</LangVersion>
+		<Nullable>enable</Nullable>
 		<Authors>daixinkai</Authors>
 		<Version>1.5.2</Version>
 		<Description>feign for Microsoft.Extensions.DependencyInjection</Description>

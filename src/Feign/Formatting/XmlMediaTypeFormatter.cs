@@ -32,11 +32,9 @@ namespace Feign.Formatting
 
         public object? GetResult(Type type, Stream stream, Encoding? encoding)
         {
-            using (StreamReader sr = new StreamReader(stream, EncodingEx.GetRequiredEncoding(encoding)))
-            {
-                XmlSerializer xz = new XmlSerializer(type);                
-                return xz.Deserialize(sr);
-            }
+            using StreamReader sr = new StreamReader(stream, EncodingEx.GetRequiredEncoding(encoding));
+            XmlSerializer xz = new XmlSerializer(type);
+            return xz.Deserialize(sr);
         }
 
         public Task<TResult?> GetResultAsync<TResult>(Stream stream, Encoding? encoding)

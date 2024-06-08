@@ -104,7 +104,7 @@ namespace Feign.Proxy
                 using (httpRequestMessage)
                 {
                     // if support content
-                    if (IsSupportContent(httpRequestMessage.Method))
+                    if (httpRequestMessage.Method.IsSupportContent())
                     {
                         HttpContent? httpContent = request.GetHttpContent(FeignOptions);
                         if (httpContent != null)
@@ -174,11 +174,6 @@ namespace Feign.Proxy
                     (FeignHttpRequestMessage)responseMessage.RequestMessage!,
                     new HttpRequestException($"Response status code does not indicate success: {responseMessage.StatusCode.GetHashCode()} ({responseMessage.ReasonPhrase}).\r\nContent : {content}"));
             }
-        }
-
-        private static bool IsSupportContent(HttpMethod httpMethod)
-        {
-            return httpMethod.IsSupportContent();
         }
 
         private static HttpMethod GetHttpMethod(string method)

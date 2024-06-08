@@ -32,7 +32,7 @@ namespace Feign
 
         public static MethodInfo[] GetMethodsIncludingBaseInterfaces(this Type type)
         {
-            List<MethodInfo> methods = new List<MethodInfo>(type.GetMethods().Where(s => !s.IsSpecialName));
+            List<MethodInfo> methods = new List<MethodInfo>(type.GetMethods().Where(static s => !s.IsSpecialName));
             GetMethodsFromBaseInterfaces(type, methods);
             return methods.ToArray();
         }
@@ -41,7 +41,7 @@ namespace Feign
         {
             foreach (var item in type.GetInterfaces())
             {
-                foreach (var method in item.GetMethods().Where(s => !s.IsSpecialName))
+                foreach (var method in item.GetMethods().Where(static s => !s.IsSpecialName))
                 {
                     if (!methods.Contains(method))
                     {

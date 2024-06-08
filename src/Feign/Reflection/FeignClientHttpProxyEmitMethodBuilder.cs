@@ -392,12 +392,12 @@ namespace Feign.Reflection
                 var methodHeaders = feignClientMethodInfo.MethodMetadata.GetCustomAttribute<HeadersAttribute>()!.Headers;
                 if (methodHeaders != null)
                 {
-                    headers.AddRange(methodHeaders.Select(static s => new EmitConstantStringValue(s)));
+                    headers.AddRange(methodHeaders.Select(static s => new EmitStringValue(s)));
                 }
                 if (headers.Count > 0)
                 {
                     iLGenerator.Emit(OpCodes.Dup);
-                    iLGenerator.EmitStringArray(headers);
+                    iLGenerator.EmitNewArray(headers);
                     iLGenerator.EmitSetProperty(typeof(FeignClientHttpRequest).GetRequiredProperty("Headers"));
                 }
             }
@@ -441,7 +441,7 @@ namespace Feign.Reflection
                         EmitFeignClientRequestContent(iLGenerator, emitRequestContents[0], null);
                     }
                 }
-                else if (emitRequestContents.Any(s => !s.SupportMultipart))
+                else if (emitRequestContents.Any(static s => !s.SupportMultipart))
                 {
                     throw new NotSupportedException("最多只支持一个RequestContent \r\n " + feignClientMethodInfo.ToString());
                 }
@@ -655,7 +655,7 @@ namespace Feign.Reflection
             foreach (var parameterInfo in method.GetParameters())
             {
                 index++;
-                if (parameterInfo.GetCustomAttributes().Any(s => s is INotRequestParameter))
+                if (parameterInfo.GetCustomAttributes().Any(static s => s is INotRequestParameter))
                 {
                     continue;
                 }

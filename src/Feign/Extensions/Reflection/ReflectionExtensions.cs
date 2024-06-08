@@ -19,7 +19,7 @@ namespace Feign
 
         public static ConstructorInfo? GetDefaultConstructor(this Type type)
         {
-            //return type.GetConstructors().Where(s => s.GetParameters().Length == 0).FirstOrDefault();
+            //return type.GetConstructors().Where(static s => s.GetParameters().Length == 0).FirstOrDefault();
             return type.GetConstructor(Type.EmptyTypes);
         }
 

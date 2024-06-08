@@ -132,8 +132,8 @@ namespace Feign
             else if (expression.Body.NodeType == ExpressionType.MemberInit)
             {
                 var memberInitExpression = expression.Body as MemberInitExpression;
-                var fields = memberInitExpression!.Bindings.OfType<MemberAssignment>().Where(s => s.Member.MemberType == MemberTypes.Field).ToList();
-                var properties = memberInitExpression.Bindings.OfType<MemberAssignment>().Where(s => s.Member.MemberType == MemberTypes.Property).ToList();
+                var fields = memberInitExpression!.Bindings.OfType<MemberAssignment>().Where(static s => s.Member.MemberType == MemberTypes.Field).ToList();
+                var properties = memberInitExpression.Bindings.OfType<MemberAssignment>().Where(static s => s.Member.MemberType == MemberTypes.Property).ToList();
                 return new CustomAttributeBuilder(
                     memberInitExpression.NewExpression!.Constructor!,
                     memberInitExpression.NewExpression.Arguments.OfType<ConstantExpression>().Select(static s => s.Value).ToArray(),

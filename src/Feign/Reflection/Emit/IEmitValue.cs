@@ -9,6 +9,7 @@ namespace Feign.Reflection
 {
     internal interface IEmitValue<T>
     {
-        void Emit(ILGenerator iLGenerator);
+        T? Value { get; }
+        bool Emit(ILGenerator iLGenerator);
     }
 }

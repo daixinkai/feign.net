@@ -153,10 +153,10 @@ namespace Feign.Reflection
                 #region cctor
                 var cctor = typeBuilder.DefineConstructor(MethodAttributes.PrivateScope | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName | MethodAttributes.Static, CallingConventions.Standard, Type.EmptyTypes);
                 var cctorILGenerator = cctor.GetILGenerator();
-                List<EmitConstantStringValue>? headers = headersAttribute!.Headers?.Select(static s => new EmitConstantStringValue(s)).ToList();
+                List<EmitStringValue>? headers = headersAttribute!.Headers?.Select(static s => new EmitStringValue(s)).ToList();
                 if (headers != null)
                 {
-                    cctorILGenerator.EmitStringArray(headers);
+                    cctorILGenerator.EmitNewArray(headers);
                     cctorILGenerator.Emit(OpCodes.Stsfld, headersFieldBuilder);
                 }
                 cctorILGenerator.Emit(OpCodes.Ret);

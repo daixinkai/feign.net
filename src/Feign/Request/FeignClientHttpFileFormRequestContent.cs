@@ -29,7 +29,7 @@ namespace Feign.Request
             {
                 return null;
             }
-            string? boundary = contentType?.Parameters.FirstOrDefault(s => s.Name == "boundary")?.Value;
+            string? boundary = contentType?.Parameters.FirstOrDefault(static s => s.Name == "boundary")?.Value;
             MultipartFormDataContent multipartFormDataContent = FeignClientUtils.CreateMultipartFormDataContent(boundary, RequestFileForm.QuotedBoundary);
             if (RequestFileForm.RequestFiles != null)
             {
@@ -50,7 +50,7 @@ namespace Feign.Request
             //    {
             //        continue;
             //    }
-            //    if (typeof(IHttpRequestFile).IsAssignableFrom(property.PropertyType) || property.PropertyType.IsGenericType && property.PropertyType.GenericTypeArguments.Any(s => typeof(IHttpRequestFile).IsAssignableFrom(s)))
+            //    if (typeof(IHttpRequestFile).IsAssignableFrom(property.PropertyType) || property.PropertyType.IsGenericType && property.PropertyType.GenericTypeArguments.Any(static s => typeof(IHttpRequestFile).IsAssignableFrom(s)))
             //    {
             //        continue;
             //    }

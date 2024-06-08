@@ -12,15 +12,15 @@ namespace Feign.Cache
 {
     internal class JsonCacheProvider : ICacheProvider
     {
-        public JsonCacheProvider(IDistributedCache distributedCache = null)
+        public JsonCacheProvider(IDistributedCache? distributedCache = null)
         {
             _distributedCache = distributedCache;
         }
 
-        private readonly IDistributedCache _distributedCache;
+        private readonly IDistributedCache? _distributedCache;
 
 
-        public T Get<T>(string name)
+        public T? Get<T>(string name)
         {
             if (_distributedCache == null)
             {
@@ -34,7 +34,7 @@ namespace Feign.Cache
             return default;
         }
 
-        public async Task<T> GetAsync<T>(string name)
+        public async Task<T?> GetAsync<T>(string name)
         {
             if (_distributedCache == null)
             {
@@ -71,7 +71,7 @@ namespace Feign.Cache
         }
 
 
-        private static string SerializeForCache(object data)
+        private static string SerializeForCache(object? data)
         {
 #if NETSTANDARD2_0
             return Newtonsoft.Json.JsonConvert.SerializeObject(data);
@@ -80,7 +80,7 @@ namespace Feign.Cache
 #endif
         }
 
-        private static T DeserializeFromCache<T>(string json)
+        private static T? DeserializeFromCache<T>(string json)
         {
             try
             {

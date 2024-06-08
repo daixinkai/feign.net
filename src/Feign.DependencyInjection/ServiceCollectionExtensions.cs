@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services)
         {
-            return AddFeignClients(services, (FeignOptions)null);
+            return AddFeignClients(services, default(FeignOptions));
         }
 
         public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services, Action<IFeignOptions> setupAction)
@@ -27,13 +27,9 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddFeignClients(services, options);
         }
 
-        public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services, IFeignOptions options)
+        public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services, IFeignOptions? options)
         {
-            if (options == null)
-            {
-                options = new FeignOptions();
-            }
-
+            options ??= new FeignOptions();
             DependencyInjectionFeignBuilder feignBuilder = new DependencyInjectionFeignBuilder(options, services);
             feignBuilder.AddDefaultFeignClients()
             .AddLoggerFactory<LoggerFactory>()
