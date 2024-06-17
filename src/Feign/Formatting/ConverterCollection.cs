@@ -109,39 +109,71 @@ namespace Feign.Formatting
             return converter;
         }
 
-        internal TResult? ConvertValue<TResult>(object? value, bool useDefault)
+        internal bool TryConvertValue<TResult>(object? value, out TResult? result)
         {
+            result = default;
             if (value == null)
             {
-                return default;
+                return false;
             }
             var converter = FindConverter(value.GetType(), typeof(TResult));
             if (converter == null)
             {
-                if (!useDefault)
-                {
-                    return default;
-                }
+                return false;
+            }
+            result = InvokeConvert<TResult>(converter, value);
+            return true;
+        }
+
+        internal TResult? ConvertValue<TResult>(object? value, bool useDefault)
+        {
+            if (TryConvertValue<TResult>(value, out var result))
+            {
+                return result;
+            }
+            if (useDefault)
+            {
                 return ConvertDefaultValue<TResult>(value);
             }
-            return InvokeConvert<TResult>(converter, value);
+            return default;
+        }
+
+        internal bool TryConvertValue<TSource, TResult>(TSource? value, out TResult? result)
+        {
+            result = default;
+            if (value == null)
+            {
+                return false;
+            }
+            var converter = FindConverter<TSource, TResult>();
+            if (converter == null)
+            {
+                return false;
+            }
+            result = InvokeConvert<TResult>(converter, value);
+            return true;
         }
 
         internal TResult? ConvertValue<TSource, TResult>(TSource value, bool useDefault)
         {
-            var converter = FindConverter<TSource, TResult>();
-            if (converter == null)
+            if (TryConvertValue<TSource, TResult>(value, out var result))
             {
-                if (!useDefault)
-                {
-                    return default;
-                }
+                return result;
+            }
+            if (useDefault)
+            {
                 return ConvertDefaultValue<TResult>(value);
             }
-            return converter.Convert(value);
+            return default;
         }
 
-        private TResult? ConvertDefaultValue<TResult>(object? value)
+        /// <summary>
+        ///  object -> TResult
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal TResult? ConvertDefaultValue<TResult>(object? value)
         {
             var converter = FindConverter<object, TResult>();
             if (converter == null)
@@ -177,5 +209,6 @@ namespace Feign.Formatting
             var delegateType = typeof(Func<,,>).MakeGenericType(new[] { typeof(IConverter), sourceType, resultType });
             return Expression.Lambda(delegateType, body, instance, source).Compile();
         }
+
     }
 }

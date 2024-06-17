@@ -24,7 +24,7 @@ namespace Feign.Tests
 
         public static IFeignBuilder AddTestFeignClients(this IFeignBuilder feignBuilder)
         {
-            feignBuilder.AddConverter(new TestServiceParamStringConverter());
+            //feignBuilder.AddConverter(new TestServiceParamStringConverter());
             feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
             feignBuilder.Options.AutomaticDecompression = DecompressionMethods.GZip;
@@ -154,7 +154,8 @@ namespace Feign.Tests
             {
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().ReceivingQueryResult();
+            //feignBuilder.Options.FeignClientPipeline.Service<ITestService>().ReceivingQueryResult();
+            feignBuilder.Options.FeignClientPipeline.ReceivingQueryResult();
             feignBuilder.Options.FeignClientPipeline.UseCancelRequest(context =>
             {
                 context.CancellationToken.Register((state) =>
@@ -196,7 +197,8 @@ namespace Feign.Tests
                 {
                     context.Result = new QueryResult()
                     {
-                        StatusCode = context.ResponseMessage.StatusCode
+                        StatusCode = context.ResponseMessage.StatusCode,
+                        RequestUri = GetRequestUri(context)
                     };
                     return;
                 }
@@ -230,6 +232,7 @@ namespace Feign.Tests
                         queryResult = InvokeQueryResultConstructor(context.ResultType.GetGenericArguments()[0]);
                     }
                     queryResult.StatusCode = context.ResponseMessage.StatusCode;
+                    queryResult.RequestUri = GetRequestUri(context);
                     context.Result = queryResult;
                 }
 
@@ -257,6 +260,7 @@ namespace Feign.Tests
                         queryResult = InvokeQueryResultConstructor(context.ResultType.GetGenericArguments()[0]);
                     }
                     queryResult.StatusCode = context.ResponseMessage.StatusCode;
+                    queryResult.RequestUri = GetRequestUri(context);
                     context.Result = queryResult;
                 }
             });
@@ -289,6 +293,11 @@ namespace Feign.Tests
                 _queryResultFunc = Expression.Lambda<Func<QueryResult>>(constructorExpression).Compile();
             }
             return _queryResultFunc.Invoke();
+        }
+
+        private static string GetRequestUri<T>(IReceivingResponsePipelineContext<T> context)
+        {
+            return context.ResponseMessage.RequestMessage.RequestUri.ToString();
         }
 
     }

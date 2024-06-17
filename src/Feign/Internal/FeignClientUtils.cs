@@ -97,37 +97,37 @@ namespace Feign.Internal
                 yield break;
             }
 
-            if (typeof(IDictionary).IsAssignableFrom(typeof(T)))
-            {
-                IDictionary map = (IDictionary)value;
-                foreach (var item in map.Keys)
-                {
-                    var mapValue = map[item!];
-                    if (mapValue == null)
-                    {
-                        continue;
-                    }
-                    yield return new KeyValuePair<string, string?>(item!.ToString()!, converters.ConvertValue<string>(mapValue, true));
-                }
-                yield break;
-            }
+            //if (typeof(IDictionary).IsAssignableFrom(typeof(T)))
+            //{
+            //    IDictionary map = (IDictionary)value;
+            //    foreach (var item in map.Keys)
+            //    {
+            //        var mapValue = map[item!];
+            //        if (mapValue == null)
+            //        {
+            //            continue;
+            //        }
+            //        yield return new KeyValuePair<string, string?>(item!.ToString()!, converters.ConvertValue<string>(mapValue, true));
+            //    }
+            //    yield break;
+            //}
 
-            if (typeof(IEnumerable).IsAssignableFrom(typeof(T)))
-            {
-                foreach (var item in (IEnumerable)value)
-                {
-                    if (item == null)
-                    {
-                        continue;
-                    }
-                    yield return new KeyValuePair<string, string?>(name, converters.ConvertValue<string>(item, true));
-                }
-                yield break;
-            }
+            //if (typeof(IEnumerable).IsAssignableFrom(typeof(T)))
+            //{
+            //    foreach (var item in (IEnumerable)value)
+            //    {
+            //        if (item == null)
+            //        {
+            //            continue;
+            //        }
+            //        yield return new KeyValuePair<string, string?>(name, converters.ConvertValue<string>(item, true));
+            //    }
+            //    yield break;
+            //}
 
             // get properties
 
-            foreach (var item in new ObjectQueryMap<T>(value, namingPolicy, converters).GetStringParameters())
+            foreach (var item in new ObjectQueryMap<T>(name, value, namingPolicy, converters).GetStringParameters())
             {
                 yield return item;
             }

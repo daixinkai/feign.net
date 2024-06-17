@@ -22,6 +22,9 @@ namespace Feign.Tests
         {
             get { return ((int)StatusCode >= 200) && ((int)StatusCode <= 299); }
         }
+
+        public string RequestUri { get; set; }
+
     }
 
     /// <summary>
@@ -41,7 +44,6 @@ namespace Feign.Tests
         /// 结果
         /// </summary>
         public T Data { get; set; }
-
 
     }
 }

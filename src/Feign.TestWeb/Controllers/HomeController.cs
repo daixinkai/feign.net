@@ -17,7 +17,6 @@ namespace Feign.TestWeb.Controllers
         {
             if (id != null)
             {
-
                 return new QueryResult<object>
                 {
                     Data = new TestServiceParam
@@ -26,6 +25,9 @@ namespace Feign.TestWeb.Controllers
                     }
                 };
             }
+
+
+
             var noBaseUrlTestService = HttpContext.RequestServices.GetRequiredService<INoBaseUrlTestService>();
 
             var responseMessage = await testControllerService.GetHttpResponseMessage();
@@ -55,10 +57,37 @@ namespace Feign.TestWeb.Controllers
 
             //var t = await testControllerService.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });       
 
-            var tt = testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });
+            var tt = testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 }, new TestServiceParam
+            {
+                Age = 1,
+                Name = "root",
+                Ids = ["1", "2"],
+                Properties = new Dictionary<string, string>
+                {
+                    { "key1","value1"},
+                    { "key2","value2"}
+                },
+                SubParam = new TestServiceParam
+                {
+                    Age = 2,
+                    Name = "sub1",
+                    SubParam = new TestServiceParam
+                    {
+                        Age = 3,
+                        Name = "sub2",
+                    },
+                    Properties = new Dictionary<string, string>
+                    {
+                        { "key1","value1"},
+                        { "key2","value2"}
+                    },
+                }
+            });
             var t = await tt;
             var ttt = testServiceClient.GetQueryResultValue("1", new int[] { 1, 2, 3 });
-            return new JsonResult(t);
+            //return new JsonResult(t);
+
+            return Ok(t);
 
 
             //var r = await testService.Get();

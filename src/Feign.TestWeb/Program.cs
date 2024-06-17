@@ -18,6 +18,7 @@ var feignBuilder = builder.Services.AddFeignClients(options =>
 {
     options.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     options.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    //options.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
 })
  .AddTestFeignClients()
 //.AddServiceDiscovery<TestServiceDiscovery>()
