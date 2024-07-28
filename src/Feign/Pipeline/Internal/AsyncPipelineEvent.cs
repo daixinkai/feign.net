@@ -4,15 +4,15 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace Feign.Internal
+//namespace Feign.Pipeline
 //{
-//    internal class AsyncEvent<TEventArgs>
+//    internal class AsyncPipelineEvent<T>
 //    {
-//        readonly List<AsyncEventInvocator<TEventArgs>> _handlers = new List<AsyncEventInvocator<TEventArgs>>();
+//        private readonly List<AsyncPipelineEventInvocator<T>> _handlers = new();
 
-//        ICollection<AsyncEventInvocator<TEventArgs>> _handlersForInvoke;
+//        private ICollection<AsyncPipelineEventInvocator<T>> _handlersForInvoke;
 
-//        public AsyncEvent()
+//        public AsyncPipelineEvent()
 //        {
 //            _handlersForInvoke = _handlers;
 //        }
@@ -21,7 +21,7 @@
 //        // require locking the actual list (_handlers).
 //        public bool HasHandlers { get; private set; }
 
-//        public void AddHandler(Func<TEventArgs, Task> handler)
+//        public void AddHandler(Func<T, ValueTask> handler)
 //        {
 //            if (handler == null)
 //            {
@@ -30,13 +30,13 @@
 
 //            lock (_handlers)
 //            {
-//                _handlers.Add(new AsyncEventInvocator<TEventArgs>(handler));
+//                _handlers.Add(new AsyncPipelineEventInvocator<T>(handler));
 //                HasHandlers = true;
-//                _handlersForInvoke = new List<AsyncEventInvocator<TEventArgs>>(_handlers);
+//                _handlersForInvoke = new List<AsyncPipelineEventInvocator<T>>(_handlers);
 //            }
 //        }
 
-//        public async Task InvokeAsync(TEventArgs eventArgs)
+//        public async ValueTask InvokeAsync(T eventArgs)
 //        {
 //            if (!HasHandlers)
 //            {
@@ -57,8 +57,22 @@
 //            }
 //        }
 
+//        public void RemoveHandler(Func<T, ValueTask> handler)
+//        {
+//            if (handler == null)
+//            {
+//                throw new ArgumentNullException(nameof(handler));
+//            }
+//            lock (_handlers)
+//            {
+//                _handlers.RemoveAll(h => h.WrapsHandler(handler));
 
-//        public async Task TryInvokeAsync(TEventArgs eventArgs)
+//                HasHandlers = _handlers.Count > 0;
+//                _handlersForInvoke = new List<AsyncPipelineEventInvocator<T>>(_handlers);
+//            }
+//        }
+
+//        public async ValueTask TryInvokeAsync(T eventArgs)
 //        {
 //            if (eventArgs == null)
 //            {
