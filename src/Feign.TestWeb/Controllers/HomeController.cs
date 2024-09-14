@@ -25,8 +25,7 @@ namespace Feign.TestWeb.Controllers
                     }
                 };
             }
-
-
+            
 
             var noBaseUrlTestService = HttpContext.RequestServices.GetRequiredService<INoBaseUrlTestService>();
 

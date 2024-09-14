@@ -194,7 +194,10 @@ namespace Feign.Proxy
 
         private FeignHttpRequestMessage CreateRequestMessage(FeignClientHttpRequest request, HttpMethod method, Uri? uri)
         {
-            FeignHttpRequestMessage requestMessage = new(request, method, uri);
+            FeignHttpRequestMessage requestMessage = new(request, method, uri)
+            {
+                ServiceId = ServiceId
+            };
             if (!string.IsNullOrWhiteSpace(request.Accept))
             {
                 requestMessage.Headers.Accept.ParseAdd(request.Accept);

@@ -12,9 +12,10 @@ namespace Feign.Discovery
         /// <summary>
         /// Find the service path to use based on the service collection
         /// </summary>
+        /// <param name="serviceId"></param>
         /// <param name="uri"></param>
         /// <param name="services"></param>
         /// <returns></returns>
-        Uri ResolveService(Uri uri, IList<IServiceInstance>? services);
+        Uri ResolveService(string serviceId, Uri uri, IList<IServiceInstance>? services);
     }
 }

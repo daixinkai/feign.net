@@ -12,7 +12,7 @@ namespace Feign.Tests
         public void Configure(FeignClientConfigurationContext<ITestControllerService> context)
         {
             context.Pipeline.Authorization(feignClient =>
-            {
+            {                
                 return null;
             });
         }

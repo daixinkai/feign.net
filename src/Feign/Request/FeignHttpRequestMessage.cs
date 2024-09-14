@@ -31,8 +31,14 @@ namespace Feign.Request
         /// </summary>
         public FeignClientHttpRequest FeignClientRequest { get; }
 
-
+        /// <summary>
+        /// Gets the ResponseMessage
+        /// </summary>
         public HttpResponseMessage? ResponseMessage { get; internal set; }
+        /// <summary>
+        /// Gets or sets the ServiceId
+        /// </summary>
+        public string? ServiceId { get; set; }
 
     }
 }

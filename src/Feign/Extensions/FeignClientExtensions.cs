@@ -36,5 +36,16 @@ namespace Feign
             return feignClient.AsFallback()?.Fallback as TService;
         }
 
+        public static void SetFeature<T>(this IFeignClient<object> feignClient, T? instance) where T : class
+        {
+            feignClient.Features[typeof(T)] = instance;
+        }
+
+        public static T? GetFeature<T>(this IFeignClient<object> feignClient) where T : class
+        {
+            feignClient.Features.TryGetValue(typeof(T), out var instance);
+            return instance as T;
+        }
+
     }
 }

@@ -4,6 +4,8 @@ using Feign.Internal;
 using Feign.Logging;
 using Feign.Pipeline.Internal;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Feign.Proxy
 {
@@ -20,6 +22,7 @@ namespace Feign.Proxy
             _globalPipeline = FeignOptions.FeignClientPipeline as GlobalFeignClientPipeline;
             _serviceIdPipeline = _globalPipeline?.GetServicePipeline(ServiceId);
             _servicePipeline = _globalPipeline?.GetServicePipeline<TService>();
+            _features = new Dictionary<Type, object?>();
 
             _logger = options.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
 
@@ -120,6 +123,8 @@ namespace Feign.Proxy
         /// </summary>
         internal readonly ServiceFeignClientPipeline<TService>? _servicePipeline;
 
+        private readonly Dictionary<Type, object?> _features;
+
         private readonly ILogger? _logger;
 
         private const string s_httpScheme = "http";
@@ -129,6 +134,9 @@ namespace Feign.Proxy
         TService IFeignClient<TService>.Service => (this as TService)!;
 
         Type IFeignClient<TService>.ServiceType => typeof(TService);
+
+        IDictionary<Type, object?> IFeignClient.Features => _features;
+
 
         protected virtual UriKind UriKind => UriKind.Relative;
 
@@ -157,6 +165,7 @@ namespace Feign.Proxy
         protected virtual string[]? DefaultHeaders => null;
 
         protected FeignHttpClient HttpClient { get; }
+
 
         #region IDisposable Support
         private bool disposedValue = false; // 要检测冗余调用

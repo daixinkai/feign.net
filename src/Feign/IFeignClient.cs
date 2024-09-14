@@ -14,6 +14,10 @@ namespace Feign
         /// Gets the serviceId
         /// </summary>
         string ServiceId { get; }
+        /// <summary>
+        /// Gets the collection of features provided by the  available on this client
+        /// </summary>
+        IDictionary<Type, object?> Features { get; }
     }
     /// <summary>
     /// An interface that represents a service object of a known type

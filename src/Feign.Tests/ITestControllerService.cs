@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Tests
 {
-    [CustomFeignClient("yun-platform-service-provider"
+    [CustomFeignClient(TestFeignExtensions.DefaultServiceId
 //, Fallback = typeof(TestControllerServiceFallback)
 //, Url = "http://localhost:62488/"
 , UriKind = UriKind.RelativeOrAbsolute

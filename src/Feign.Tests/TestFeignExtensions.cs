@@ -19,8 +19,10 @@ using System.Threading.Tasks;
 namespace Feign.Tests
 {
 
-    public static class FeignExtensions
+    public static class TestFeignExtensions
     {
+        //public const string DefaultServiceId = "yun-platform-service-provider";
+        public const string DefaultServiceId = "Yun-Platform-Service-Provider";
 
         public static IFeignBuilder AddTestFeignClients(this IFeignBuilder feignBuilder)
         {
@@ -97,7 +99,7 @@ namespace Feign.Tests
                 context.FeignClient.Service.ServiceId = context.FeignClient.ServiceId;
                 context.FeignClient.Service.ServiceType = context.FeignClient.ServiceType;
             });
-            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseInitializing(context =>
+            feignBuilder.Options.FeignClientPipeline.Service(TestFeignExtensions.DefaultServiceId).UseInitializing(context =>
             {
 
             });
@@ -120,7 +122,7 @@ namespace Feign.Tests
                 ITestService service = feignClient.Service;
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseBuildingRequest(context =>
+            feignBuilder.Options.FeignClientPipeline.Service(DefaultServiceId).UseBuildingRequest(context =>
             {
                 var fallbackFeignClient = context.FeignClient.AsFallback();
                 fallbackFeignClient = context.FeignClient.AsFallback<object>();
@@ -150,7 +152,7 @@ namespace Feign.Tests
             //#endif
             //            });
             feignBuilder.Options.FeignClientPipeline.UseSendingRequest(FeignClientPipeline_SendingRequest);
-            feignBuilder.Options.FeignClientPipeline.Service("yun-platform-service-provider").UseReceivingResponse(context =>
+            feignBuilder.Options.FeignClientPipeline.Service(DefaultServiceId).UseReceivingResponse(context =>
             {
                 return TaskEx.CompletedValueTask;
             });

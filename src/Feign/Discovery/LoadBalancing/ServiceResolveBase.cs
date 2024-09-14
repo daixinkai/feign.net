@@ -14,12 +14,12 @@ namespace Feign.Discovery.LoadBalancing
             _logger = logger;
         }
         private readonly ILogger? _logger;
-        public Uri ResolveService(Uri uri, IList<IServiceInstance>? services)
+        public Uri ResolveService(string serviceId, Uri uri, IList<IServiceInstance>? services)
         {
-            _logger?.LogTrace($"ResolveService: {uri.Host}");
+            _logger?.LogTrace($"ResolveService: {serviceId}");
             if (services == null || services.Count == 0)
             {
-                _logger?.LogWarning($"Attempted to resolve service for {uri.Host} but found 0 instances");
+                _logger?.LogWarning($"Attempted to resolve service for {serviceId} but found 0 instances");
                 return uri;
             }
 

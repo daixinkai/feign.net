@@ -67,13 +67,20 @@ namespace Feign.Discovery
                 return requestMessage.RequestUri;
             }
 
-            IList<IServiceInstance>? services = FeignClient.FeignOptions.DiscoverServiceCacheTime.HasValue ?
-            await _serviceDiscovery.GetServiceInstancesWithCacheAsync(requestMessage.RequestUri!.Host, _serviceCacheProvider, FeignClient.FeignOptions.DiscoverServiceCacheTime.Value).ConfigureAwait(false) : _serviceDiscovery.GetServiceInstances(requestMessage.RequestUri!.Host);
+            string serviceId = requestMessage.ServiceId ?? requestMessage.RequestUri!.Host;
+
+            var cacheTime = FeignClient.FeignOptions.DiscoverServiceCacheTime;
+            IList<IServiceInstance>? services = cacheTime.HasValue ?
+            await _serviceDiscovery.GetServiceInstancesWithCacheAsync(serviceId, _serviceCacheProvider, cacheTime.Value)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+            : _serviceDiscovery.GetServiceInstances(serviceId);
             if (services == null || services.Count == 0)
             {
                 ServiceResolveFail(requestMessage);
             }
-            return _serviceResolve.ResolveService(requestMessage.RequestUri, services);
+            return _serviceResolve.ResolveService(serviceId, requestMessage.RequestUri!, services);
         }
 
         private static void ServiceResolveFail(FeignHttpRequestMessage requestMessage)
