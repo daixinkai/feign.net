@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Middleware;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,17 +11,25 @@ namespace Feign.Pipeline.Internal
     {
         public virtual bool Enabled { get; set; } = true;
 
-        private readonly List<BuildingRequestDelegate<TService>> _buildingRequestMiddlewares = new();
-        private readonly List<CancelRequestDelegate<TService>> _cancelRequestMiddlewares = new();
-        private readonly List<DisposingDelegate<TService>> _disposingMiddlewares = new();
-        private readonly List<ErrorRequestDelegate<TService>> _errorRequestMiddlewares = new();
-        private readonly List<FallbackRequestDelegate<TService>> _fallbackRequestMiddlewares = new();
-        private readonly List<InitializingDelegate<TService>> _initializingMiddlewares = new();
-        private readonly List<ReceivingResponseDelegate<TService>> _receivingResponseMiddlewares = new();
-        private readonly List<ReceivedResponseDelegate<TService>> _receivedResponseMiddlewares = new();
-        private readonly List<SendingRequestDelegate<TService>> _sendingRequestMiddlewares = new();
+        private readonly List<IBuildingRequestMiddleware<TService>> _buildingRequestMiddlewares = new();
+        private readonly List<ICancelRequestMiddleware<TService>> _cancelRequestMiddlewares = new();
+        private readonly List<IDisposingMiddleware<TService>> _disposingMiddlewares = new();
+        private readonly List<IErrorRequestMiddleware<TService>> _errorRequestMiddlewares = new();
+        private readonly List<IFallbackRequestMiddleware<TService>> _fallbackRequestMiddlewares = new();
+        private readonly List<IInitializingMiddleware<TService>> _initializingMiddlewares = new();
+        private readonly List<IReceivingResponseMiddleware<TService>> _receivingResponseMiddlewares = new();
+        private readonly List<IReceivedResponseMiddleware<TService>> _receivedResponseMiddlewares = new();
+        private readonly List<ISendingRequestMiddleware<TService>> _sendingRequestMiddlewares = new();
 
         public IFeignClientPipeline<TService> UseBuildingRequest(BuildingRequestDelegate<TService> middleware)
+        {
+            if (middleware != null)
+            {
+                _buildingRequestMiddlewares.Add(new DefaultBuildingRequestMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseBuildingRequest(IBuildingRequestMiddleware<TService> middleware)
         {
             if (middleware != null)
             {
@@ -33,12 +42,28 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
+                _cancelRequestMiddlewares.Add(new DefaultCancelRequestMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseCancelRequest(ICancelRequestMiddleware<TService> middleware)
+        {
+            if (middleware != null)
+            {
                 _cancelRequestMiddlewares.Add(middleware);
             }
             return this;
         }
-
+  
         public IFeignClientPipeline<TService> UseDisposing(DisposingDelegate<TService> middleware)
+        {
+            if (middleware != null)
+            {
+                _disposingMiddlewares.Add(new DefaultDisposingMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseDisposing(IDisposingMiddleware<TService> middleware)
         {
             if (middleware != null)
             {
@@ -51,12 +76,28 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
+                _errorRequestMiddlewares.Add(new DefaultErrorRequestMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseErrorRequest(IErrorRequestMiddleware<TService> middleware)
+        {
+            if (middleware != null)
+            {
                 _errorRequestMiddlewares.Add(middleware);
             }
             return this;
         }
 
         public IFeignClientPipeline<TService> UseFallbackRequest(FallbackRequestDelegate<TService> middleware)
+        {
+            if (middleware != null)
+            {
+                _fallbackRequestMiddlewares.Add(new DefaultFallbackRequestMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseFallbackRequest(IFallbackRequestMiddleware<TService> middleware)
         {
             if (middleware != null)
             {
@@ -69,12 +110,28 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
+                _initializingMiddlewares.Add(new DefaultInitializingMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseInitializing(IInitializingMiddleware<TService> middleware)
+        {
+            if (middleware != null)
+            {
                 _initializingMiddlewares.Add(middleware);
             }
             return this;
         }
 
         public IFeignClientPipeline<TService> UseReceivingResponse(ReceivingResponseDelegate<TService> middleware)
+        {
+            if (middleware != null)
+            {
+                _receivingResponseMiddlewares.Add(new DefaultReceivingResponseMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseReceivingResponse(IReceivingResponseMiddleware<TService> middleware)
         {
             if (middleware != null)
             {
@@ -87,12 +144,28 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
+                _receivedResponseMiddlewares.Add(new DefaultReceivedResponseMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseReceivedResponse(IReceivedResponseMiddleware<TService> middleware)
+        {
+            if (middleware != null)
+            {
                 _receivedResponseMiddlewares.Add(middleware);
             }
             return this;
         }
 
         public IFeignClientPipeline<TService> UseSendingRequest(SendingRequestDelegate<TService> middleware)
+        {
+            if (middleware != null)
+            {
+                _sendingRequestMiddlewares.Add(new DefaultSendingRequestMiddleware<TService>(middleware));
+            }
+            return this;
+        }
+        public IFeignClientPipeline<TService> UseSendingRequest(ISendingRequestMiddleware<TService> middleware)
         {
             if (middleware != null)
             {
@@ -113,7 +186,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _buildingRequestMiddlewares)
             {
-                await middleware.Invoke(context)
+                await middleware.InvokeAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
@@ -132,7 +205,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _sendingRequestMiddlewares)
             {
-                await middleware.Invoke(context)
+                await middleware.InvokeAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
@@ -151,7 +224,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _cancelRequestMiddlewares)
             {
-                await middleware.Invoke(context)
+                await middleware.InvokeAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
@@ -170,7 +243,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _errorRequestMiddlewares)
             {
-                await middleware.Invoke(context)
+                await middleware.InvokeAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
@@ -189,7 +262,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _receivingResponseMiddlewares)
             {
-                await middleware.Invoke(context)
+                await middleware.InvokeAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
@@ -208,7 +281,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _receivedResponseMiddlewares)
             {
-                await middleware.Invoke(context)
+                await middleware.InvokeAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
@@ -257,7 +330,7 @@ namespace Feign.Pipeline.Internal
             }
             foreach (var middleware in _fallbackRequestMiddlewares)
             {
-                await middleware.Invoke(context)
+                await middleware.InvokeAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
