@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Middleware
 {
-    public interface IBuildingRequestMiddleware<T> : IFeignClientMiddleware
+    public interface IBuildingRequestMiddleware<T> : IFeignClientMiddleware<T>
     {
         ValueTask InvokeAsync(IBuildingRequestPipelineContext<T> context);
     }

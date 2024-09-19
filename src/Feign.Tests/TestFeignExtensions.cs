@@ -116,6 +116,7 @@ namespace Feign.Tests
             //#endif
             //            });
             feignBuilder.Options.FeignClientPipeline.UseBuildingRequest(FeignClientPipeline_BuildingRequest);
+            feignBuilder.Options.FeignClientPipeline.UseMiddleware(new TestFeignClientMiddleware<object>());
             feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseBuildingRequest(context =>
             {
                 IFeignClient<ITestService> feignClient = context.FeignClient;

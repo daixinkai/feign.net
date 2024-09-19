@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Middleware
 {
-    public interface ICancelRequestMiddleware<T> : IFeignClientMiddleware
+    public interface ICancelRequestMiddleware<T> : IFeignClientMiddleware<T>
     {
         ValueTask InvokeAsync(ICancelRequestPipelineContext<T> context);
     }

@@ -15,6 +15,23 @@ namespace Feign
     public interface IFeignClientPipeline<TService>
     {
         bool Enabled { get; set; }
+        /// <summary>
+        /// Use middleware
+        /// </summary>
+        /// <param name="middleware">
+        /// <para><see cref="IBuildingRequestMiddleware{TService}"/></para>
+        /// <para><see cref="IBuildingRequestMiddleware{TService}"/></para>
+        /// <para><see cref="ICancelRequestMiddleware{TService}"/></para>
+        /// <para><see cref="IDisposingMiddleware{TService}"/></para>
+        /// <para><see cref="IErrorRequestMiddleware{TService}"/></para>
+        /// <para><see cref="IFallbackRequestMiddleware{TService}"/></para>
+        /// <para><see cref="IInitializingMiddleware{TService}"/></para>
+        /// <para><see cref="IReceivedResponseMiddleware{TService}"/></para>
+        /// <para><see cref="IReceivingResponseMiddleware{TService}"/></para>
+        /// <para><see cref="ISendingRequestMiddleware{TService}"/></para>
+        /// </param>
+        /// <returns></returns>
+        IFeignClientPipeline<TService> UseMiddleware(IFeignClientMiddleware<TService> middleware);
         IFeignClientPipeline<TService> UseBuildingRequest(IBuildingRequestMiddleware<TService> middleware);
         IFeignClientPipeline<TService> UseBuildingRequest(BuildingRequestDelegate<TService> middleware);
         IFeignClientPipeline<TService> UseCancelRequest(ICancelRequestMiddleware<TService> middleware);

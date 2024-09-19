@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Middleware
 {
-    public interface IInitializingMiddleware<T> : IFeignClientMiddleware
+    public interface IInitializingMiddleware<T> : IFeignClientMiddleware<T>
     {
         void Invoke(IInitializingPipelineContext<T> context);
     }

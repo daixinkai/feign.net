@@ -21,6 +21,46 @@ namespace Feign.Pipeline.Internal
         private readonly List<IReceivedResponseMiddleware<TService>> _receivedResponseMiddlewares = new();
         private readonly List<ISendingRequestMiddleware<TService>> _sendingRequestMiddlewares = new();
 
+        public IFeignClientPipeline<TService> UseMiddleware(IFeignClientMiddleware<TService> middleware)
+        {
+            if (middleware is IBuildingRequestMiddleware<TService> buildingRequestMiddleware)
+            {
+                UseBuildingRequest(buildingRequestMiddleware);
+            }
+            if (middleware is ICancelRequestMiddleware<TService> cancelRequestMiddleware)
+            {
+                UseCancelRequest(cancelRequestMiddleware);
+            }
+            if (middleware is IDisposingMiddleware<TService> disposingMiddleware)
+            {
+                UseDisposing(disposingMiddleware);
+            }
+            if (middleware is IErrorRequestMiddleware<TService> errorRequestMiddleware)
+            {
+                UseErrorRequest(errorRequestMiddleware);
+            }
+            if (middleware is IFallbackRequestMiddleware<TService> fallbackRequestMiddleware)
+            {
+                UseFallbackRequest(fallbackRequestMiddleware);
+            }
+            if (middleware is IInitializingMiddleware<TService> initializingMiddleware)
+            {
+                UseInitializing(initializingMiddleware);
+            }
+            if (middleware is IReceivingResponseMiddleware<TService> receivingResponseMiddleware)
+            {
+                UseReceivingResponse(receivingResponseMiddleware);
+            }
+            if (middleware is IReceivedResponseMiddleware<TService> receivedResponseMiddleware)
+            {
+                UseReceivedResponse(receivedResponseMiddleware);
+            }
+            if (middleware is ISendingRequestMiddleware<TService> sendingRequestMiddleware)
+            {
+                UseSendingRequest(sendingRequestMiddleware);
+            }
+            return this;
+        }
         public IFeignClientPipeline<TService> UseBuildingRequest(BuildingRequestDelegate<TService> middleware)
         {
             if (middleware != null)
@@ -54,7 +94,7 @@ namespace Feign.Pipeline.Internal
             }
             return this;
         }
-  
+
         public IFeignClientPipeline<TService> UseDisposing(DisposingDelegate<TService> middleware)
         {
             if (middleware != null)
