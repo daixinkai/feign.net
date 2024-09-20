@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Middleware
 {
-    public class AuthenticationMiddleware<T> : IBuildingRequestMiddleware<T>
+    internal class AuthenticationMiddleware<T> : IBuildingRequestMiddleware<T>
     {
 
         enum ValueMode
@@ -39,7 +39,7 @@ namespace Feign.Middleware
         }
 #endif
 
-        private ValueMode _mode;
+        private readonly ValueMode _mode;
 
         public AuthenticationHeaderValue? AuthenticationHeaderValue { get; }
 
