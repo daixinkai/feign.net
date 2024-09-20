@@ -12,16 +12,4 @@ namespace Feign.Middleware
         ValueTask InvokeAsync(IBuildingRequestPipelineContext<T> context);
     }
 
-    public class DefaultBuildingRequestMiddleware<T> : IBuildingRequestMiddleware<T>
-    {
-        public DefaultBuildingRequestMiddleware(BuildingRequestDelegate<T> middleware)
-        {
-            _middleware = middleware;
-        }
-
-        private readonly BuildingRequestDelegate<T> _middleware;
-
-        public ValueTask InvokeAsync(IBuildingRequestPipelineContext<T> context) => _middleware.Invoke(context);
-    }
-
 }

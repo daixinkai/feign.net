@@ -11,16 +11,5 @@ namespace Feign.Middleware
     {
         ValueTask InvokeAsync(ISendingRequestPipelineContext<T> context);
     }
-    public class DefaultSendingRequestMiddleware<T> : ISendingRequestMiddleware<T>
-    {
-        public DefaultSendingRequestMiddleware(SendingRequestDelegate<T> middleware)
-        {
-            _middleware = middleware;
-        }
-
-        private readonly SendingRequestDelegate<T> _middleware;
-
-        public ValueTask InvokeAsync(ISendingRequestPipelineContext<T> context) => _middleware.Invoke(context);
-    }
 
 }

@@ -65,7 +65,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _buildingRequestMiddlewares.Add(new DefaultBuildingRequestMiddleware<TService>(middleware));
+                _buildingRequestMiddlewares.Add(new DelegateBuildingRequestMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -82,7 +82,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _cancelRequestMiddlewares.Add(new DefaultCancelRequestMiddleware<TService>(middleware));
+                _cancelRequestMiddlewares.Add(new DelegateCancelRequestMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -99,7 +99,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _disposingMiddlewares.Add(new DefaultDisposingMiddleware<TService>(middleware));
+                _disposingMiddlewares.Add(new DelegateDisposingMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -116,7 +116,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _errorRequestMiddlewares.Add(new DefaultErrorRequestMiddleware<TService>(middleware));
+                _errorRequestMiddlewares.Add(new DelegateErrorRequestMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -133,7 +133,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _fallbackRequestMiddlewares.Add(new DefaultFallbackRequestMiddleware<TService>(middleware));
+                _fallbackRequestMiddlewares.Add(new DelegateFallbackRequestMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -150,7 +150,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _initializingMiddlewares.Add(new DefaultInitializingMiddleware<TService>(middleware));
+                _initializingMiddlewares.Add(new DelegateInitializingMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -167,7 +167,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _receivingResponseMiddlewares.Add(new DefaultReceivingResponseMiddleware<TService>(middleware));
+                _receivingResponseMiddlewares.Add(new DelegateReceivingResponseMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -184,7 +184,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _receivedResponseMiddlewares.Add(new DefaultReceivedResponseMiddleware<TService>(middleware));
+                _receivedResponseMiddlewares.Add(new DelegateReceivedResponseMiddleware<TService>(middleware));
             }
             return this;
         }
@@ -201,7 +201,7 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _sendingRequestMiddlewares.Add(new DefaultSendingRequestMiddleware<TService>(middleware));
+                _sendingRequestMiddlewares.Add(new DelegateSendingRequestMiddleware<TService>(middleware));
             }
             return this;
         }

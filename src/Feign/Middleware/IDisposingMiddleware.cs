@@ -12,16 +12,4 @@ namespace Feign.Middleware
         void Invoke(IDisposingPipelineContext<T> context);
     }
 
-    public class DefaultDisposingMiddleware<T> : IDisposingMiddleware<T>
-    {
-        public DefaultDisposingMiddleware(DisposingDelegate<T> middleware)
-        {
-            _middleware = middleware;
-        }
-
-        private readonly DisposingDelegate<T> _middleware;
-
-        public void Invoke(IDisposingPipelineContext<T> context) => _middleware.Invoke(context);
-    }
-
 }

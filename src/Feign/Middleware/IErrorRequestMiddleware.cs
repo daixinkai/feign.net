@@ -11,15 +11,5 @@ namespace Feign.Middleware
     {
         ValueTask InvokeAsync(IErrorRequestPipelineContext<T> context);
     }
-    public class DefaultErrorRequestMiddleware<T> : IErrorRequestMiddleware<T>
-    {
-        public DefaultErrorRequestMiddleware(ErrorRequestDelegate<T> middleware)
-        {
-            _middleware = middleware;
-        }
 
-        private readonly ErrorRequestDelegate<T> _middleware;
-
-        public ValueTask InvokeAsync(IErrorRequestPipelineContext<T> context) => _middleware.Invoke(context);
-    }
 }

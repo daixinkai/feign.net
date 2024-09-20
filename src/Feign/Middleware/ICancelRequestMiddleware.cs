@@ -12,16 +12,4 @@ namespace Feign.Middleware
         ValueTask InvokeAsync(ICancelRequestPipelineContext<T> context);
     }
 
-    public class DefaultCancelRequestMiddleware<T> : ICancelRequestMiddleware<T>
-    {
-        public DefaultCancelRequestMiddleware(CancelRequestDelegate<T> middleware)
-        {
-            _middleware = middleware;
-        }
-
-        private readonly CancelRequestDelegate<T> _middleware;
-
-        public ValueTask InvokeAsync(ICancelRequestPipelineContext<T> context) => _middleware.Invoke(context);
-    }
-
 }

@@ -11,15 +11,5 @@ namespace Feign.Middleware
     {
         void Invoke(IInitializingPipelineContext<T> context);
     }
-    public class DefaultInitializingMiddleware<T> : IInitializingMiddleware<T>
-    {
-        public DefaultInitializingMiddleware(InitializingDelegate<T> middleware)
-        {
-            _middleware = middleware;
-        }
 
-        private readonly InitializingDelegate<T> _middleware;
-
-        public void Invoke(IInitializingPipelineContext<T> context) => _middleware.Invoke(context);
-    }
 }

@@ -72,6 +72,11 @@ feignBuilder.Options.FeignClientPipeline.UseReceivedResponse(context =>
 
 var app = builder.Build();
 
+feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
+{
+    context.FeignClient.SetFeature(app.Services);
+});
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

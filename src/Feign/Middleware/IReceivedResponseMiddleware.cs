@@ -11,15 +11,5 @@ namespace Feign.Middleware
     {
         ValueTask InvokeAsync(IReceivedResponsePipelineContext<T> context);
     }
-    public class DefaultReceivedResponseMiddleware<T> : IReceivedResponseMiddleware<T>
-    {
-        public DefaultReceivedResponseMiddleware(ReceivedResponseDelegate<T> middleware)
-        {
-            _middleware = middleware;
-        }
 
-        private readonly ReceivedResponseDelegate<T> _middleware;
-
-        public ValueTask InvokeAsync(IReceivedResponsePipelineContext<T> context) => _middleware.Invoke(context);
-    }
 }
