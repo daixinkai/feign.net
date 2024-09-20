@@ -59,19 +59,19 @@ namespace Feign.Middleware
             switch (_mode)
             {
                 case ValueMode.AuthenticationHeaderValue:
-                    context.Headers["Authorization"] = AuthenticationHeaderValue!.Scheme + " " + AuthenticationHeaderValue!.Parameter;
+                    SetAuthorization(context, AuthenticationHeaderValue!.Scheme, AuthenticationHeaderValue!.Parameter);
                     break;
                 case ValueMode.AuthenticationHeaderValueAction:
                     var authenticationHeaderValue = AuthenticationHeaderValueAction!.Invoke(context.FeignClient);
                     if (authenticationHeaderValue != null)
                     {
-                        context.Headers["Authorization"] = authenticationHeaderValue.Scheme + " " + authenticationHeaderValue.Parameter;
+                        SetAuthorization(context, authenticationHeaderValue.Scheme, authenticationHeaderValue.Parameter);
                     }
                     break;
 #if !NET45
                 case ValueMode.SchemeAndParameterFactory:
                     var schemeAndParameter = SchemeAndParameterFactory!.Invoke(context.FeignClient);
-                    context.Headers["Authorization"] = schemeAndParameter.Item1 + " " + schemeAndParameter.Item2;
+                    SetAuthorization(context, schemeAndParameter.Item1, schemeAndParameter.Item2);
                     break;
 #endif
                 default:
@@ -80,5 +80,11 @@ namespace Feign.Middleware
 
             return TaskEx.CompletedValueTask;
         }
+
+        private static void SetAuthorization(IBuildingRequestPipelineContext<T> context, string scheme, string? parameter)
+        {
+            context.Headers["Authorization"] = scheme + " " + parameter;
+        }
+
     }
 }
