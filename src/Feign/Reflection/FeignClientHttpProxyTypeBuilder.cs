@@ -172,6 +172,12 @@ namespace Feign.Reflection
 
             foreach (var method in serviceType.GetMethodsIncludingBaseInterfaces())
             {
+                if (!method.Attributes.HasFlag(MethodAttributes.Abstract))
+                {
+                    //is default interface method?
+                    //https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/proposals/csharp-8.0/default-interface-methods
+                    continue;
+                }
                 // build method
                 var buildMethod = methodBuilder.BuildMethod(typeBuilder, serviceType, method, feignClientAttribute);
                 feignClientTypeInfo.Methods.Add(buildMethod);

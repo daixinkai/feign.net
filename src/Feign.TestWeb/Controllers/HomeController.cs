@@ -25,11 +25,13 @@ namespace Feign.TestWeb.Controllers
                     }
                 };
             }
-            
+
 
             var noBaseUrlTestService = HttpContext.RequestServices.GetRequiredService<INoBaseUrlTestService>();
 
             var responseMessage = await testControllerService.GetHttpResponseMessage();
+
+            //responseMessage = await testControllerService.GetDefaultHttpResponseMessage();
 
             string? ss = responseMessage.RequestMessage?.RequestUri?.ToString();
 

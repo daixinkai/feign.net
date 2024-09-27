@@ -37,5 +37,9 @@ namespace Feign.Tests
         [GetMapping("/httpResponseMessage")]
         Task<HttpResponseMessage> GetHttpResponseMessage();
 
+#if NET6_0_OR_GREATER
+        Task<HttpResponseMessage> GetDefaultHttpResponseMessage() => throw new Exception("GetDefaultHttpResponseMessage");
+#endif
+
     }
 }
