@@ -738,6 +738,14 @@ namespace Feign.Reflection
                     //replaceValueMethod = ReplacePathVariableMethod;
                     replaceValueMethod = GetReplacePathVariableMethod(typeBuilder, parameterInfo.ParameterType);
                 }
+                //else if (parameterInfo.GetCustomAttributes().Any(static s => typeof(IRequestParameterEncoder).IsAssignableFrom(s.GetType())))
+                //{
+                //    var parameterEncoders = parameterInfo.GetCustomAttributes().Where(static s => typeof(IRequestParameterEncoder).IsAssignableFrom(s.GetType())).ToList();
+                //    if (parameterEncoders.Count > 1)
+                //    {
+                //        throw new ArgumentException("Multiple IRequestParameterEncoder in " + method.ToString());
+                //    }
+                //}
                 else
                 {
                     name = parameterInfo.Name;

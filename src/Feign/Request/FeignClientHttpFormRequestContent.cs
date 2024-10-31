@@ -55,7 +55,7 @@ namespace Feign.Request
             IList<KeyValuePair<string, string?>> nameValueCollection =
                 Content is IHttpRequestForm httpRequestForm ?
                 (httpRequestForm.GetRequestForm()?.ToList() ?? ArrayEx.EmptyList<KeyValuePair<string, string?>>()) :
-                FeignClientUtils.GetObjectStringParameters(Name, Content, options.Converters, options.PropertyNamingPolicy).ToList();
+                FeignClientUtils.GetObjectStringParameters(Name, Content, options).ToList();
             FormUrlEncodedContent formUrlEncodedContent = new FormUrlEncodedContent(nameValueCollection);
             return formUrlEncodedContent;
         }

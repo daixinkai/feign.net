@@ -65,26 +65,26 @@ namespace Feign.Internal
                 return uri + $"?{name}={value}";
             }
         }
-        public static string ReplaceRequestQuery<T>(ConverterCollection converters, NamingPolicy namingPolicy, string uri, string name, T value, bool urlEncode)
+        public static string ReplaceRequestQuery<T>(string uri, string name, T value, IFeignOptions options)
         {
             var typeCode = Type.GetTypeCode(typeof(T));
             if (typeCode == TypeCode.Object)
             {
-                foreach (var item in GetObjectStringParameters(name, value, converters, namingPolicy))
+                foreach (var item in GetObjectStringParameters(name, value, options))
                 {
-                    uri = ReplaceRequestQuery(uri, item.Key, item.Value, urlEncode);
+                    uri = ReplaceRequestQuery(uri, item.Key, item.Value, options.UseUrlEncode);
                 }
                 return uri;
             }
             else
             {
-                return ReplaceRequestQuery(uri, name, converters.ConvertValue<T, string>(value, true), urlEncode);
+                return ReplaceRequestQuery(uri, name, options.Converters.ConvertValue<T, string>(value, true), options.UseUrlEncode);
             }
         }
         #endregion
 
 
-        public static IEnumerable<KeyValuePair<string, string?>> GetObjectStringParameters<T>(string name, T value, ConverterCollection converters, NamingPolicy namingPolicy)
+        public static IEnumerable<KeyValuePair<string, string?>> GetObjectStringParameters<T>(string name, T value, IFeignOptions options)
         {
             if (value == null)
             {
@@ -93,7 +93,7 @@ namespace Feign.Internal
             //Nullable<>
             if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                yield return new KeyValuePair<string, string?>(name, converters.ConvertValue<T, string>(value, true));
+                yield return new KeyValuePair<string, string?>(name, options.Converters.ConvertValue<T, string>(value, true));
                 yield break;
             }
 
@@ -127,7 +127,7 @@ namespace Feign.Internal
 
             // get properties
 
-            foreach (var item in new ObjectQueryMap<T>(name, value, namingPolicy, converters).GetStringParameters())
+            foreach (var item in new ObjectQueryMap<T>(name, value, options.PropertyNamingPolicy, options.Converters).GetStringParameters())
             {
                 yield return item;
             }

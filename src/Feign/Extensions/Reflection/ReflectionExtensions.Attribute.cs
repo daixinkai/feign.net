@@ -73,8 +73,15 @@ namespace Feign
             var datas = CustomAttributeData.GetCustomAttributes(parameter);
             foreach (var data in datas)
             {
-                CustomAttributeBuilder customAttributeBuilder = new CustomAttributeBuilder(data.Constructor, data.ConstructorArguments.Select(static s => s.Value).ToArray());
-                parameterBuilder.SetCustomAttribute(customAttributeBuilder);
+                try
+                {
+                    //Unable to cast object of type 'System.Collections.ObjectModel.ReadOnlyCollection`1[System.Reflection.CustomAttributeTypedArgument]' to type 'System.Array'.
+                    CustomAttributeBuilder customAttributeBuilder = new CustomAttributeBuilder(data.Constructor, data.ConstructorArguments.Select(static s => s.Value).ToArray());
+                    parameterBuilder.SetCustomAttribute(customAttributeBuilder);
+                }
+                catch
+                {
+                }
             }
         }
 

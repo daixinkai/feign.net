@@ -18,7 +18,7 @@ namespace Feign.Internal
         {
             public DictionaryParameters(
                 string? prefix,
-                string name,
+                string? name,
                 IDictionary dictionary,
                 NamingPolicy namingPolicy,
                 ConverterCollection converters)
@@ -31,7 +31,7 @@ namespace Feign.Internal
             }
 
             private readonly string? _prefix;
-            private readonly string _name;
+            private readonly string? _name;
             private readonly IDictionary _dictionary;
             private readonly NamingPolicy _namingPolicy;
             private readonly ConverterCollection _converters;
@@ -39,7 +39,7 @@ namespace Feign.Internal
 
             public IEnumerable<KeyValuePair<string, string?>> GetStringParameters()
             {
-                string prefix = GetName(_prefix, _name, _namingPolicy) + ".";
+                string prefix = GetPrefix(_prefix, _name, _namingPolicy);
                 foreach (var key in _dictionary.Keys)
                 {
                     var dictionaryValue = _dictionary[key!];
@@ -132,7 +132,7 @@ namespace Feign.Internal
         {
             public ObjectParameters(
                 string? prefix,
-                string name,
+                string? name,
                 object value,
                 NamingPolicy namingPolicy,
                 ConverterCollection converters)
@@ -145,7 +145,7 @@ namespace Feign.Internal
             }
 
             private readonly string? _prefix;
-            private readonly string _name;
+            private readonly string? _name;
             private readonly object _value;
             private readonly NamingPolicy _namingPolicy;
             private readonly ConverterCollection _converters;
@@ -274,7 +274,7 @@ namespace Feign.Internal
                     case TypeCode.Empty:
                         yield break;
                     case TypeCode.Object:
-                        foreach (var item in new ObjectParameters(GetName(_prefix, _name, simpleNamingPolicy) + ".", _name, _value, _namingPolicy, _converters).GetStringParameters())
+                        foreach (var item in new ObjectParameters(GetPrefix(_prefix, _name, simpleNamingPolicy), _name, _value, _namingPolicy, _converters).GetStringParameters())
                         {
                             yield return item;
                         }
@@ -327,7 +327,7 @@ namespace Feign.Internal
             //if (typeof(IDictionary).IsAssignableFrom(type))
             if (Value is IDictionary dictionary)
             {
-                return new DictionaryParameters(null, Name, dictionary, NamingPolicy, Converters).GetStringParameters();
+                return new DictionaryParameters(null, null, dictionary, NamingPolicy, Converters).GetStringParameters();
             }
             //if (typeof(IEnumerable).IsAssignableFrom(type))
             if (Value is IEnumerable enumerable)
@@ -335,7 +335,7 @@ namespace Feign.Internal
                 return new EnumerableParameters(null, Name, enumerable, NamingPolicy, Converters).GetStringParameters();
             }
 
-            return new UnknownParameters(null, Name, Value!, NamingPolicy, Converters, true).GetStringParameters();
+            return new UnknownParameters(null, "", Value!, NamingPolicy, Converters, true).GetStringParameters();
 
         }
 
@@ -360,13 +360,23 @@ namespace Feign.Internal
         private static KeyValuePair<string, string?> CreateParameter(string? prefix, string name, string? value, NamingPolicy namingPolicy)
             => new KeyValuePair<string, string?>(GetName(prefix, name, namingPolicy), value);
 
-        private static string GetName(string? prefix, string name, NamingPolicy namingPolicy)
+        private static string GetName(string? prefix, string? name, NamingPolicy namingPolicy)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return "";
+            }
             if (prefix == null)
             {
                 return namingPolicy.ConvertName(name);
             }
             return prefix + namingPolicy.ConvertName(name);
+        }
+
+        private static string GetPrefix(string? prefix, string? name, NamingPolicy namingPolicy)
+        {
+            string value = GetName(prefix, name, namingPolicy);
+            return string.IsNullOrWhiteSpace(value) ? "" : value + ".";
         }
 
     }

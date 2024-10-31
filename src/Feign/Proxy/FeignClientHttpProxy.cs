@@ -223,7 +223,7 @@ namespace Feign.Proxy
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplaceRequestQuery(FeignOptions.Converters, FeignOptions.PropertyNamingPolicy, uri, name, value, FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, FeignOptions);
         }
         protected string ReplaceStringRequestQuery(string uri, string name, string value)
         {

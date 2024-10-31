@@ -58,7 +58,10 @@ namespace Feign.TestWeb.Controllers
 
             //var t = await testControllerService.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });       
 
-            var tt = testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 }, new TestServiceParam
+            var tt = testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 }, new Dictionary<string, object>
+            {
+                ["mapTest"] = 1
+            }, new TestServiceParam
             {
                 Age = 1,
                 Name = "root",

@@ -32,7 +32,7 @@ namespace Feign.TestWeb.Controllers
 
             for (int i = 0; i < 1000; i++)
             {
-                var t = await testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 });
+                var t = await testServiceClient.GetQueryResultValueAsync("1", new int[] { 1, 2, 3 }, null);
             }
 
             stopwatch.Stop();

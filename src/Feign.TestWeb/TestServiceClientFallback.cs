@@ -18,7 +18,7 @@ namespace Feign.TestWeb
         {
             throw new NotImplementedException();
         }
-        public ValueTask<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([RequestQuery] string id, [RequestQuery] int[] values, TestServiceParam? param = null)
+        public ValueTask<IQueryResult<TestServiceParam>> GetQueryResultValueAsync([RequestQuery] string id, [RequestQuery] int[] values, Dictionary<string, object>? map = null, TestServiceParam? param = null)
         {
             string text = "";
             text = base.ReplaceStringPathVariable(text, "id", id);
