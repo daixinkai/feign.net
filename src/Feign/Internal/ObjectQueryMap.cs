@@ -327,6 +327,8 @@ namespace Feign.Internal
             //if (typeof(IDictionary).IsAssignableFrom(type))
             if (Value is IDictionary dictionary)
             {
+                //remove root param name
+                //return new DictionaryParameters(null, Name, dictionary, NamingPolicy, Converters).GetStringParameters();
                 return new DictionaryParameters(null, null, dictionary, NamingPolicy, Converters).GetStringParameters();
             }
             //if (typeof(IEnumerable).IsAssignableFrom(type))
@@ -334,9 +336,9 @@ namespace Feign.Internal
             {
                 return new EnumerableParameters(null, Name, enumerable, NamingPolicy, Converters).GetStringParameters();
             }
-
+            //remove root param name
+            //return new UnknownParameters(null, Name, Value!, NamingPolicy, Converters, true).GetStringParameters();
             return new UnknownParameters(null, "", Value!, NamingPolicy, Converters, true).GetStringParameters();
-
         }
 
         private static IEnumerable<KeyValuePair<string, string?>>? GetKnownParameters(string? prefix, string name, object value, NamingPolicy namingPolicy, ConverterCollection converters)
