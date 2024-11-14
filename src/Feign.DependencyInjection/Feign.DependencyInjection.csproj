@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1;net6.0;net7.0;net8.0;</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1;net6.0;net7.0;net8.0;net9.0;</TargetFrameworks>
 		<PackageId>Feign.DependencyInjection</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<LangVersion>10.0</LangVersion>
@@ -47,6 +47,12 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
