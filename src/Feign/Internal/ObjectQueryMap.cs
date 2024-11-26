@@ -264,7 +264,6 @@ namespace Feign.Internal
             private readonly ConverterCollection _converters;
             private readonly bool _useSimpleNamingPolicy;
 
-
             public IEnumerable<KeyValuePair<string, string?>> GetStringParameters()
             {
                 var simpleNamingPolicy = _useSimpleNamingPolicy ? _namingPolicy : NamingPolicy.Default;
@@ -274,9 +273,17 @@ namespace Feign.Internal
                     case TypeCode.Empty:
                         yield break;
                     case TypeCode.Object:
-                        foreach (var item in new ObjectParameters(GetPrefix(_prefix, _name, simpleNamingPolicy), _name, _value, _namingPolicy, _converters).GetStringParameters())
+                        var specialValue = GetSpecialObjectValue(type, _value);
+                        if (specialValue != null)
                         {
-                            yield return item;
+                            yield return new KeyValuePair<string, string?>(GetPrefix(_prefix, _name, simpleNamingPolicy), specialValue);
+                        }
+                        else
+                        {
+                            foreach (var item in new ObjectParameters(GetPrefix(_prefix, _name, simpleNamingPolicy), _name, _value, _namingPolicy, _converters).GetStringParameters())
+                            {
+                                yield return item;
+                            }
                         }
                         break;
                     case TypeCode.String:
@@ -301,6 +308,11 @@ namespace Feign.Internal
                         yield return CreateParameter(_prefix, _name, _converters.ConvertValue<string>(_value, true), simpleNamingPolicy);
                         break;
                 }
+            }
+
+            private string? GetSpecialObjectValue(Type type, object value)
+            {
+                return _converters.ConvertValue<string>(value, false);
             }
 
         }

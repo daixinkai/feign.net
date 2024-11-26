@@ -66,6 +66,11 @@ namespace Feign.TestWeb.Controllers
                 Age = 1,
                 Name = "root",
                 Ids = ["1", "2"],
+                DateTimeRange = new DateTimeOffsetRange
+                {
+                    StartTime = DateTimeOffset.Now,
+                    EndTime = DateTimeOffset.Now
+                },
                 Properties = new Dictionary<string, string>
                 {
                     { "key1","value1"},

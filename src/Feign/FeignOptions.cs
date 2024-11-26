@@ -45,6 +45,8 @@ namespace Feign
             Converters.AddConverter(new StructToStringConverter<uint>(), false);
             Converters.AddConverter(new StructToStringConverter<ulong>(), false);
             Converters.AddConverter(new StructToStringConverter<ushort>(), false);
+            Converters.AddConverter(new DateTimeToStringConverter(), false);
+            Converters.AddConverter(new DateTimeOffsetToStringConverter(), false);
             Converters.AddConverter(new ObjectStringConverter());
         }
 

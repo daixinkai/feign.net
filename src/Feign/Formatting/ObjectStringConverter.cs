@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Feign.Formatting
@@ -40,6 +41,18 @@ namespace Feign.Formatting
     internal class StringToStringConverter : IConverter<string, string>
     {
         public string? Convert(string? value) => value;
+    }
+
+    internal class DateTimeToStringConverter : IConverter<DateTime, string>
+    {
+        public string? Convert(DateTime value)
+            => value.ToString();
+    }
+
+    internal class DateTimeOffsetToStringConverter : IConverter<DateTimeOffset, string>
+    {
+        public string? Convert(DateTimeOffset value)
+            => value.ToString("yyyy-MM-ddTHH:mm:ssK", DateTimeFormatInfo.InvariantInfo);
     }
 
 }

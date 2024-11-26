@@ -8,6 +8,8 @@ namespace Feign.Tests
     public abstract class TestServiceParamBase
     {
         public abstract string ServiceId { get; }
+
+        public DateTimeOffsetRange? DateTimeRange { get; set; }
     }
     public class TestServiceParam : TestServiceParamBase
     {
