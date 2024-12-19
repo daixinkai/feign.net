@@ -39,6 +39,62 @@ namespace Feign.Reflection
                     Type = type
                 };
         }
+
+        public static Type BuildType(ModuleBuilder moduleBuilder, string guid, Type configurationType)
+        {
+            var parentType = typeof(FeignClientHttpProxyOptions);
+            //创建类型
+            TypeAttributes typeAttributes = TypeAttributes.Public |
+                     TypeAttributes.Class |
+                     TypeAttributes.AutoClass |
+                     TypeAttributes.AnsiClass |
+                     TypeAttributes.BeforeFieldInit |
+                     TypeAttributes.AutoLayout;
+            string typeName = configurationType.Name;
+            typeName += "_" + guid;
+            typeName = configurationType.Namespace + ".ProxyOptions." + typeName;
+            TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, Type.EmptyTypes);
+
+            var configurationProperty = parentType.GetProperty("Configuration");
+            var serviceConfigurationProperty = parentType.GetProperty("ServiceConfiguration");
+
+            ConstructorInfo baseConstructorInfo = parentType.GetFirstConstructor();
+
+            var constructorParameters = baseConstructorInfo.GetParameters().Select(ConstructorParameter.Create).ToList();
+
+            constructorParameters.Add(ConstructorParameter.Create(null, "configuration", configurationProperty, configurationType));
+
+            ConstructorBuilder constructorBuilder = typeBuilder.DefineConstructor(
+               MethodAttributes.Public,
+               CallingConventions.Standard,
+               constructorParameters.Distinct().Select(static s => s.Type).ToArray());
+
+            int index = 0;
+            foreach (var key in constructorParameters.Distinct())
+            {
+                index++;
+                constructorBuilder.DefineParameter(index, ParameterAttributes.None, key.Name);
+            }
+
+            ILGenerator constructorIlGenerator = constructorBuilder.GetILGenerator();
+            constructorIlGenerator.CallBaseTypeConstructor(baseConstructorInfo);
+
+            index = 0;
+            foreach (var constructorParameter in constructorParameters)
+            {
+                index++;
+                if (constructorParameter.Property == null)
+                {
+                    continue;
+                }
+                constructorIlGenerator.Emit(OpCodes.Ldarg_0);
+                constructorIlGenerator.EmitLdargS(constructorParameter.Index ?? index);
+                constructorIlGenerator.EmitSetProperty(constructorParameter.Property);
+            }
+            constructorIlGenerator.Emit(OpCodes.Ret);
+            return typeBuilder.CreateTypeInfo()!.AsType();
+        }
+
         public static Type BuildType(ModuleBuilder moduleBuilder, string guid, Type serviceType, Type? configurationType, Type? serviceConfigurationType)
         {
             var parentType = typeof(FeignClientHttpProxyOptions<>).MakeGenericType(serviceType);

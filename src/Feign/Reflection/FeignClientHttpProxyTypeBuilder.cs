@@ -37,6 +37,8 @@ namespace Feign.Reflection
         private readonly FallbackFeignClientHttpProxyEmitMethodBuilder _fallbackMethodBuilder;
         private readonly DynamicAssembly _dynamicAssembly;
 
+        private readonly Dictionary<Type, Type> _configurationTypeMap = new();
+
         public FeignClientTypeInfo? Build(Type serviceType)
         {
             // Check whether the proxy type can be generated
@@ -221,7 +223,24 @@ namespace Feign.Reflection
             {
                 configurationType = feignClientAttribute.Configuration;
             }
-            return FeignClientHttpProxyOptionsBuilder.BuildType(_dynamicAssembly.ModuleBuilder, _guid, serviceType, configurationType, serviceConfigurationType);
+
+            if (serviceConfigurationType != null)
+            {
+                return FeignClientHttpProxyOptionsBuilder.BuildType(_dynamicAssembly.ModuleBuilder, _guid, serviceType, configurationType, serviceConfigurationType);
+            }
+
+            if (configurationType == null)
+            {
+                return null;
+            }
+
+            if (!_configurationTypeMap.TryGetValue(feignClientAttribute.Configuration, out var optionsType))
+            {
+                optionsType = FeignClientHttpProxyOptionsBuilder.BuildType(_dynamicAssembly.ModuleBuilder, _guid, feignClientAttribute.Configuration);
+                _configurationTypeMap[feignClientAttribute.Configuration] = optionsType;
+            }
+            return optionsType;
+
         }
 
         /// <summary>

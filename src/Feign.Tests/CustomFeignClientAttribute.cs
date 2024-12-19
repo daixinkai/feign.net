@@ -15,6 +15,7 @@ namespace Feign.Tests
             {
                 method = (MethodInfo)MethodBase.GetCurrentMethod();
             }
+            Configuration = typeof(TestConfiguration);
         }
         bool Flag { get; }
     }

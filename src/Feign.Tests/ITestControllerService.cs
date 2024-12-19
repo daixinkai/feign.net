@@ -11,7 +11,6 @@ namespace Feign.Tests
 //, Fallback = typeof(TestControllerServiceFallback)
 //, Url = "http://localhost:62488/"
 , UriKind = UriKind.RelativeOrAbsolute
-, Configuration = typeof(TestConfiguration)
 )]
     [RequestMapping("/api/test")]
     [Headers("Cache-Control:max-age=0", "Accept-Encoding: gzip, deflate, br", "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8")]
