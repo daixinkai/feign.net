@@ -7,6 +7,7 @@ using System.Text;
 #if NET45
 using DictionaryKey = System.Tuple<System.Type, System.Type>;
 using ConvertDictionaryKey = System.Tuple<System.Type, System.Type, System.Type, System.Type>;
+using ValueTuple=System.Tuple;
 #else
 using DictionaryKey = System.ValueTuple<System.Type, System.Type>;
 using ConvertDictionaryKey = System.ValueTuple<System.Type, System.Type, System.Type, System.Type>;
@@ -17,7 +18,7 @@ namespace Feign.Formatting
     /// <summary>
     /// Converter collection
     /// </summary>
-    public sealed class ConverterCollection : IEnumerable<IConverter>
+    public sealed partial class ConverterCollection : IEnumerable<IConverter>
     {
 
         private readonly System.Collections.Concurrent.ConcurrentDictionary<DictionaryKey, IConverter> _map = new();
@@ -29,38 +30,49 @@ namespace Feign.Formatting
         private void SyncFrozenMap() => _frozenMap = _map.ToFrozenDictionary();
 #endif
 
-        public IEnumerator<IConverter> GetEnumerator()
-        {
-            return _map.Values.GetEnumerator();
-        }
+        IEnumerator<IConverter> IEnumerable<IConverter>.GetEnumerator()
+            => _map.Values.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
+            => _map.Values.GetEnumerator();
+
+        /// <summary>
+        /// Add a converter
+        /// </summary>
+        /// <param name="converter"></param>
+        public void AddConverter(IConverter converter)
+            => AddConverter(converter, true);
+
+        /// <summary>
+        /// Add a converter
+        /// </summary>
+        /// <param name="converter"></param>
+        /// <param name="completed"></param>
+        internal void AddConverter(IConverter converter, bool completed)
         {
-            return GetEnumerator();
+
+            foreach (var type in converter.GetType().GetInterfaces())
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IConverter<,>))
+                {
+                    var key = ValueTuple.Create(type.GenericTypeArguments[0], type.GenericTypeArguments[1]);
+                    AddConverter(converter, key, completed);
+                }
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IStringConverter<>))
+                {
+                    AddStringConverter((IStringConverter)converter, type.GenericTypeArguments[0], completed);
+                }
+            }
         }
 
         /// <summary>
         /// Add a converter
         /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
         /// <param name="converter"></param>
-        public void AddConverter<TSource, TResult>(IConverter<TSource, TResult> converter)
-            => AddConverter(converter, true);
-        /// <summary>
-        /// Add a converter
-        /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="converter"></param>
+        /// <param name="key"></param>
         /// <param name="completed"></param>
-        internal void AddConverter<TSource, TResult>(IConverter<TSource, TResult> converter, bool completed)
+        private void AddConverter(IConverter converter, DictionaryKey key, bool completed)
         {
-#if NET45
-            var key = Tuple.Create(typeof(TSource), typeof(TResult));
-#else
-            var key = (typeof(TSource), typeof(TResult));
-#endif
             if (_map.ContainsKey(key))
             {
                 _map[key] = converter;
@@ -88,6 +100,7 @@ namespace Feign.Formatting
             IConverter? converter = FindConverter(typeof(TSource), typeof(TResult));
             return converter == null ? null : (IConverter<TSource, TResult>)converter;
         }
+
         /// <summary>
         /// Find a converter for a specified type
         /// </summary>
@@ -109,7 +122,7 @@ namespace Feign.Formatting
             return converter;
         }
 
-        internal bool TryConvertValue<TResult>(object? value, out TResult? result)
+        private bool TryConvertValue<TSource, TResult>(TSource? value, out TResult? result)
         {
             result = default;
             if (value == null)
@@ -121,50 +134,8 @@ namespace Feign.Formatting
             {
                 return false;
             }
-            result = InvokeConvert<TResult>(converter, value);
+            result = InvokeConvert<TSource, TResult>(converter, value);
             return true;
-        }
-
-        internal TResult? ConvertValue<TResult>(object? value, bool useDefault)
-        {
-            if (TryConvertValue<TResult>(value, out var result))
-            {
-                return result;
-            }
-            if (useDefault)
-            {
-                return ConvertDefaultValue<TResult>(value);
-            }
-            return default;
-        }
-
-        internal bool TryConvertValue<TSource, TResult>(TSource? value, out TResult? result)
-        {
-            result = default;
-            if (value == null)
-            {
-                return false;
-            }
-            var converter = FindConverter<TSource, TResult>();
-            if (converter == null)
-            {
-                return false;
-            }
-            result = InvokeConvert<TResult>(converter, value);
-            return true;
-        }
-
-        internal TResult? ConvertValue<TSource, TResult>(TSource value, bool useDefault)
-        {
-            if (TryConvertValue<TSource, TResult>(value, out var result))
-            {
-                return result;
-            }
-            if (useDefault)
-            {
-                return ConvertDefaultValue<TResult>(value);
-            }
-            return default;
         }
 
         /// <summary>
@@ -173,7 +144,7 @@ namespace Feign.Formatting
         /// <typeparam name="TResult"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal TResult? ConvertDefaultValue<TResult>(object? value)
+        private TResult? ConvertDefaultValue<TResult>(object? value)
         {
             var converter = FindConverter<object, TResult>();
             if (converter == null)
@@ -183,14 +154,10 @@ namespace Feign.Formatting
             return converter.Convert(value);
         }
 
-        private TResult? InvokeConvert<TResult>(IConverter converter, object value)
+        private TResult? InvokeConvert<TSource, TResult>(IConverter converter, TSource value)
         {
-#if NET45
-            var key = Tuple.Create(converter.GetType(), typeof(object), typeof(TResult), value.GetType());
-#else
-            var key = (converter.GetType(), typeof(object), typeof(TResult), value.GetType());
-#endif
-            var func = _convertMap.GetOrAdd(key, CreateConvertDelegate) as Func<IConverter, object, TResult?>;
+            var key = ValueTuple.Create(converter.GetType(), typeof(TSource), typeof(TResult), value!.GetType());
+            var func = _convertMap.GetOrAdd(key, CreateConvertDelegate) as Func<IConverter, TSource, TResult?>;
             var result = func!.Invoke(converter, value);
             return result;
         }
@@ -204,7 +171,7 @@ namespace Feign.Formatting
             var instance = Expression.Parameter(typeof(IConverter));
             var source = Expression.Parameter(sourceType);
             var methodParameter = source.Type == valueType ? (Expression)source : Expression.Convert(source, valueType);
-            var method = convertType.GetRequiredMethod("Convert");
+            var method = typeof(IConverter<,>).MakeGenericType(valueType, resultType).GetRequiredMethod("Convert");
             var body = Expression.Call(Expression.Convert(instance, convertType), method, methodParameter);
             var delegateType = typeof(Func<,,>).MakeGenericType(new[] { typeof(IConverter), sourceType, resultType });
             return Expression.Lambda(delegateType, body, instance, source).Compile();

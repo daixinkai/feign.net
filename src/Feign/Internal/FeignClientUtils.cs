@@ -37,7 +37,7 @@ namespace Feign.Internal
 
         public static string ReplacePathVariable<T>(ConverterCollection converters, string uri, string name, T value, bool urlEncode)
         {
-            return ReplacePathVariable(uri, name, converters.ConvertValue<T, string>(value, true), urlEncode);
+            return ReplacePathVariable(uri, name, converters.ConvertStringValue(value, true), urlEncode);
         }
         #endregion
 
@@ -79,7 +79,7 @@ namespace Feign.Internal
             }
             else
             {
-                return ReplaceRequestQuery(uri, name, options.Converters.ConvertValue<T, string>(value, true), urlEncode);
+                return ReplaceRequestQuery(uri, name, options.Converters.ConvertStringValue(value, true), urlEncode);
             }
         }
         #endregion
@@ -94,7 +94,7 @@ namespace Feign.Internal
             //Nullable<>
             if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                yield return new KeyValuePair<string, string?>(name, options.Converters.ConvertValue<T, string>(value, true));
+                yield return new KeyValuePair<string, string?>(name, options.Converters.ConvertStringValue(value, true));
                 yield break;
             }
 

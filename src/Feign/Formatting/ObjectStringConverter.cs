@@ -8,7 +8,7 @@ namespace Feign.Formatting
     /// <summary>
     /// default convert object to string
     /// </summary>
-    public sealed class ObjectStringConverter : IConverter<object, string>
+    public sealed class ObjectStringConverter : IConverter<object, string>, IStringConverter<object>
     {
         public string? Convert(object? value)
         {
@@ -16,7 +16,7 @@ namespace Feign.Formatting
         }
     }
 
-    internal class ClassToStringConverter<T> : IConverter<T, string> where T : class
+    internal class ClassToStringConverter<T> : IConverter<T, string>, IStringConverter<T> where T : class
     {
         public string? Convert(T? value)
         {
@@ -24,7 +24,7 @@ namespace Feign.Formatting
         }
     }
 
-    internal class StructToStringConverter<T> : IConverter<T, string> where T : struct
+    internal class StructToStringConverter<T> : IConverter<T, string>, IStringConverter<T> where T : struct
     {
         public string? Convert(T value)
         {
@@ -32,24 +32,24 @@ namespace Feign.Formatting
         }
     }
 
-    internal class BooleanToStringConverter : IConverter<bool, string>
+    internal class BooleanToStringConverter : IConverter<bool, string>, IStringConverter<bool>
     {
         public string? Convert(bool value)
             => value ? "true" : "false";
     }
 
-    internal class StringToStringConverter : IConverter<string, string>
+    internal class StringToStringConverter : IConverter<string, string>, IStringConverter<string>
     {
         public string? Convert(string? value) => value;
     }
 
-    internal class DateTimeToStringConverter : IConverter<DateTime, string>
+    internal class DateTimeToStringConverter : IConverter<DateTime, string>, IStringConverter<DateTime>
     {
         public string? Convert(DateTime value)
             => value.ToString();
     }
 
-    internal class DateTimeOffsetToStringConverter : IConverter<DateTimeOffset, string>
+    internal class DateTimeOffsetToStringConverter : IConverter<DateTimeOffset, string>, IStringConverter<DateTimeOffset>
     {
         public string? Convert(DateTimeOffset value)
             => value.ToString("yyyy-MM-ddTHH:mm:ssK", DateTimeFormatInfo.InvariantInfo);

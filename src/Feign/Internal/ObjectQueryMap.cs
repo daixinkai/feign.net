@@ -65,7 +65,7 @@ namespace Feign.Internal
                         continue;
                     }
 
-                    if (_converters.TryConvertValue<string>(dictionaryValue, out var result))
+                    if (_converters.TryConvertStringValue(dictionaryValue, out var result))
                     {
                         yield return CreateParameter(prefix, keyName, result, NamingPolicy.Default);
                         continue;
@@ -112,7 +112,7 @@ namespace Feign.Internal
                     {
                         continue;
                     }
-                    if (_converters.TryConvertValue<string>(item, out var result))
+                    if (_converters.TryConvertStringValue(item, out var result))
                     {
                         yield return CreateParameter(_prefix, _name, result, _namingPolicy);
                     }
@@ -223,7 +223,7 @@ namespace Feign.Internal
                         continue;
                     }
 
-                    if (_converters.TryConvertValue<string>(propertyValue, out var result))
+                    if (_converters.TryConvertStringValue(propertyValue, out var result))
                     {
                         yield return CreateParameter(_prefix, property.Name, result, _namingPolicy);
                         continue;
@@ -305,14 +305,14 @@ namespace Feign.Internal
                     case TypeCode.Decimal:
                     case TypeCode.DateTime:
                     default:
-                        yield return CreateParameter(_prefix, _name, _converters.ConvertValue<string>(_value, true), simpleNamingPolicy);
+                        yield return CreateParameter(_prefix, _name, _converters.ConvertStringValue(_value, true), simpleNamingPolicy);
                         break;
                 }
             }
 
             private string? GetSpecialObjectValue(Type type, object value)
             {
-                return _converters.ConvertValue<string>(value, false);
+                return _converters.ConvertStringValue(value, false);
             }
 
         }

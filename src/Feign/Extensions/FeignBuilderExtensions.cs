@@ -105,16 +105,15 @@ namespace Feign
         /// <summary>
         /// Add a converter
         /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
         /// <param name="feignBuilder"></param>
         /// <param name="converter"></param>
         /// <returns></returns>
-        public static IFeignBuilder AddConverter<TSource, TResult>(this IFeignBuilder feignBuilder, IConverter<TSource, TResult> converter)
+        public static IFeignBuilder AddConverter(this IFeignBuilder feignBuilder, IConverter converter)
         {
             feignBuilder.Options.Converters.AddConverter(converter);
             return feignBuilder;
         }
+
         /// <summary>
         /// Add <see cref="ILoggerFactory"/>
         /// </summary>

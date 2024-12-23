@@ -198,7 +198,7 @@ namespace Feign.Proxy
         #region ConvertToStringValue
         protected virtual string? ConvertToStringValue<T>(T value)
         {
-            return FeignOptions.Converters.ConvertValue<T, string>(value, true);
+            return FeignOptions.Converters.ConvertStringValue(value, true);
         }
         #endregion
 
