@@ -53,14 +53,22 @@ namespace Feign.Formatting
 
             foreach (var type in converter.GetType().GetInterfaces())
             {
+                bool isConverter = false;
+                bool isStringConverter = false;
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IConverter<,>))
                 {
                     var key = ValueTuple.Create(type.GenericTypeArguments[0], type.GenericTypeArguments[1]);
                     AddConverter(converter, key, completed);
+                    isConverter = true;
                 }
                 if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IStringConverter<>))
                 {
                     AddStringConverter((IStringConverter)converter, type.GenericTypeArguments[0], completed);
+                    isStringConverter = true;
+                }
+                if (isConverter && !isStringConverter && completed)
+                {
+                    RemoveStringConverter(type.GenericTypeArguments[0], completed);
                 }
             }
         }

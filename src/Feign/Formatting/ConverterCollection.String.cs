@@ -54,6 +54,20 @@ namespace Feign.Formatting
 #endif
         }
 
+        internal void RemoveStringConverter(Type key, bool completed)
+        {
+            if (_stringMap.TryRemove(key, out var converter))
+            {
+#if NET8_0_OR_GREATER
+                if (completed)
+                {
+                    SyncStringFrozenMap();
+                }
+#endif
+            }
+        }
+
+
         /// <summary>
         /// Find a string converter for a specified type
         /// </summary>
