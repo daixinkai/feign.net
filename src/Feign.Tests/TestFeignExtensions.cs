@@ -27,6 +27,7 @@ namespace Feign.Tests
         public static IFeignBuilder AddTestFeignClients(this IFeignBuilder feignBuilder)
         {
             //feignBuilder.AddConverter(new TestServiceParamStringConverter());
+            feignBuilder.AddConverter(new TestDateTimeOffsetToStringConverter());
             feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
             feignBuilder.Options.Request.AutomaticDecompression = DecompressionMethods.GZip;
