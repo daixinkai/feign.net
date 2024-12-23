@@ -2,6 +2,7 @@
 using Feign.Formatting;
 using Feign.Pipeline.Internal;
 using Feign.Reflection;
+using Feign.Request;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -23,10 +24,13 @@ namespace Feign
             FeignClientPipeline = new GlobalFeignClientPipeline();
             Lifetime = FeignClientLifetime.Singleton;
             Types = new List<FeignClientTypeInfo>();
-            DiscoverServiceCacheTime = TimeSpan.FromMinutes(10);
             PropertyNamingPolicy = NamingPolicy.CamelCase;
             JsonProvider = new JsonProviderType();
-            LoadBalancingPolicy = LoadBalancingPolicy.Random;
+            Request = new FeignRequestOptions
+            {
+                DiscoverServiceCacheTime = TimeSpan.FromMinutes(10),
+                LoadBalancingPolicy = LoadBalancingPolicy.Random
+            };
         }
 
         private void AddDefaultConverters()
@@ -71,19 +75,45 @@ namespace Feign
 
         public IJsonProvider JsonProvider { get; set; }
 
-        public DecompressionMethods? AutomaticDecompression { get; set; }
-
         public IList<FeignClientTypeInfo> Types { get; }
-        public TimeSpan? DiscoverServiceCacheTime { get; set; }
+
+        public FeignRequestOptions Request { get; }
 
         /// <inheritdoc/>
-        public bool? UseCookies { get; set; }
+        TimeSpan? IFeignOptions.DiscoverServiceCacheTime
+        {
+            get => Request.DiscoverServiceCacheTime;
+            set => Request.DiscoverServiceCacheTime = value;
+        }
 
         /// <inheritdoc/>
-        public bool UseUrlEncode { get; set; }
+        public bool? UseCookies
+        {
+            get => Request.UseCookies;
+            set => Request.UseCookies = value;
+        }
 
         /// <inheritdoc/>
-        public LoadBalancingPolicy LoadBalancingPolicy { get; set; }
+        public bool UseUrlEncode
+        {
+            get => Request.UseUrlEncode;
+            set => Request.UseUrlEncode = value;
+        }
+
+        /// <inheritdoc/>
+        public DecompressionMethods? AutomaticDecompression
+        {
+            get => Request.AutomaticDecompression;
+            set => Request.AutomaticDecompression = value;
+        }
+
+        /// <inheritdoc/>
+        public LoadBalancingPolicy LoadBalancingPolicy
+        {
+            get => Request.LoadBalancingPolicy;
+            set => Request.LoadBalancingPolicy = value;
+        }
+
 
     }
 }

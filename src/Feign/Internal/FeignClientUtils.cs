@@ -68,17 +68,18 @@ namespace Feign.Internal
         public static string ReplaceRequestQuery<T>(string uri, string name, T value, IFeignOptions options)
         {
             var typeCode = Type.GetTypeCode(typeof(T));
+            bool urlEncode = options.Request.UseUrlEncode;
             if (typeCode == TypeCode.Object)
             {
                 foreach (var item in GetObjectStringParameters(name, value, options))
                 {
-                    uri = ReplaceRequestQuery(uri, item.Key, item.Value, options.UseUrlEncode);
+                    uri = ReplaceRequestQuery(uri, item.Key, item.Value, urlEncode);
                 }
                 return uri;
             }
             else
             {
-                return ReplaceRequestQuery(uri, name, options.Converters.ConvertValue<T, string>(value, true), options.UseUrlEncode);
+                return ReplaceRequestQuery(uri, name, options.Converters.ConvertValue<T, string>(value, true), urlEncode);
             }
         }
         #endregion
@@ -127,7 +128,7 @@ namespace Feign.Internal
 
             // get properties
 
-            foreach (var item in new ObjectQueryMap<T>(name, value, options.PropertyNamingPolicy, options.Converters).GetStringParameters())
+            foreach (var item in new ObjectQueryMap<T>(name, value, options.PropertyNamingPolicy, options.Converters).GetStringParameters(options.Request.IncludeRootParameterName))
             {
                 yield return item;
             }

@@ -127,7 +127,8 @@ namespace Feign.Proxy
                 if (requestContext._cancellationTokenSource != null)
                 {
                     cts = requestContext._cancellationTokenSource;
-                    cancellationToken = cts.Token;
+                    //cancellationToken = cts.Token;
+                    requestContext.CancellationToken = cts.Token;
                 }
                 request = requestContext.RequestMessage;
                 if (request == null)

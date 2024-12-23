@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Feign.Proxy
+namespace Feign.Response
 {
     internal static class SpecialResults
     {

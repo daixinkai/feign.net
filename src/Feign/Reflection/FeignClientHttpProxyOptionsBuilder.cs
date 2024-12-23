@@ -56,7 +56,6 @@ namespace Feign.Reflection
             TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, Type.EmptyTypes);
 
             var configurationProperty = parentType.GetProperty("Configuration");
-            var serviceConfigurationProperty = parentType.GetProperty("ServiceConfiguration");
 
             ConstructorInfo baseConstructorInfo = parentType.GetFirstConstructor();
 

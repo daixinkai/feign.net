@@ -27,13 +27,13 @@ namespace Feign.Proxy
             _logger = options.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
 
             var httpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, options.ServiceDiscovery, options.CacheProvider, _logger);
-            if (FeignOptions.AutomaticDecompression.HasValue)
+            if (FeignOptions.Request.AutomaticDecompression.HasValue)
             {
-                httpClientHandler.AutomaticDecompression = FeignOptions.AutomaticDecompression.Value;
+                httpClientHandler.AutomaticDecompression = FeignOptions.Request.AutomaticDecompression.Value;
             }
-            if (FeignOptions.UseCookies.HasValue)
+            if (FeignOptions.Request.UseCookies.HasValue)
             {
-                httpClientHandler.UseCookies = FeignOptions.UseCookies.Value;
+                httpClientHandler.UseCookies = FeignOptions.Request.UseCookies.Value;
             }
             httpClientHandler.ShouldResolveService = Url == null;
             httpClientHandler.AllowAutoRedirect = false;
@@ -168,11 +168,11 @@ namespace Feign.Proxy
 
 
         #region IDisposable Support
-        private bool disposedValue = false; // 要检测冗余调用
+        private bool _disposedValue = false; // 要检测冗余调用
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 var disposingContext = new DisposingPipelineContext<TService>(this, disposing);
                 OnDisposing(disposingContext);
@@ -180,7 +180,7 @@ namespace Feign.Proxy
                 {
                     HttpClient.Dispose();
                 }
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -205,19 +205,19 @@ namespace Feign.Proxy
         #region PathVariable
         protected string ReplacePathVariable<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplacePathVariable(FeignOptions.Converters, uri, name, value, FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(FeignOptions.Converters, uri, name, value, FeignOptions.Request.UseUrlEncode);
         }
         protected string ReplaceStringPathVariable(string uri, string name, string value)
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value, FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(uri, name, value, FeignOptions.Request.UseUrlEncode);
         }
         protected string ReplaceToStringPathVariable<T>(string uri, string name, T value) where T : struct
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.Request.UseUrlEncode);
         }
         protected string ReplaceNullablePathVariable<T>(string uri, string name, T? value) where T : struct
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.Request.UseUrlEncode);
         }
         #endregion
         #region RequestQuery
@@ -231,11 +231,11 @@ namespace Feign.Proxy
             {
                 return uri;
             }
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, FeignOptions.Request.UseUrlEncode);
         }
         protected string ReplaceToStringRequestQuery<T>(string uri, string name, T value) where T : struct
         {
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString(), FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString(), FeignOptions.Request.UseUrlEncode);
         }
         protected string ReplaceNullableRequestQuery<T>(string uri, string name, T? value) where T : struct
         {
@@ -243,7 +243,7 @@ namespace Feign.Proxy
             {
                 return uri;
             }
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.Value.ToString(), FeignOptions.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.Value.ToString(), FeignOptions.Request.UseUrlEncode);
         }
         #endregion
 

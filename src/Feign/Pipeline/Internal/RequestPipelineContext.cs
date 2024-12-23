@@ -70,7 +70,7 @@ namespace Feign.Pipeline.Internal
         #endregion
 
         #region CannelRequest
-        public CancellationToken CancellationToken { get; }
+        public CancellationToken CancellationToken { get; internal set; }
         #endregion
 
 

@@ -2,6 +2,7 @@
 using Feign.Proxy;
 using Feign.Request;
 using Feign.Request.Headers;
+using Feign.Response;
 using System;
 using System.Collections.Generic;
 using System.IO;

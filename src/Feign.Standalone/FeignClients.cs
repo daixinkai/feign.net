@@ -32,6 +32,11 @@ namespace Feign.Standalone
             return s_standaloneFeignBuilder.GetService<TService>();
         }
 
+        public static object Get(Type type)
+        {
+            return s_standaloneFeignBuilder.GetService(type);
+        }
+
         public static IStandaloneFeignBuilder AddFeignClients()
         {
             return AddFeignClients((FeignOptions)null);

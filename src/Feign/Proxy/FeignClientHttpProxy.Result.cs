@@ -2,6 +2,7 @@
 using Feign.Internal;
 using Feign.Pipeline.Internal;
 using Feign.Request;
+using Feign.Response;
 using System;
 using System.Collections.Generic;
 using System.IO;

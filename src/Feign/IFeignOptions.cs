@@ -1,6 +1,7 @@
 ﻿using Feign.Discovery.LoadBalancing;
 using Feign.Formatting;
 using Feign.Reflection;
+using Feign.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,33 +57,44 @@ namespace Feign
         /// Gets or sets the Types
         /// </summary>
         IList<FeignClientTypeInfo> Types { get; }
+
+        /// <summary>
+        /// Gets the RequestOptions
+        /// </summary>
+        FeignRequestOptions Request { get; }
+
         /// <summary>
         /// Gets or sets the DiscoverServiceCacheTime.
         /// default value : 10min.
         /// Set to null to not use cache
         /// </summary>
+        [Obsolete("Use Request.DiscoverServiceCacheTime")]
         TimeSpan? DiscoverServiceCacheTime { get; set; }
 
         /// <summary>
         /// Is enable url encode (like : RequestQuery,PathVariable)
         /// </summary>
+        [Obsolete("Use Request.UseUrlEncode")]
         bool UseUrlEncode { get; set; }
 
         /// <summary>
         ///   Gets or sets the type of decompression method used by the handler for automatic decompression of the HTTP content response.
         ///   Default value : null
         /// </summary>
+        [Obsolete("Use Request.AutomaticDecompression")]
         DecompressionMethods? AutomaticDecompression { get; set; }
 
         /// <summary>
         /// HttpClient.Handler.UseCookies
         /// </summary>
+        [Obsolete("Use Request.UseCookies")]
         bool? UseCookies { get; set; }
 
         /// <summary>
         /// Gets or sets Load balancing policy.
         /// Default value : <see cref="LoadBalancingPolicy.Random"/>
         /// </summary>
+        [Obsolete("Use Request.LoadBalancingPolicy")]
         LoadBalancingPolicy LoadBalancingPolicy { get; set; }
 
     }

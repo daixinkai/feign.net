@@ -4,7 +4,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace Feign
+//namespace Feign.Request
 //{
 //    [Obsolete]
 //    public interface IRequestParameterEncoder

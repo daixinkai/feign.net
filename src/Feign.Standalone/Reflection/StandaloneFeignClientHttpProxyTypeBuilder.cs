@@ -12,17 +12,17 @@ namespace Feign.Standalone.Reflection
 {
     internal class StandaloneFeignClientHttpProxyTypeBuilder : FeignClientHttpProxyTypeBuilder
     {
-        protected override Type GetParentType(Type parentType)
+        protected override Type GetParentType(Type serviceType, FeignClientAttribute feignClientAttribute)
         {
-            if (typeof(FallbackFactoryFeignClientHttpProxy<,>) == parentType.GetGenericTypeDefinition())
+            if (feignClientAttribute.Fallback != null)
             {
-                return typeof(StandaloneFallbackFactoryFeignClientHttpProxy<,>).MakeGenericType(parentType.GetGenericArguments());
+                return typeof(StandaloneFallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, feignClientAttribute.Fallback);
             }
-            if (typeof(FallbackFeignClientHttpProxy<,>) == parentType.GetGenericTypeDefinition())
+            if (feignClientAttribute.FallbackFactory != null)
             {
-                return typeof(StandaloneFallbackFeignClientHttpProxy<,>).MakeGenericType(parentType.GetGenericArguments());
+                return typeof(StandaloneFallbackFactoryFeignClientHttpProxy<,>).MakeGenericType(serviceType, feignClientAttribute.FallbackFactory);
             }
-            return typeof(StandaloneFeignClientHttpProxy<>).MakeGenericType(parentType.GetGenericArguments());
+            return typeof(StandaloneFeignClientHttpProxy<>).MakeGenericType(serviceType);
         }
     }
 }

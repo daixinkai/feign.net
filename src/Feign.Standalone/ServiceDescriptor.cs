@@ -58,6 +58,11 @@ namespace Feign.Standalone
 
         private static object GetNewService(Type type)
         {
+            var constructor = type.GetConstructors()[0];
+            if (constructor.GetParameters().Length > 0)
+            {
+                return Activator.CreateInstance(type, constructor.GetParameters().Select(s => FeignClients.Get(s.ParameterType)).ToArray());
+            }
             return Activator.CreateInstance(type);
         }
 

@@ -29,7 +29,8 @@ namespace Feign.Tests
             //feignBuilder.AddConverter(new TestServiceParamStringConverter());
             feignBuilder.AddServiceDiscovery<TestServiceDiscovery>();
             feignBuilder.Options.IncludeMethodMetadata = true;
-            feignBuilder.Options.AutomaticDecompression = DecompressionMethods.GZip;
+            feignBuilder.Options.Request.AutomaticDecompression = DecompressionMethods.GZip;
+            //feignBuilder.Options.Request.IncludeRootParameterName = true;
 #if NETCOREAPP2_1_OR_GREATER
             feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
             {

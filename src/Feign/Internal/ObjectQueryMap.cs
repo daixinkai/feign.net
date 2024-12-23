@@ -333,14 +333,16 @@ namespace Feign.Internal
 
         public ConverterCollection Converters { get; }
 
-        public IEnumerable<KeyValuePair<string, string?>> GetStringParameters()
+        public IEnumerable<KeyValuePair<string, string?>> GetStringParameters(bool includeRootName)
         {
             var type = Value!.GetType();
             //if (typeof(IDictionary).IsAssignableFrom(type))
             if (Value is IDictionary dictionary)
             {
-                //remove root param name
-                //return new DictionaryParameters(null, Name, dictionary, NamingPolicy, Converters).GetStringParameters();
+                if (includeRootName)
+                {
+                    return new DictionaryParameters(null, Name, dictionary, NamingPolicy, Converters).GetStringParameters();
+                }
                 return new DictionaryParameters(null, null, dictionary, NamingPolicy, Converters).GetStringParameters();
             }
             //if (typeof(IEnumerable).IsAssignableFrom(type))
@@ -348,8 +350,10 @@ namespace Feign.Internal
             {
                 return new EnumerableParameters(null, Name, enumerable, NamingPolicy, Converters).GetStringParameters();
             }
-            //remove root param name
-            //return new UnknownParameters(null, Name, Value!, NamingPolicy, Converters, true).GetStringParameters();
+            if (includeRootName)
+            {
+                return new UnknownParameters(null, Name, Value!, NamingPolicy, Converters, true).GetStringParameters();
+            }
             return new UnknownParameters(null, "", Value!, NamingPolicy, Converters, true).GetStringParameters();
         }
 

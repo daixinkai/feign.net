@@ -52,31 +52,10 @@ namespace Feign.Reflection
             FeignClientAttribute feignClientAttribute = serviceType.GetCustomAttributeIncludingBaseInterfaces<FeignClientAttribute>()!;
 
 
-            IMethodBuilder methodBuilder;
 
-            Type parentType;
-            if (feignClientAttribute.Fallback != null)
-            {
-                // This service supports service fallback
-                methodBuilder = _fallbackMethodBuilder;
-                parentType = typeof(FallbackFeignClientHttpProxy<,>);
-                parentType = parentType.MakeGenericType(serviceType, feignClientAttribute.Fallback);
-            }
-            else if (feignClientAttribute.FallbackFactory != null)
-            {
-                // This service supports service fallback(from fallback factory)
-                methodBuilder = _fallbackMethodBuilder;
-                parentType = typeof(FallbackFactoryFeignClientHttpProxy<,>);
-                parentType = parentType.MakeGenericType(serviceType, feignClientAttribute.FallbackFactory);
-            }
-            else
-            {
-                //default service
-                methodBuilder = _methodBuilder;
-                parentType = typeof(FeignClientHttpProxy<>);
-                parentType = parentType.MakeGenericType(serviceType);
-            }
-            parentType = GetParentType(parentType);
+            Type parentType = GetParentType(serviceType, feignClientAttribute);
+            var methodBuilder = GetMethodBuilder(serviceType, parentType, feignClientAttribute);
+
 
             var feignClientTypeInfo = new FeignClientTypeInfo(feignClientAttribute, serviceType)
             {
@@ -202,6 +181,53 @@ namespace Feign.Reflection
 
         }
 
+        /// <summary>
+        /// get parent type
+        /// </summary>
+        /// <param name="serviceType"></param>
+        /// <param name="feignClientAttribute"></param>
+        /// <returns></returns>
+        protected virtual Type GetParentType(Type serviceType, FeignClientAttribute feignClientAttribute)
+        {
+            if (feignClientAttribute.Fallback != null)
+            {
+                // This service supports service fallback
+                return typeof(FallbackFeignClientHttpProxy<,>).MakeGenericType(serviceType, feignClientAttribute.Fallback);
+            }
+            else if (feignClientAttribute.FallbackFactory != null)
+            {
+                // This service supports service fallback(from fallback factory)
+                return typeof(FallbackFactoryFeignClientHttpProxy<,>).MakeGenericType(serviceType, feignClientAttribute.FallbackFactory);
+            }
+            else
+            {
+                //default service
+                return typeof(FeignClientHttpProxy<>).MakeGenericType(serviceType);
+            }
+        }
+
+        /// <summary>
+        /// get method builder
+        /// </summary>
+        /// <param name="serviceType"></param>
+        /// <param name="parentType"></param>
+        /// <param name="feignClientAttribute"></param>
+        /// <returns></returns>
+        protected virtual IMethodBuilder GetMethodBuilder(Type serviceType, Type parentType, FeignClientAttribute feignClientAttribute)
+        {
+            if (feignClientAttribute.Fallback != null)
+            {
+                // This service supports service fallback
+                return _fallbackMethodBuilder;
+            }
+            else if (feignClientAttribute.FallbackFactory != null)
+            {
+                // This service supports service fallback(from fallback factory)
+                return _fallbackMethodBuilder;
+            }
+            //default service
+            return _methodBuilder;
+        }
 
         private Type? BuildFeignClientHttpProxyOptionsType(Type serviceType, FeignClientAttribute feignClientAttribute)
         {
@@ -242,17 +268,6 @@ namespace Feign.Reflection
             return optionsType;
 
         }
-
-        /// <summary>
-        /// 获取服务的父类型
-        /// </summary>
-        /// <param name="parentType"></param>
-        /// <returns></returns>
-        protected virtual Type GetParentType(Type parentType)
-        {
-            return parentType;
-        }
-
 
         private string GetTypeFullName(Type serviceType)
         {

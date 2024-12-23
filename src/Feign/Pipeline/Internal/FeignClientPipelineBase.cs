@@ -258,7 +258,7 @@ namespace Feign.Pipeline.Internal
             {
                 return;
             }
-            if (_buildingRequestMiddlewares.Count == 0)
+            if (_cancelRequestMiddlewares.Count == 0)
             {
                 return;
             }

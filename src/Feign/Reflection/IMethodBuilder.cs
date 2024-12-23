@@ -9,7 +9,7 @@ namespace Feign.Reflection
     /// <summary>
     /// 方法生成器
     /// </summary>
-    internal interface IMethodBuilder
+    public interface IMethodBuilder
     {
         FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute);
     }

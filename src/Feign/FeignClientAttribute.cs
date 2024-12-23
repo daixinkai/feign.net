@@ -65,6 +65,5 @@ namespace Feign
         /// whether 404s should be decoded instead of throwing FeignExceptions
         /// </summary>
         public bool Dismiss404 { get; set; }
-
     }
 }

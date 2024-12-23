@@ -34,7 +34,7 @@ namespace Feign.Discovery
             ICacheProvider? serviceCacheProvider,
             ILogger? logger) : base(feignClient, logger)
         {
-            _serviceResolve = feignClient.FeignOptions.LoadBalancingPolicy switch
+            _serviceResolve = feignClient.FeignOptions.Request.LoadBalancingPolicy switch
             {
                 LoadBalancingPolicy.FirstAlphabetical => new FirstServiceResolve(logger),
                 LoadBalancingPolicy.Random => new RandomServiceResolve(logger),
@@ -69,7 +69,7 @@ namespace Feign.Discovery
 
             string serviceId = requestMessage.ServiceId ?? requestMessage.RequestUri!.Host;
 
-            var cacheTime = FeignClient.FeignOptions.DiscoverServiceCacheTime;
+            var cacheTime = FeignClient.FeignOptions.Request.DiscoverServiceCacheTime;
             IList<IServiceInstance>? services = cacheTime.HasValue ?
             await _serviceDiscovery.GetServiceInstancesWithCacheAsync(serviceId, _serviceCacheProvider, cacheTime.Value)
 #if USE_CONFIGUREAWAIT_FALSE
