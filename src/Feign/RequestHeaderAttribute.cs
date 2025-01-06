@@ -1,4 +1,4 @@
-﻿using Feign.Request.Headers;
+﻿using Feign.Request.Transforms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace Feign
     /// Convert parameters into request headers
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
-    public class RequestHeaderAttribute : RequestHeaderBaseAttribute
+    public class RequestHeaderAttribute : RequestTransformBaseAttribute
     {
         public RequestHeaderAttribute()
         {
@@ -41,9 +41,9 @@ namespace Feign
             return new KeyValuePair<string, string>(values[0], values[1]);
         }
 
-        protected internal override LocalBuilder EmitNewRequestHeaderHandler(ILGenerator iLGenerator, LocalBuilder valueBuilder)
+        protected internal override LocalBuilder? EmitNewHttpRequestTransform(ILGenerator iLGenerator, LocalBuilder valueBuilder)
         {
-            LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(IRequestHeaderHandler));
+            LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(IHttpRequestTransform));
             var method = typeof(RequestHeaderAttribute).GetMethod("GetHeader", BindingFlags.Public | BindingFlags.Static);
             //iLGenerator.Emit(OpCodes.Pop);
             //iLGenerator.Emit(OpCodes.Ldnull);
@@ -56,8 +56,12 @@ namespace Feign
                 iLGenerator.Emit(OpCodes.Ldnull);
             }
             iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
+            if (valueBuilder.LocalType != typeof(string))
+            {
+                iLGenerator.Emit(OpCodes.Call, valueBuilder.LocalType.GetConvertToStringValueMethod());
+            }
             iLGenerator.Emit(OpCodes.Call, method!);
-            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) })!);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(HttpRequestHeaderTransform).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) })!);
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
             return localBuilder;
         }

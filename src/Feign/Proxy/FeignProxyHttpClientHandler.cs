@@ -112,6 +112,21 @@ namespace Feign.Proxy
                     .ConfigureAwait(false)
 #endif
                     ;
+
+                #region RequestTransforms
+                if (request.FeignClientRequest.RequestTransforms != null && request.FeignClientRequest.RequestTransforms.Count > 0)
+                {
+                    foreach (var transform in request.FeignClientRequest.RequestTransforms)
+                    {
+                        await transform.ApplyAsync(request);
+                    }
+                }
+                if (request.ResponseMessage != null)
+                {
+                    return request.ResponseMessage;
+                }
+                #endregion
+
                 #region SendingRequest
                 await _feignClient.OnSendingRequestAsync(requestContext)
 #if USE_CONFIGUREAWAIT_FALSE

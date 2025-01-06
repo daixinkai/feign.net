@@ -97,8 +97,8 @@ namespace Feign.Proxy
 
         private async Task<HttpResponseMessage?> GetResponseMessageAsync(FeignClientHttpRequest request)
         {
-            HttpMethod httpMethod = GetHttpMethod(request.HttpMethod);
-            FeignHttpRequestMessage httpRequestMessage = CreateRequestMessage(request, httpMethod, CreateUri(request));
+            var httpMethod = GetHttpMethod(request.HttpMethod);
+            var httpRequestMessage = CreateRequestMessage(request, httpMethod, CreateUri(request));
             try
             {
                 using (httpRequestMessage)
@@ -220,13 +220,6 @@ namespace Feign.Proxy
                     {
                         requestMessage.Headers.TryAddWithoutValidation(values[0], values[1]);
                     }
-                }
-            }
-            if (request.RequestHeaderHandlers != null && request.RequestHeaderHandlers.Count > 0)
-            {
-                foreach (var handler in request.RequestHeaderHandlers)
-                {
-                    handler.SetHeader(requestMessage);
                 }
             }
             return requestMessage;

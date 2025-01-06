@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Reflection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -26,6 +27,16 @@ namespace Feign
         public static ConstructorInfo GetFirstConstructor(this Type type)
         {
             return type.GetConstructors()[0];
+        }
+
+        public static MethodInfo GetConvertToStringValueMethod(this Type type)
+        {
+            var toStringMethod = StringValueMethods.GetToStringMethod(type);
+            if (toStringMethod != null)
+            {
+                return toStringMethod;
+            }
+            return type.GetRequiredMethod("ToString", Type.EmptyTypes);
         }
 
         public static bool IsNullableType(this Type type)

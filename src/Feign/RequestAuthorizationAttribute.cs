@@ -1,4 +1,4 @@
-﻿using Feign.Request.Headers;
+﻿using Feign.Request.Transforms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace Feign
     /// Sets Authorization to the request headers
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
-    public class RequestAuthorizationAttribute : RequestHeaderBaseAttribute
+    public class RequestAuthorizationAttribute : RequestTransformBaseAttribute
     {
         public RequestAuthorizationAttribute()
         {
@@ -37,9 +37,9 @@ namespace Feign
             return new KeyValuePair<string, string>("Authorization", value);
         }
 
-        protected internal override LocalBuilder EmitNewRequestHeaderHandler(ILGenerator iLGenerator, LocalBuilder valueBuilder)
+        protected internal override LocalBuilder? EmitNewHttpRequestTransform(ILGenerator iLGenerator, LocalBuilder valueBuilder)
         {
-            LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(IRequestHeaderHandler));
+            LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(IHttpRequestTransform));
             var method = typeof(RequestAuthorizationAttribute).GetMethod("GetHeader", BindingFlags.Public | BindingFlags.Static);
             //iLGenerator.Emit(OpCodes.Pop);
             //iLGenerator.Emit(OpCodes.Ldnull);
@@ -52,8 +52,12 @@ namespace Feign
                 iLGenerator.Emit(OpCodes.Ldnull);
             }
             iLGenerator.Emit(OpCodes.Ldloc, valueBuilder);
+            if (valueBuilder.LocalType != typeof(string))
+            {
+                iLGenerator.Emit(OpCodes.Call, valueBuilder.LocalType.GetConvertToStringValueMethod());
+            }
             iLGenerator.Emit(OpCodes.Call, method!);
-            iLGenerator.Emit(OpCodes.Newobj, typeof(RequestHeaderHandler).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) })!);
+            iLGenerator.Emit(OpCodes.Newobj, typeof(HttpRequestHeaderTransform).GetConstructor(new Type[] { typeof(KeyValuePair<string, string>) })!);
             iLGenerator.Emit(OpCodes.Stloc, localBuilder);
             return localBuilder;
         }

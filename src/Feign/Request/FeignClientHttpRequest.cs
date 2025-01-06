@@ -1,6 +1,6 @@
 ﻿using Feign.Internal;
 using Feign.Reflection;
-using Feign.Request.Headers;
+using Feign.Request.Transforms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +33,10 @@ namespace Feign.Request
                 ContentType = mediaTypeHeaderValue;
             }
         }
+
+
+        private List<IHttpRequestTransform>? _requestTransforms;
+
         /// <summary>
         /// Gets the BaseUrl
         /// </summary>
@@ -46,9 +50,9 @@ namespace Feign.Request
         /// </summary>
         public string Uri { get; }
         /// <summary>
-        /// Gets or sets the HttpMethod
+        /// Gets the HttpMethod
         /// </summary>
-        public string HttpMethod { get; set; }
+        public string HttpMethod { get; }
         /// <summary>
         /// Gets the ContentType
         /// </summary>
@@ -88,9 +92,19 @@ namespace Feign.Request
         public FeignClientMethodInfo? Method { get; set; }
 
         /// <summary>
-        /// Gets or sets the RequestHeaderHandlers
+        /// Gets RequestTransforms
         /// </summary>
-        public List<IRequestHeaderHandler>? RequestHeaderHandlers { get; set; }
+        public IReadOnlyList<IHttpRequestTransform>? RequestTransforms => _requestTransforms;
+
+        /// <summary>
+        /// Add a <see cref="IHttpRequestTransform"/>
+        /// </summary>
+        /// <param name="transform"></param>
+        public void AddRequestTransform(IHttpRequestTransform transform)
+        {
+            _requestTransforms ??= new List<IHttpRequestTransform>();
+            _requestTransforms.Add(transform);
+        }
 
         /// <summary>
         /// Gets the HttpContent sent with the request

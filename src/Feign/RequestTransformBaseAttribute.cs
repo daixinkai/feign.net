@@ -1,7 +1,9 @@
 ﻿using Feign.Internal;
+using Feign.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,11 +11,12 @@ using System.Threading.Tasks;
 namespace Feign
 {
     /// <summary>
-    /// Convert parameters into request headers
+    /// apply parameters transform
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
-    public abstract class RequestHeaderBaseAttribute : Attribute, INotRequestParameter
+    public abstract class RequestTransformBaseAttribute : Attribute, IRequestTransformParameter
     {
-        protected internal abstract LocalBuilder EmitNewRequestHeaderHandler(ILGenerator iLGenerator, LocalBuilder valueBuilder);
+        protected internal abstract LocalBuilder? EmitNewHttpRequestTransform(ILGenerator iLGenerator, LocalBuilder valueBuilder);
+
     }
 }

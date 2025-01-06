@@ -13,6 +13,7 @@ using Feign.Cache;
 using Feign.Logging;
 using Feign.Reflection;
 using Feign.Request;
+using Feign.Request.Transforms;
 using Feign.Standalone;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -26,9 +27,8 @@ namespace Feign.Tests.NET45
         public void TestMethod1()
         {
             FeignClientHttpRequest request = new FeignClientHttpRequest(null, null, null, null, null);
-            request.RequestHeaderHandlers = new List<Request.Headers.IRequestHeaderHandler>();
-            Request.Headers.IRequestHeaderHandler requestHeaderHandler = null;
-            request.RequestHeaderHandlers.Add(requestHeaderHandler);
+            var requestTransform = new HttpRequestHeaderTransform(null, "");
+            request.AddRequestTransform(requestTransform);
             DynamicAssembly dynamicAssembly = new DynamicAssembly();
             dynamicAssembly.DEBUG_MODE = true;
             FeignClientHttpProxyTypeBuilder feignClientTypeBuilder = new FeignClientHttpProxyTypeBuilder(dynamicAssembly);

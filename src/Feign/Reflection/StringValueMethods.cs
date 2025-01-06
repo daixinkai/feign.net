@@ -10,15 +10,14 @@ namespace Feign.Reflection
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static class StringValueMethods
     {
-        public static MethodInfo GetToStringMethod(Type valueType)
+        public static MethodInfo? GetToStringMethod(Type type)
         {
-            if (valueType.IsNullableType() && valueType.GenericTypeArguments[0].IsPrimitive)
+            if (type.IsNullableType() && type.GenericTypeArguments[0].IsPrimitive)
             {
                 return typeof(StringValueMethods).GetMethods()
-                    .FirstOrDefault(static s => s.Name == "NullableToString" && s.IsGenericMethod)!.MakeGenericMethod(valueType.GetGenericArguments()[0]);
+                    .FirstOrDefault(static s => s.Name == "NullableToString" && s.IsGenericMethod)?.MakeGenericMethod(type.GetGenericArguments()[0]);
             }
-            //return typeof(StringValueMethods).GetMethod("ToString", new Type[] { valueType });
-            return typeof(StringValueMethods).GetRequiredMethod("ToString", new Type[] { valueType });
+            return typeof(StringValueMethods).GetMethod("ToString", new Type[] { type });
         }
 
         public static string ToString(string value)

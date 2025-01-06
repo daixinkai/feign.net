@@ -1,7 +1,7 @@
 ﻿using Feign.Internal;
 using Feign.Proxy;
 using Feign.Request;
-using Feign.Request.Headers;
+using Feign.Request.Transforms;
 using Feign.Response;
 using System;
 using System.Collections.Generic;
@@ -74,18 +74,18 @@ namespace Feign.Reflection
                 .MakeGenericMethod(valueType)
                 ;
         }
-        protected static MethodInfo GetConvertToStringValueMethod(TypeBuilder typeBuilder, Type valueType)
-        {
-            var toStringMethod = StringValueMethods.GetToStringMethod(valueType);
-            if (toStringMethod != null)
-            {
-                return toStringMethod;
-            }
-            return typeBuilder.BaseType!
-                .GetRequiredMethod("ConvertToStringValue", BindingFlags.Instance | BindingFlags.NonPublic)
-                .MakeGenericMethod(valueType)
-                ;
-        }
+        //protected static MethodInfo GetConvertToStringValueMethod(TypeBuilder typeBuilder, Type valueType)
+        //{
+        //    var toStringMethod = StringValueMethods.GetToStringMethod(valueType);
+        //    if (toStringMethod != null)
+        //    {
+        //        return toStringMethod;
+        //    }
+        //    return typeBuilder.BaseType!
+        //        .GetRequiredMethod("ConvertToStringValue", BindingFlags.Instance | BindingFlags.NonPublic)
+        //        .MakeGenericMethod(valueType)
+        //        ;
+        //}
         #endregion
 
         public FeignClientMethodInfo BuildMethod(TypeBuilder typeBuilder, Type serviceType, MethodInfo method, FeignClientAttribute feignClientAttribute)
@@ -454,45 +454,34 @@ namespace Feign.Reflection
             }
             #endregion
 
-            #region FeignClientHttpRequest.RequestHeaderHandlers
-            // request headers
-            List<Tuple<int, ParameterInfo, RequestHeaderBaseAttribute>> headerBaseAttributes = new();
+            #region FeignClientHttpRequest.RequestTransforms
+            // request transforms
+            List<Tuple<int, ParameterInfo, RequestTransformBaseAttribute>> requestTransformAttributes = new();
             int parameterIndex = -1;
             foreach (var item in feignClientMethodInfo.MethodMetadata.GetParameters())
             {
                 parameterIndex++;
-                if (!item.IsDefined(typeof(RequestHeaderBaseAttribute)))
+                if (!item.IsDefined(typeof(RequestTransformBaseAttribute)))
                 {
                     continue;
                 }
-                headerBaseAttributes.Add(Tuple.Create(parameterIndex, item, item.GetCustomAttribute<RequestHeaderBaseAttribute>()!));
+                requestTransformAttributes.Add(Tuple.Create(parameterIndex, item, item.GetCustomAttribute<RequestTransformBaseAttribute>()!));
             }
-            if (headerBaseAttributes.Count > 0)
+            if (requestTransformAttributes.Count > 0)
             {
-                //feignClientHttpRequest.RequestHeaderHandlers = new List<IRequestHeaderHandler>();
-                iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
-                iLGenerator.Emit(OpCodes.Newobj, typeof(List<IRequestHeaderHandler>).GetEmptyConstructor()!);
-                iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetRequiredProperty("RequestHeaderHandlers").SetMethod!);
-
-                MethodInfo listAddItemMethodInfo = typeof(List<IRequestHeaderHandler>).GetRequiredMethod("Add");
-                foreach (var headerBaseAttribute in headerBaseAttributes)
+                MethodInfo addRequestTransformMethodInfo = typeof(FeignClientHttpRequest).GetRequiredMethod("AddRequestTransform");
+                foreach (var requestTransformAttribute in requestTransformAttributes)
                 {
-                    //string text2 = "xxx";
-                    //feignClientHttpRequest.RequestHeaderHandlers.Add(new RequestHeaderHandler("xxx", text2));
-                    var valueBuilder = iLGenerator.DeclareLocal(typeof(string));
-                    iLGenerator.EmitLdarg(headerBaseAttribute.Item1 + 1);
-                    if (headerBaseAttribute.Item2.ParameterType != typeof(string))
-                    {
-                        iLGenerator.Emit(OpCodes.Call, GetConvertToStringValueMethod(typeBuilder, headerBaseAttribute.Item2.ParameterType));
-                    }
+                    //feignClientHttpRequest.AddRequestTransform(new IHttpRequestTransform);
+                    var valueBuilder = iLGenerator.DeclareLocal(requestTransformAttribute.Item2.ParameterType);
+                    iLGenerator.EmitLdarg(requestTransformAttribute.Item1 + 1);
                     iLGenerator.Emit(OpCodes.Stloc, valueBuilder);
-                    var handlerLocalBuilder = headerBaseAttribute.Item3.EmitNewRequestHeaderHandler(iLGenerator, valueBuilder);
-                    if (handlerLocalBuilder != null)
+                    var transformLocalBuilder = requestTransformAttribute.Item3.EmitNewHttpRequestTransform(iLGenerator, valueBuilder);
+                    if (transformLocalBuilder != null)
                     {
                         iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
-                        iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpRequest).GetRequiredProperty("RequestHeaderHandlers").GetMethod!);
-                        iLGenerator.Emit(OpCodes.Ldloc, handlerLocalBuilder);
-                        iLGenerator.Emit(OpCodes.Callvirt, listAddItemMethodInfo);
+                        iLGenerator.Emit(OpCodes.Ldloc, transformLocalBuilder);
+                        iLGenerator.Emit(OpCodes.Callvirt, addRequestTransformMethodInfo);
                     }
                 }
             }
@@ -656,7 +645,7 @@ namespace Feign.Reflection
             foreach (var parameterInfo in method.GetParameters())
             {
                 index++;
-                if (parameterInfo.GetCustomAttributes().Any(static s => s is INotRequestParameter))
+                if (parameterInfo.GetCustomAttributes().Any(static s => s is IRequestTransformParameter))
                 {
                     continue;
                 }

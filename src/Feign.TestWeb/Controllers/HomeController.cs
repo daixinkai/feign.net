@@ -110,6 +110,16 @@ namespace Feign.TestWeb.Controllers
             //return new OkResult();
         }
 
+        [HttpGet("/test")]
+        public async Task<ActionResult<object>> Test(string? id, [FromServices] ITestControllerService testControllerService)
+        {
+            //var s = testControllerService.GetQueryResultValue(null, null, "sessionId:12345", 1);
+            var ss = await testControllerService.GetHttpResponseMessage(new TestServiceParam
+            {
+            });
+            return Ok();
+        }
+
         [HttpGet("/html")]
         public IActionResult Html()
         {

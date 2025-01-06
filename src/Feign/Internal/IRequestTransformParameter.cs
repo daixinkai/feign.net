@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Internal
 {
-    internal interface INotRequestParameter
+    internal interface IRequestTransformParameter
     {
     }
 }
