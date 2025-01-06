@@ -456,16 +456,16 @@ namespace Feign.Reflection
 
             #region FeignClientHttpRequest.RequestTransforms
             // request transforms
-            List<Tuple<int, ParameterInfo, RequestTransformBaseAttribute>> requestTransformAttributes = new();
+            List<Tuple<int, ParameterInfo, RequestParameterTransformBaseAttribute>> requestTransformAttributes = new();
             int parameterIndex = -1;
             foreach (var item in feignClientMethodInfo.MethodMetadata.GetParameters())
             {
                 parameterIndex++;
-                if (!item.IsDefined(typeof(RequestTransformBaseAttribute)))
+                if (!item.IsDefined(typeof(RequestParameterTransformBaseAttribute)))
                 {
                     continue;
                 }
-                requestTransformAttributes.Add(Tuple.Create(parameterIndex, item, item.GetCustomAttribute<RequestTransformBaseAttribute>()!));
+                requestTransformAttributes.Add(Tuple.Create(parameterIndex, item, item.GetCustomAttribute<RequestParameterTransformBaseAttribute>()!));
             }
             if (requestTransformAttributes.Count > 0)
             {

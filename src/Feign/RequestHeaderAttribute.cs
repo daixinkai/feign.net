@@ -14,7 +14,7 @@ namespace Feign
     /// Convert parameters into request headers
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
-    public class RequestHeaderAttribute : RequestTransformBaseAttribute
+    public class RequestHeaderAttribute : RequestParameterTransformBaseAttribute
     {
         public RequestHeaderAttribute()
         {

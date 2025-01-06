@@ -14,7 +14,7 @@ namespace Feign
     /// Sets Authorization to the request headers
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = true, AllowMultiple = false)]
-    public class RequestAuthorizationAttribute : RequestTransformBaseAttribute
+    public class RequestAuthorizationAttribute : RequestParameterTransformBaseAttribute
     {
         public RequestAuthorizationAttribute()
         {

@@ -28,7 +28,7 @@ namespace Feign.Tests
     }
 
 
-    public class CustomHttpRequestTransformAttribute : RequestTransformBaseAttribute
+    public class CustomHttpRequestTransformAttribute : RequestParameterTransformBaseAttribute
     {
         protected override LocalBuilder EmitNewHttpRequestTransform(ILGenerator iLGenerator, LocalBuilder valueBuilder)
         {
