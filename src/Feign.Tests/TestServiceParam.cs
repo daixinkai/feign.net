@@ -13,6 +13,12 @@ namespace Feign.Tests
     }
     public class TestServiceParam : TestServiceParamBase
     {
+
+#if NET6_0_OR_GREATER
+        public DateOnly? Date { get; set; }     
+        public TimeOnly? Time { get; set; }
+#endif
+
         public string Name { get; set; }
         public int Age { get; set; }
         public int? State { get; set; }

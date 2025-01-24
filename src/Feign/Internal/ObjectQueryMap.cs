@@ -229,6 +229,12 @@ namespace Feign.Internal
                         continue;
                     }
 
+                    if (propertyValue.GetType().IsValueType)
+                    {
+                        yield return CreateParameter(_prefix, property.Name, propertyValue.ToString(), _namingPolicy);
+                        continue;
+                    }
+
                     foreach (var item in new UnknownParameters(_prefix, property.Name, propertyValue, _namingPolicy, _converters, true).GetStringParameters())
                     {
                         yield return item;

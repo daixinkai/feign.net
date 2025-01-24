@@ -15,6 +15,7 @@ namespace Feign.TestWeb.Controllers
             [FromServices] ITestServiceClient testServiceClient
             )
         {
+
             if (id != null)
             {
                 return new QueryResult<object>
@@ -25,7 +26,6 @@ namespace Feign.TestWeb.Controllers
                     }
                 };
             }
-
 
             var noBaseUrlTestService = HttpContext.RequestServices.GetRequiredService<INoBaseUrlTestService>();
 
@@ -63,6 +63,8 @@ namespace Feign.TestWeb.Controllers
                 ["mapTest"] = 1
             }, new TestServiceParam
             {
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Time = TimeOnly.FromDateTime(DateTime.Now),
                 Age = 1,
                 Name = "root",
                 Ids = ["1", "2"],

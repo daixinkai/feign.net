@@ -51,6 +51,10 @@ namespace Feign
             Converters.AddConverter(new StructToStringConverter<ushort>(), false);
             Converters.AddConverter(new DateTimeToStringConverter(), false);
             Converters.AddConverter(new DateTimeOffsetToStringConverter(), false);
+#if NET6_0_OR_GREATER
+            Converters.AddConverter(new DateOnlyToStringConverter(), false);
+            Converters.AddConverter(new TimeOnlyToStringConverter(), false);
+#endif
             Converters.AddConverter(new ObjectStringConverter());
         }
 

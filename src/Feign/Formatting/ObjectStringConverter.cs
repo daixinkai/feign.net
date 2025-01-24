@@ -55,4 +55,17 @@ namespace Feign.Formatting
             => value.ToString("yyyy-MM-ddTHH:mm:ssK", DateTimeFormatInfo.InvariantInfo);
     }
 
+#if NET6_0_OR_GREATER
+    internal class DateOnlyToStringConverter : IConverter<DateOnly, string>, IStringConverter<DateOnly>
+    {
+        public string? Convert(DateOnly value)
+            => value.ToString("yyyy-MM-dd");
+    }
+    internal class TimeOnlyToStringConverter : IConverter<TimeOnly, string>, IStringConverter<TimeOnly>
+    {
+        public string? Convert(TimeOnly value)
+            => value.ToString("HH:mm:ss");
+    }
+#endif
+
 }
