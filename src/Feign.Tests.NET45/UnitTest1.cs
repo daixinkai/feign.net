@@ -26,6 +26,7 @@ namespace Feign.Tests.NET45
         [TestMethod]
         public void TestMethod1()
         {
+            var method = typeof(TestServiceFallback).GetMethod(nameof(TestServiceFallback.PostOfTAsync));
             FeignClientHttpRequest request = new FeignClientHttpRequest(null, null, null, null, null);
             var requestTransform = new HttpRequestHeaderTransform(null, "");
             request.AddRequestTransform(requestTransform);

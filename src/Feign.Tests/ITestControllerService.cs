@@ -31,7 +31,7 @@ namespace Feign.Tests
         [ResultType(typeof(QueryResult<>))]
         [Headers("Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Cache-Control:max-age=0")]
         [RequestMapping("/{id}", Method = "GET", Accept = "text/html")]
-        IQueryResult<TestServiceParam> GetQueryResultValue([PathVariable("id")] int? id, [RequestQuery] TestServiceParam param, [RequestHeader] string header, [RequestAuthorization] int authorization);
+        IQueryResult<TestServiceParam> GetQueryResultValue([PathVariable("id")] int? id, [RequestQuery] TestServiceParam param, [RequestUri] string uri, [RequestHeader] string header, [RequestAuthorization] int authorization);
 
         [GetMapping("/httpResponseMessage")]
         Task<HttpResponseMessage> GetHttpResponseMessage();

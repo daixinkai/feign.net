@@ -16,6 +16,8 @@ namespace Feign.TestWeb.Controllers
             )
         {
 
+            testControllerService.GetQueryResultValue(null, new TestServiceParam(), "api/test", "Key:Value", 1);
+
             if (id != null)
             {
                 return new QueryResult<object>
@@ -97,6 +99,8 @@ namespace Feign.TestWeb.Controllers
             var t = await tt;
             var ttt = testServiceClient.GetQueryResultValue("1", new int[] { 1, 2, 3 });
             //return new JsonResult(t);
+
+            var tttt = await testService.PostOfTAsync<HttpResponseMessage>(1);
 
             return Ok(t);
 

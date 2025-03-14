@@ -121,7 +121,7 @@ namespace Feign.Reflection
         {
 
             MethodAttributes methodAttributes = MethodAttributes.Public;
-            MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, methodAttributes, CallingConventions.Standard, method.ReturnType, Type.EmptyTypes);
+            MethodBuilder methodBuilder = typeBuilder.DefineMethodEx(method, methodAttributes, CallingConventions.Standard, method.ReturnType, Type.EmptyTypes);
             ILGenerator iLGenerator = methodBuilder.GetILGenerator();
             if (fieldBuilders.Count > 0)
             {

@@ -18,9 +18,8 @@ namespace Feign
 
         public static MethodBuilder DefineMethodBuilder(this TypeBuilder typeBuilder, MethodInfo method, MethodAttributes methodAttributes, bool copyCustomAttributes)
         {
-
             var arguments = method.GetParameters().Select(a => a.ParameterType).ToArray();
-            MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, methodAttributes, CallingConventions.Standard, method.ReturnType, arguments);
+            MethodBuilder methodBuilder = typeBuilder.DefineMethodEx(method, methodAttributes, CallingConventions.Standard, method.ReturnType, arguments);
             int position = 1;
             foreach (var parameter in method.GetParameters())
             {

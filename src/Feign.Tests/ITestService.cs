@@ -80,6 +80,9 @@ namespace Feign.Tests
         [DeleteMapping]
         Task<string> DeleteAsync([RequestBody] int[] ids);
 
+        [PostMapping]
+        Task<T> PostOfTAsync<T>(int id);
+
     }
 
 

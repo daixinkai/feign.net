@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Feign.Proxy;
 using Feign.Reflection;
 using Feign.Request;
 using Newtonsoft.Json.Linq;
 
 namespace Feign.Tests
 {
+
     public class TestServiceFallback : ITestService
     {
 
@@ -212,6 +214,11 @@ namespace Feign.Tests
         }
 
         public void GetNullableVoid([PathVariable] int id, [RequestParam] int? appId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> PostOfTAsync<T>(int id)
         {
             throw new NotImplementedException();
         }

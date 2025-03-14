@@ -61,9 +61,9 @@ namespace Feign.Reflection
             {
                 throw new NotSupportedException("RequestBody or RequestForm is not supported");
             }
-            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo, feignClientAttribute);
+            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, methodBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo, feignClientAttribute);
             // fallback
-            LocalBuilder fallbackDelegate = DefineFallbackDelegate(typeBuilder, iLGenerator, serviceType, feignClientMethodInfo.MethodMetadata!);
+            LocalBuilder fallbackDelegate = DefineFallbackDelegate(typeBuilder, methodBuilder, iLGenerator, serviceType, feignClientMethodInfo.MethodMetadata!);
             iLGenerator.Emit(OpCodes.Ldarg_0);  //this
             iLGenerator.Emit(OpCodes.Ldloc, feignClientRequest);
             iLGenerator.Emit(OpCodes.Ldloc, fallbackDelegate);
@@ -80,11 +80,12 @@ namespace Feign.Reflection
         /// Generate fallback method delegate
         /// </summary>
         /// <param name="typeBuilder"></param>
+        /// <param name="methodBuilder"></param>
         /// <param name="iLGenerator"></param>
         /// <param name="serviceType"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        private LocalBuilder DefineFallbackDelegate(TypeBuilder typeBuilder, ILGenerator iLGenerator, Type serviceType, MethodInfo method)
+        private LocalBuilder DefineFallbackDelegate(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, Type serviceType, MethodInfo method)
         {
             Type delegateType;
             if (method.ReturnType == null || method.ReturnType == typeof(void))
@@ -119,14 +120,14 @@ namespace Feign.Reflection
                 iLGenerator.Emit(OpCodes.Newobj, anonymousMethodClassTypeBuild.Item2);
                 iLGenerator.Emit(OpCodes.Stloc, anonymousMethodClass);
                 iLGenerator.Emit(OpCodes.Ldloc, anonymousMethodClass);
-                iLGenerator.Emit(OpCodes.Ldftn, anonymousMethodClassTypeBuild.Item3);
+                iLGenerator.Emit(OpCodes.Ldftn, anonymousMethodClassTypeBuild.Item3.MakeGenericDefinitionArguments(methodBuilder));
             }
             else
             {
                 iLGenerator.Emit(OpCodes.Ldarg_0); //this
                 iLGenerator.EmitGetProperty(typeBuilder.BaseType!.GetRequiredProperty("Fallback")); //.Fallback
                 iLGenerator.Emit(OpCodes.Dup);
-                iLGenerator.Emit(OpCodes.Ldvirtftn, method);
+                iLGenerator.Emit(OpCodes.Ldvirtftn, method.MakeGenericDefinitionArguments(methodBuilder));
             }
 
             iLGenerator.Emit(OpCodes.Newobj, delegateConstructor);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,6 +54,31 @@ namespace Feign
             {
                 GetMethodsFromBaseInterfaces(item, methods);
             }
+        }
+
+        public static MethodBuilder DefineMethodEx(this TypeBuilder typeBuilder, MethodInfo method, MethodAttributes attributes, CallingConventions callingConvention, Type? returnType, Type[]? parameterTypes)
+        {
+            MethodBuilder methodBuilder = typeBuilder.DefineMethod(method.Name, attributes, callingConvention, returnType, parameterTypes);
+            if (method.IsGenericMethod && method.IsGenericMethodDefinition)
+            {
+                var names = new List<string>();
+                var length = method.GetGenericArguments().Length;
+                for (int i = 1; i <= length; i++)
+                {
+                    names.Add("T" + i);
+                }
+                methodBuilder.DefineGenericParameters(names.ToArray());
+            }
+            return methodBuilder;
+        }
+
+        public static MethodInfo MakeGenericDefinitionArguments(this MethodInfo method, MethodBuilder methodBuilder)
+        {
+            if (method.IsGenericMethod && method.IsGenericMethodDefinition)
+            {
+                return method.MakeGenericMethod(methodBuilder.GetGenericArguments());
+            }
+            return method;
         }
 
     }

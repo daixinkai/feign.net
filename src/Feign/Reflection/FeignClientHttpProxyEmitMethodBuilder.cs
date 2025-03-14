@@ -140,7 +140,7 @@ namespace Feign.Reflection
             return GetInvokeMethod(serviceType, requestMapping, GetReturnType(method), method.IsTaskMethod() || method.IsValueTaskMethod());
         }
 
-        private static Type GetReturnType(MethodInfo method)
+        protected static Type GetReturnType(MethodInfo method)
         {
             Type returnType;
             if ((method.IsTaskMethod() || method.IsValueTaskMethod()) && method.ReturnType.IsGenericType)
@@ -261,7 +261,7 @@ namespace Feign.Reflection
                 throw new NotSupportedException("RequestBody or RequestForm is not supported");
             }
             //定义请求的详情 FeignClientHttpRequest
-            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo, feignClientAttribute);
+            LocalBuilder feignClientRequest = DefineFeignClientRequest(typeBuilder, methodBuilder, serviceType, iLGenerator, uri, requestMapping, emitRequestContents, feignClientMethodInfo, feignClientAttribute);
             iLGenerator.Emit(OpCodes.Ldarg_0);  //this
             iLGenerator.Emit(OpCodes.Ldloc, feignClientRequest);
             iLGenerator.Emit(OpCodes.Call, invokeMethod);
@@ -298,6 +298,7 @@ namespace Feign.Reflection
         /// 定义用于Send方法的FeignClientHttpRequest
         /// </summary>
         /// <param name="typeBuilder"></param>
+        /// <param name="methodBuilder"></param>
         /// <param name="serviceType"></param>
         /// <param name="iLGenerator"></param>
         /// <param name="uri"></param>
@@ -306,10 +307,10 @@ namespace Feign.Reflection
         /// <param name="feignClientMethodInfo"></param>
         /// <param name="feignClientAttribute"></param>
         /// <returns></returns>
-        protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent>? emitRequestContents, FeignClientMethodInfo feignClientMethodInfo, FeignClientAttribute feignClientAttribute)
+        protected LocalBuilder DefineFeignClientRequest(TypeBuilder typeBuilder, MethodBuilder methodBuilder, Type serviceType, ILGenerator iLGenerator, LocalBuilder uri, RequestMappingBaseAttribute requestMapping, List<EmitRequestContent>? emitRequestContents, FeignClientMethodInfo feignClientMethodInfo, FeignClientAttribute feignClientAttribute)
         {
             Type returnType = GetReturnType(feignClientMethodInfo.MethodMetadata!);
-            var feignClientMethodInfoLocalBuilder = DefineFeignClientMethodInfo(typeBuilder, iLGenerator, feignClientMethodInfo, returnType);
+            var feignClientMethodInfoLocalBuilder = DefineFeignClientMethodInfo(typeBuilder, methodBuilder, iLGenerator, feignClientMethodInfo, returnType);
 
             LocalBuilder localBuilder = iLGenerator.DeclareLocal(typeof(FeignClientHttpRequest));
 
@@ -491,7 +492,7 @@ namespace Feign.Reflection
             return localBuilder;
         }
 
-        private static LocalBuilder DefineFeignClientMethodInfo(TypeBuilder typeBuilder, ILGenerator iLGenerator, FeignClientMethodInfo feignClientMethodInfo, Type returnType)
+        private static LocalBuilder DefineFeignClientMethodInfo(TypeBuilder typeBuilder, MethodBuilder methodBuilder, ILGenerator iLGenerator, FeignClientMethodInfo feignClientMethodInfo, Type returnType)
         {
             //feignClientMethodInfo
             //feignClientMethodInfo=null
@@ -530,7 +531,7 @@ namespace Feign.Reflection
             iLGenerator.Emit(OpCodes.Ceq);
             iLGenerator.Emit(OpCodes.Brfalse_S, nextLabel);
             iLGenerator.Emit(OpCodes.Ldloc, localBuilder);
-            iLGenerator.EmitMethodInfo(feignClientMethodInfo.MethodMetadata!);
+            iLGenerator.EmitMethodInfo(feignClientMethodInfo.MethodMetadata!.MakeGenericDefinitionArguments(methodBuilder));
             iLGenerator.EmitSetProperty(typeof(FeignClientMethodInfo).GetRequiredProperty("MethodMetadata"));
             #endregion
             //处理下 if GOTO
@@ -601,7 +602,8 @@ namespace Feign.Reflection
                     throw new NotSupportedException($"ContentType {emitRequestContent.MediaType}  is not supported");
                     //constructorInfo = typeof(FeignClientFormRequestContent<>).MakeGenericType(emitRequestContent.Parameter.ParameterType).GetConstructors()[0];
                     //break;
-            };
+            }
+
             iLGenerator.Emit(OpCodes.Ldstr, emitRequestContent.Parameter.Name!);
             iLGenerator.EmitLdarg(emitRequestContent.ParameterIndex);
             iLGenerator.Emit(OpCodes.Newobj, constructorInfo);
