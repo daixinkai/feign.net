@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Feign.Middleware
 {
-    public interface IFeignClientMiddleware<T>
+    public interface IFeignClientMiddleware
+    {
+    }
+    public interface IFeignClientMiddleware<T> : IFeignClientMiddleware
     {
     }
 }

@@ -16,6 +16,8 @@ namespace Feign.TestWeb.Controllers
             )
         {
 
+            //testControllerService = ((IFeignClient<ITestControllerService>)testControllerService).CreateScope().Service;
+
             testControllerService.GetQueryResultValue(null, new TestServiceParam(), "api/test", "Key:Value", 1);
 
             if (id != null)

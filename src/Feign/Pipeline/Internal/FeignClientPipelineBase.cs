@@ -65,162 +65,122 @@ namespace Feign.Pipeline.Internal
         {
             if (middleware != null)
             {
-                _buildingRequestMiddlewares.Add(new DelegateBuildingRequestMiddleware<TService>(middleware));
+                UseBuildingRequest(new DelegateBuildingRequestMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseBuildingRequest(IBuildingRequestMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _buildingRequestMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_buildingRequestMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseCancelRequest(CancelRequestDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _cancelRequestMiddlewares.Add(new DelegateCancelRequestMiddleware<TService>(middleware));
+                UseCancelRequest(new DelegateCancelRequestMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseCancelRequest(ICancelRequestMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _cancelRequestMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_cancelRequestMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseDisposing(DisposingDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _disposingMiddlewares.Add(new DelegateDisposingMiddleware<TService>(middleware));
+                UseDisposing(new DelegateDisposingMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseDisposing(IDisposingMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _disposingMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_disposingMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseErrorRequest(ErrorRequestDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _errorRequestMiddlewares.Add(new DelegateErrorRequestMiddleware<TService>(middleware));
+                UseErrorRequest(new DelegateErrorRequestMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseErrorRequest(IErrorRequestMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _errorRequestMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_errorRequestMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseFallbackRequest(FallbackRequestDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _fallbackRequestMiddlewares.Add(new DelegateFallbackRequestMiddleware<TService>(middleware));
+                UseFallbackRequest(new DelegateFallbackRequestMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseFallbackRequest(IFallbackRequestMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _fallbackRequestMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_fallbackRequestMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseInitializing(InitializingDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _initializingMiddlewares.Add(new DelegateInitializingMiddleware<TService>(middleware));
+                UseInitializing(new DelegateInitializingMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseInitializing(IInitializingMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _initializingMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_initializingMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseReceivingResponse(ReceivingResponseDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _receivingResponseMiddlewares.Add(new DelegateReceivingResponseMiddleware<TService>(middleware));
+                UseReceivingResponse(new DelegateReceivingResponseMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseReceivingResponse(IReceivingResponseMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _receivingResponseMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_receivingResponseMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseReceivedResponse(ReceivedResponseDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _receivedResponseMiddlewares.Add(new DelegateReceivedResponseMiddleware<TService>(middleware));
+                UseReceivedResponse(new DelegateReceivedResponseMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseReceivedResponse(IReceivedResponseMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _receivedResponseMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_receivedResponseMiddlewares, middleware);
         }
 
         public IFeignClientPipeline<TService> UseSendingRequest(SendingRequestDelegate<TService> middleware)
         {
             if (middleware != null)
             {
-                _sendingRequestMiddlewares.Add(new DelegateSendingRequestMiddleware<TService>(middleware));
+                UseSendingRequest(new DelegateSendingRequestMiddleware<TService>(middleware));
             }
             return this;
         }
         public IFeignClientPipeline<TService> UseSendingRequest(ISendingRequestMiddleware<TService> middleware)
         {
-            if (middleware != null)
-            {
-                _sendingRequestMiddlewares.Add(middleware);
-            }
-            return this;
+            return AddMiddleware(_sendingRequestMiddlewares, middleware);
         }
 
         protected internal virtual async Task BuildingRequestAsync(IBuildingRequestPipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_buildingRequestMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_buildingRequestMiddlewares))
             {
                 return;
             }
@@ -235,11 +195,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual async Task SendingRequestAsync(ISendingRequestPipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_sendingRequestMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_sendingRequestMiddlewares))
             {
                 return;
             }
@@ -254,11 +210,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual async Task CancelRequestAsync(ICancelRequestPipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_cancelRequestMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_cancelRequestMiddlewares))
             {
                 return;
             }
@@ -273,11 +225,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual async Task ErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_errorRequestMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_errorRequestMiddlewares))
             {
                 return;
             }
@@ -292,11 +240,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual async Task ReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_receivingResponseMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_receivingResponseMiddlewares))
             {
                 return;
             }
@@ -311,11 +255,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual async Task ReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_receivedResponseMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_receivedResponseMiddlewares))
             {
                 return;
             }
@@ -330,11 +270,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual void Initializing(IInitializingPipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_initializingMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_initializingMiddlewares))
             {
                 return;
             }
@@ -345,11 +281,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual void Disposing(IDisposingPipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_disposingMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_disposingMiddlewares))
             {
                 return;
             }
@@ -360,11 +292,7 @@ namespace Feign.Pipeline.Internal
         }
         protected internal virtual async Task FallbackRequestAsync(IFallbackRequestPipelineContext<TService> context)
         {
-            if (!Enabled)
-            {
-                return;
-            }
-            if (_fallbackRequestMiddlewares.Count == 0)
+            if (!IsEnableMiddleware(_fallbackRequestMiddlewares))
             {
                 return;
             }
@@ -409,6 +337,27 @@ namespace Feign.Pipeline.Internal
             _sendingRequestMiddlewares.AddRange(pipeline._sendingRequestMiddlewares);
         }
 
+        private IFeignClientPipeline<TService> AddMiddleware<TMiddleware>(IList<TMiddleware> middlewares, TMiddleware? middleware) where TMiddleware : IFeignClientMiddleware
+        {
+            if (middleware != null)
+            {
+                middlewares.Add(middleware);
+            }
+            return this;
+        }
+
+        private bool IsEnableMiddleware<TMiddleware>(IList<TMiddleware> middlewares) where TMiddleware : IFeignClientMiddleware
+        {
+            if (!Enabled)
+            {
+                return false;
+            }
+            if (middlewares.Count == 0)
+            {
+                return false;
+            }
+            return true;
+        }
 
     }
 }
