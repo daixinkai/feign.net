@@ -13,14 +13,14 @@ namespace Feign.Polly
 
         internal readonly ConcurrentDictionary<Type, IAsyncPolicy> _serviceTypePolicyMap = new ConcurrentDictionary<Type, IAsyncPolicy>();
 
-        public override IAsyncPolicy GetAsyncPolicy(IFeignClient<object> feignClient)
+        public override IAsyncPolicy GetAsyncPolicy(string serviceId, Type serviceType)
         {
             IAsyncPolicy asyncPolicy;
-            if (_serviceTypePolicyMap.TryGetValue(feignClient.ServiceType, out asyncPolicy))
+            if (_serviceTypePolicyMap.TryGetValue(serviceType, out asyncPolicy))
             {
                 return asyncPolicy;
             }
-            return _serviceTypePolicyMap.GetOrAdd(feignClient.ServiceType, type => SetupAllPolly(feignClient));
+            return _serviceTypePolicyMap.GetOrAdd(serviceType, type => SetupAllPolly(serviceId, serviceType));
         }
 
     }

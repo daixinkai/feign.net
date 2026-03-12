@@ -33,7 +33,7 @@ namespace Feign.Tests
             feignBuilder.Options.Request.AutomaticDecompression = DecompressionMethods.GZip;
             //feignBuilder.Options.Request.IncludeRootParameterName = true;
 #if NETCOREAPP2_1_OR_GREATER
-            feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
+            feignBuilder.Options.Pipeline.UseInitializing(context =>
             {
                 var httpHandler = context.HttpHandler;
                 httpHandler.PooledConnectionLifetime = TimeSpan.FromHours(1);
@@ -41,19 +41,19 @@ namespace Feign.Tests
             feignBuilder.Options.PropertyNamingPolicy = NamingPolicy.SnakeCaseLower;
 #endif
             feignBuilder.AddFeignClients(Assembly.GetExecutingAssembly(), FeignClientLifetime.Singleton);
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseSendingRequest(context =>
+            feignBuilder.Options.Pipeline.Service<ITestService>().UseSendingRequest(context =>
             {
                 //context.Terminate();
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().UseSendingRequest(context =>
+            feignBuilder.Options.Pipeline.Service<ITestControllerService>().UseSendingRequest(context =>
             {
                 //e.CancellationTokenSource.Cancel();
                 //e.Terminate();
                 return TaskEx.CompletedValueTask;
             });
 
-            feignBuilder.Options.FeignClientPipeline.Service<ITestControllerService>().UseCancelRequest(context =>
+            feignBuilder.Options.Pipeline.Service<ITestControllerService>().UseCancelRequest(context =>
             {
                 context.CancellationToken.Register(obj =>
                 {
@@ -62,7 +62,7 @@ namespace Feign.Tests
                 }, context);
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseSendingRequest(context =>
+            feignBuilder.Options.Pipeline.Service<ITestService>().UseSendingRequest(context =>
             {
                 var types = feignBuilder.Options.Types;
                 if (context.RequestMessage.Content != null)
@@ -78,7 +78,7 @@ namespace Feign.Tests
                 }
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.UseFallbackRequest(context =>
+            feignBuilder.Options.Pipeline.UseFallbackRequest(context =>
             {
                 var parameters = context.GetParameters();
                 object fallback = context.Fallback;
@@ -91,21 +91,21 @@ namespace Feign.Tests
                 context.Terminate();
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
+            feignBuilder.Options.Pipeline.UseInitializing(context =>
             {
                 context.HttpHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             });
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseInitializing(context =>
+            feignBuilder.Options.Pipeline.Service<ITestService>().UseInitializing(context =>
             {
                 context.FeignClient.Service.Name = "Initializing set";
                 context.FeignClient.Service.ServiceId = context.FeignClient.ServiceId;
                 context.FeignClient.Service.ServiceType = context.FeignClient.ServiceType;
             });
-            feignBuilder.Options.FeignClientPipeline.Service(TestFeignExtensions.DefaultServiceId).UseInitializing(context =>
+            feignBuilder.Options.Pipeline.Service(TestFeignExtensions.DefaultServiceId).UseInitializing(context =>
             {
 
             });
-            feignBuilder.Options.FeignClientPipeline.UseDisposing(context =>
+            feignBuilder.Options.Pipeline.UseDisposing(context =>
             {
                 var ee = context;
             });
@@ -117,15 +117,15 @@ namespace Feign.Tests
             //                return new AuthenticationHeaderValue("global", "asdasd");
             //#endif
             //            });
-            feignBuilder.Options.FeignClientPipeline.UseBuildingRequest(FeignClientPipeline_BuildingRequest);
-            feignBuilder.Options.FeignClientPipeline.UseMiddleware(new TestFeignClientMiddleware<object>());
-            feignBuilder.Options.FeignClientPipeline.Service<ITestService>().UseBuildingRequest(context =>
+            feignBuilder.Options.Pipeline.UseBuildingRequest(FeignClientPipeline_BuildingRequest);
+            feignBuilder.Options.Pipeline.UseMiddleware(new TestFeignClientMiddleware<object>());
+            feignBuilder.Options.Pipeline.Service<ITestService>().UseBuildingRequest(context =>
             {
                 IFeignClient<ITestService> feignClient = context.FeignClient;
                 ITestService service = feignClient.Service;
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.Service(DefaultServiceId).UseBuildingRequest(context =>
+            feignBuilder.Options.Pipeline.Service(DefaultServiceId).UseBuildingRequest(context =>
             {
                 var fallbackFeignClient = context.FeignClient.AsFallback();
                 fallbackFeignClient = context.FeignClient.AsFallback<object>();
@@ -154,14 +154,14 @@ namespace Feign.Tests
             //                return new AuthenticationHeaderValue("service", "asdasd");
             //#endif
             //            });
-            feignBuilder.Options.FeignClientPipeline.UseSendingRequest(FeignClientPipeline_SendingRequest);
-            feignBuilder.Options.FeignClientPipeline.Service(DefaultServiceId).UseReceivingResponse(context =>
+            feignBuilder.Options.Pipeline.UseSendingRequest(FeignClientPipeline_SendingRequest);
+            feignBuilder.Options.Pipeline.Service(DefaultServiceId).UseReceivingResponse(context =>
             {
                 return TaskEx.CompletedValueTask;
             });
-            //feignBuilder.Options.FeignClientPipeline.Service<ITestService>().ReceivingQueryResult();
-            feignBuilder.Options.FeignClientPipeline.ReceivingQueryResult();
-            feignBuilder.Options.FeignClientPipeline.UseCancelRequest(context =>
+            //feignBuilder.Options.Pipeline.Service<ITestService>().ReceivingQueryResult();
+            feignBuilder.Options.Pipeline.ReceivingQueryResult();
+            feignBuilder.Options.Pipeline.UseCancelRequest(context =>
             {
                 context.CancellationToken.Register((state) =>
                 {
@@ -169,7 +169,7 @@ namespace Feign.Tests
                 }, context.FeignClient);
                 return TaskEx.CompletedValueTask;
             });
-            feignBuilder.Options.FeignClientPipeline.UseErrorRequest(context =>
+            feignBuilder.Options.Pipeline.UseErrorRequest(context =>
             {
                 Exception exception = context.Exception;
                 //e.ExceptionHandled = true;

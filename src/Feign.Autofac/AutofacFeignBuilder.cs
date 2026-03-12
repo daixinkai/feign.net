@@ -10,7 +10,7 @@ namespace Feign.Autofac
     internal sealed class AutofacFeignBuilder : DefaultFeignBuilderBase, IAutofacFeignBuilder
     {
 
-        public AutofacFeignBuilder(IFeignOptions options, ContainerBuilder containerBuilder) : base(options)
+        public AutofacFeignBuilder(FeignOptions options, ContainerBuilder containerBuilder) : base(options)
         {
             ContainerBuilder = containerBuilder;
         }

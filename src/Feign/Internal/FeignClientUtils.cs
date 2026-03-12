@@ -65,7 +65,7 @@ namespace Feign.Internal
                 return uri + $"?{name}={value}";
             }
         }
-        public static string ReplaceRequestQuery<T>(string uri, string name, T value, IFeignOptions options)
+        public static string ReplaceRequestQuery<T>(string uri, string name, T value, FeignOptions options)
         {
             var typeCode = Type.GetTypeCode(typeof(T));
             bool urlEncode = options.Request.UseUrlEncode;
@@ -85,7 +85,7 @@ namespace Feign.Internal
         #endregion
 
 
-        public static IEnumerable<KeyValuePair<string, string?>> GetObjectStringParameters<T>(string name, T value, IFeignOptions options)
+        public static IEnumerable<KeyValuePair<string, string?>> GetObjectStringParameters<T>(string name, T value, FeignOptions options)
         {
             if (value == null)
             {
@@ -194,6 +194,9 @@ namespace Feign.Internal
             }
             return multipartFormDataContent;
         }
+
+        public static IDictionary<TKey, object?> CreateDictionary<TKey>() where TKey : notnull
+            => new Dictionary<TKey, object?>();
 
 
     }

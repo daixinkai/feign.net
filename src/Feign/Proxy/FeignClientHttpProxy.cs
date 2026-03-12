@@ -17,29 +17,20 @@ namespace Feign.Proxy
     {
         public FeignClientHttpProxy(FeignClientHttpProxyOptions options)
         {
-            FeignOptions = options.FeignOptions;
+            Options = options.FeignOptions;
 
-            _globalPipeline = FeignOptions.FeignClientPipeline as GlobalFeignClientPipeline;
+            _globalPipeline = Options.Pipeline as GlobalFeignClientPipeline;
             _serviceIdPipeline = _globalPipeline?.GetServicePipeline(ServiceId);
             _servicePipeline = _globalPipeline?.GetServicePipeline<TService>();
-            _features = new Dictionary<Type, object?>();
+            _features = FeignClientUtils.CreateDictionary<Type>();
 
             _logger = options.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
 
             var httpClientHandler = new ServiceDiscoveryHttpClientHandler<TService>(this, options.ServiceDiscovery, options.CacheProvider, _logger);
-            if (FeignOptions.Request.AutomaticDecompression.HasValue)
-            {
-                httpClientHandler.AutomaticDecompression = FeignOptions.Request.AutomaticDecompression.Value;
-            }
-            if (FeignOptions.Request.UseCookies.HasValue)
-            {
-                httpClientHandler.UseCookies = FeignOptions.Request.UseCookies.Value;
-            }
-            httpClientHandler.ShouldResolveService = Url == null;
-            httpClientHandler.AllowAutoRedirect = false;
+            httpClientHandler.SetOptions(Options);
             HttpClient = new FeignHttpClient(new FeignDelegatingHandler(httpClientHandler));
-            //string baseUrl = httpClientHandler.ShouldResolveService ? (ServiceId ?? "") : Url!;
-            string baseUrl = httpClientHandler.ShouldResolveService ? ServiceId : Url!;
+            //string baseUrl = httpClientHandler.ShouldResolveService ? ServiceId : Url!;
+            string baseUrl = Url ?? ServiceId;
 
             BaseUrl = BuildBaseUrl(baseUrl);
 
@@ -123,13 +114,13 @@ namespace Feign.Proxy
         /// </summary>
         internal readonly ServiceFeignClientPipeline<TService>? _servicePipeline;
 
-        private readonly Dictionary<Type, object?> _features;
+        private readonly IDictionary<Type, object?> _features;
 
         private readonly ILogger? _logger;
 
         private const string s_httpScheme = "http";
 
-        protected internal IFeignOptions FeignOptions { get; private set; }
+        protected internal FeignOptions Options { get; private set; }
 
         TService IFeignClient<TService>.Service => (this as TService)!;
 
@@ -198,32 +189,32 @@ namespace Feign.Proxy
         #region ConvertToStringValue
         protected virtual string? ConvertToStringValue<T>(T value)
         {
-            return FeignOptions.Converters.ConvertStringValue(value, true);
+            return Options.Converters.ConvertStringValue(value, true);
         }
         #endregion
 
         #region PathVariable
         protected string ReplacePathVariable<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplacePathVariable(FeignOptions.Converters, uri, name, value, FeignOptions.Request.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(Options.Converters, uri, name, value, Options.Request.UseUrlEncode);
         }
         protected string ReplaceStringPathVariable(string uri, string name, string value)
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value, FeignOptions.Request.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(uri, name, value, Options.Request.UseUrlEncode);
         }
         protected string ReplaceToStringPathVariable<T>(string uri, string name, T value) where T : struct
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.Request.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), Options.Request.UseUrlEncode);
         }
         protected string ReplaceNullablePathVariable<T>(string uri, string name, T? value) where T : struct
         {
-            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), FeignOptions.Request.UseUrlEncode);
+            return FeignClientUtils.ReplacePathVariable(uri, name, value.ToString(), Options.Request.UseUrlEncode);
         }
         #endregion
         #region RequestQuery
         protected string ReplaceRequestQuery<T>(string uri, string name, T value)
         {
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, FeignOptions);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, Options);
         }
         protected string ReplaceStringRequestQuery(string uri, string name, string value)
         {
@@ -231,11 +222,11 @@ namespace Feign.Proxy
             {
                 return uri;
             }
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, FeignOptions.Request.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value, Options.Request.UseUrlEncode);
         }
         protected string ReplaceToStringRequestQuery<T>(string uri, string name, T value) where T : struct
         {
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString(), FeignOptions.Request.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.ToString(), Options.Request.UseUrlEncode);
         }
         protected string ReplaceNullableRequestQuery<T>(string uri, string name, T? value) where T : struct
         {
@@ -243,7 +234,7 @@ namespace Feign.Proxy
             {
                 return uri;
             }
-            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.Value.ToString(), FeignOptions.Request.UseUrlEncode);
+            return FeignClientUtils.ReplaceRequestQuery(uri, name, value.Value.ToString(), Options.Request.UseUrlEncode);
         }
         #endregion
 

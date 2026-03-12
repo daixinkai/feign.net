@@ -47,7 +47,7 @@ namespace Feign.Tests.NET45
             {
                 options.Assemblies.Add(typeof(ITestService).Assembly);
                 options.Lifetime = FeignClientLifetime.Singleton;
-                options.FeignClientPipeline.ReceivingQueryResult();
+                options.Pipeline.ReceivingQueryResult();
             });
 
             IContainer container = containerBuilder.Build();
@@ -68,7 +68,7 @@ namespace Feign.Tests.NET45
             windsorContainer.AddFeignClients(options =>
             {
                 options.Assemblies.Add(typeof(ITestService).Assembly);
-                options.FeignClientPipeline.ReceivingQueryResult();
+                options.Pipeline.ReceivingQueryResult();
             })
                 .AddLoggerFactory<DefaultLoggerFactory>()
             ;
@@ -85,7 +85,7 @@ namespace Feign.Tests.NET45
             FeignClients.AddFeignClients(options =>
             {
                 options.Assemblies.Add(typeof(ITestService).Assembly);
-                options.FeignClientPipeline.ReceivingQueryResult();
+                options.Pipeline.ReceivingQueryResult();
             });
             ITestService testService = FeignClients.Get<ITestService>();
             Assert.IsNotNull(testService);

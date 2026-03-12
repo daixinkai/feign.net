@@ -37,7 +37,7 @@ namespace Feign
         /// <returns></returns>
         public static TFeignBuilder AddAngleSharp<TFeignBuilder>(this TFeignBuilder feignBuilder) where TFeignBuilder : IFeignBuilder
         {
-            feignBuilder.Options.FeignClientPipeline.AddAngleSharp();
+            feignBuilder.Options.Pipeline.AddAngleSharp();
             return feignBuilder;
         }
 

@@ -91,7 +91,7 @@ namespace Feign.Proxy
             {
                 return default;
             }
-            IMediaTypeFormatter? mediaTypeFormatter = FeignOptions.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
+            IMediaTypeFormatter? mediaTypeFormatter = Options.MediaTypeFormatters.FindFormatter(responseMessage.Content.Headers.ContentType?.MediaType);
             if (mediaTypeFormatter == null)
             {
                 throw new FeignHttpRequestException(this,

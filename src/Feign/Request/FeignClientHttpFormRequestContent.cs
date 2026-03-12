@@ -29,7 +29,7 @@ namespace Feign.Request
         public string Name { get; private set; }
         public T? Content { get; }
 
-        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options)
+        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, FeignOptions options)
         {
             Type type = typeof(T);
             if (!type.IsValueType && Content == null)

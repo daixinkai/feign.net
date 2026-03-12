@@ -66,9 +66,9 @@ namespace Feign.Polly
             }
         }
 
-        public IAsyncPolicy GetAsyncPolicy(IFeignClient<object> feignClient)
+        public IAsyncPolicy GetAsyncPolicy(string serviceId, Type serviceType)
         {
-            return _policyCollection.GetAsyncPolicy(feignClient);
+            return _policyCollection.GetAsyncPolicy(serviceId, serviceType);
         }
 
 

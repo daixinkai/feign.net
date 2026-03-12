@@ -8,8 +8,10 @@ namespace Feign
 {
     public interface IFeignBuilder
     {
-        IFeignOptions Options { get; }
+        FeignOptions Options { get; }
         IFeignClientTypeBuilder TypeBuilder { get; }
+
+        bool SupportGenericService { get; }
 
         /// <summary>
         /// Adds the specified <paramref name="serviceType"/> as a <see cref="FeignClientLifetime"/> service

@@ -18,7 +18,7 @@ namespace Feign.Standalone
 
         internal static FeignClientHttpProxyOptions<TService> CreateFeignClientConfigureOptions<TService>()
         {
-            var proxyOptions = new FeignClientHttpProxyOptions<TService>(Get<IFeignOptions>(), Get<IServiceDiscovery>(), Get<ICacheProvider>(), Get<ILoggerFactory>());
+            var proxyOptions = new FeignClientHttpProxyOptions<TService>(Get<FeignOptions>(), Get<IServiceDiscovery>(), Get<ICacheProvider>(), Get<ILoggerFactory>());
             //proxyOptions.Configuration = Get<IFeignClientConfiguration>();
             //proxyOptions.ServiceConfiguration = Get<IFeignClientConfiguration<TService>>();
             return proxyOptions;
@@ -76,7 +76,7 @@ namespace Feign.Standalone
             }
             feignBuilder.AddService(typeof(ILoggerFactory), typeof(DefaultLoggerFactory), FeignClientLifetime.Singleton);
             feignBuilder.AddService(typeof(ICacheProvider), typeof(DefaultCacheProvider), FeignClientLifetime.Singleton);
-            feignBuilder.AddService<IFeignOptions>(options);
+            feignBuilder.AddService(options);
             return feignBuilder;
         }
 

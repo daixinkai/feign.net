@@ -9,7 +9,7 @@ namespace Feign.Proxy
     public class FeignClientHttpProxyOptions
     {
         public FeignClientHttpProxyOptions(
-            IFeignOptions feignOptions,
+            FeignOptions feignOptions,
             IServiceDiscovery serviceDiscovery,
             ICacheProvider? cacheProvider,
             ILoggerFactory? loggerFactory
@@ -21,7 +21,7 @@ namespace Feign.Proxy
             LoggerFactory = loggerFactory;
         }
 
-        public IFeignOptions FeignOptions { get; }
+        public FeignOptions FeignOptions { get; }
         public IServiceDiscovery ServiceDiscovery { get; }
         public ICacheProvider? CacheProvider { get; }
         public ILoggerFactory? LoggerFactory { get; }
@@ -30,7 +30,7 @@ namespace Feign.Proxy
 
     public class FeignClientHttpProxyOptions<TService> : FeignClientHttpProxyOptions
     {
-        public FeignClientHttpProxyOptions(IFeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider? cacheProvider, ILoggerFactory? loggerFactory) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
+        public FeignClientHttpProxyOptions(FeignOptions feignOptions, IServiceDiscovery serviceDiscovery, ICacheProvider? cacheProvider, ILoggerFactory? loggerFactory) : base(feignOptions, serviceDiscovery, cacheProvider, loggerFactory)
         {
         }
 

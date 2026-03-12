@@ -11,7 +11,7 @@ namespace Feign.CastleWindsor
     internal sealed class CastleWindsorFeignBuilder : DefaultFeignBuilderBase, ICastleWindsorFeignBuilder
     {
 
-        public CastleWindsorFeignBuilder(IFeignOptions options, IWindsorContainer windsorContainer) : base(options)
+        public CastleWindsorFeignBuilder(FeignOptions options, IWindsorContainer windsorContainer) : base(options)
         {
             WindsorContainer = windsorContainer;
         }

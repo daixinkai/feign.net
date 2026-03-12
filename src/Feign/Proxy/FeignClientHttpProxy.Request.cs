@@ -106,7 +106,7 @@ namespace Feign.Proxy
                     // if support content
                     if (httpRequestMessage.Method.IsSupportContent())
                     {
-                        HttpContent? httpContent = request.GetHttpContent(FeignOptions);
+                        HttpContent? httpContent = request.GetHttpContent(Options);
                         if (httpContent != null)
                         {
                             httpRequestMessage.Content = httpContent;

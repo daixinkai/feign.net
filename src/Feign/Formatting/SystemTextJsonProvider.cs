@@ -12,7 +12,7 @@ namespace Feign.Formatting
 {
     public class SystemTextJsonProvider : IJsonProvider
     {
-        internal readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
             PropertyNameCaseInsensitive = true
         };

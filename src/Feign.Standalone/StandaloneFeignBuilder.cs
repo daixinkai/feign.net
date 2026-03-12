@@ -11,7 +11,7 @@ namespace Feign.Standalone
 {
     internal class StandaloneFeignBuilder : DefaultFeignBuilderBase, IStandaloneFeignBuilder
     {
-        public StandaloneFeignBuilder(IFeignOptions options) : base(options)
+        public StandaloneFeignBuilder(FeignOptions options) : base(options)
         {
             Services = new ServiceCollection();
         }

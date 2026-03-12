@@ -6,8 +6,6 @@ using Feign.Proxy;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +32,7 @@ namespace Feign.Discovery
             ICacheProvider? serviceCacheProvider,
             ILogger? logger) : base(feignClient, logger)
         {
-            _serviceResolve = feignClient.FeignOptions.Request.LoadBalancingPolicy switch
+            _serviceResolve = feignClient.Options.Request.LoadBalancingPolicy switch
             {
                 LoadBalancingPolicy.FirstAlphabetical => new FirstServiceResolve(logger),
                 LoadBalancingPolicy.Random => new RandomServiceResolve(logger),
@@ -45,11 +43,12 @@ namespace Feign.Discovery
             };
             _serviceDiscovery = serviceDiscovery;
             _serviceCacheProvider = serviceCacheProvider;
-            ShouldResolveService = true;
+            ShouldResolveService = feignClient.Url == null;
+            AllowAutoRedirect = false;
         }
 
 
-        public bool ShouldResolveService { get; set; }
+        public bool ShouldResolveService { get; }
 
 #if USE_VALUE_TASK
         protected override async ValueTask<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
@@ -69,7 +68,7 @@ namespace Feign.Discovery
 
             string serviceId = requestMessage.ServiceId ?? requestMessage.RequestUri!.Host;
 
-            var cacheTime = FeignClient.FeignOptions.Request.DiscoverServiceCacheTime;
+            var cacheTime = FeignClient.Options.Request.DiscoverServiceCacheTime;
             IList<IServiceInstance>? services = cacheTime.HasValue ?
             await _serviceDiscovery.GetServiceInstancesWithCacheAsync(serviceId, _serviceCacheProvider, cacheTime.Value)
 #if USE_CONFIGUREAWAIT_FALSE

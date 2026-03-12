@@ -15,18 +15,18 @@ namespace Feign.Formatting
     public class JsonMediaTypeFormatter : IMediaTypeFormatter
     {
 
-        public JsonMediaTypeFormatter(IFeignOptions options) : this(Constants.MediaTypes.APPLICATION_JSON, options)
+        public JsonMediaTypeFormatter(FeignOptions options) : this(Constants.MediaTypes.APPLICATION_JSON, options)
         {
         }
 
-        public JsonMediaTypeFormatter(string mediaType, IFeignOptions options)
+        public JsonMediaTypeFormatter(string mediaType, FeignOptions options)
         {
             MediaType = mediaType;
             _options = options;
         }
         public string MediaType { get; }
 
-        private IFeignOptions _options;
+        private FeignOptions _options;
 
         public Task<TResult?> GetResultAsync<TResult>(Stream stream, Encoding? encoding)
         {

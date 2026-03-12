@@ -520,12 +520,12 @@ namespace Feign.Reflection
 
             Label nextLabel = iLGenerator.DefineLabel();
 
-            #region if (base.FeignOptions.IncludeMethodMetadata) set the call method
+            #region if (base.Options.IncludeMethodMetadata) set the call method
             //这里获取方法元数据
-            PropertyInfo feignOptionsProperty = typeBuilder.BaseType!.GetRequiredProperty("FeignOptions", BindingFlags.Instance | BindingFlags.NonPublic);
-            PropertyInfo includeMethodMetadataProperty = feignOptionsProperty.PropertyType.GetRequiredProperty("IncludeMethodMetadata");
+            PropertyInfo optionsProperty = typeBuilder.BaseType!.GetRequiredProperty(nameof(FeignClientHttpProxy<object>.Options), BindingFlags.Instance | BindingFlags.NonPublic);
+            PropertyInfo includeMethodMetadataProperty = optionsProperty.PropertyType.GetRequiredProperty("IncludeMethodMetadata");
             iLGenerator.Emit(OpCodes.Ldarg_0);
-            iLGenerator.EmitGetProperty(feignOptionsProperty);
+            iLGenerator.EmitGetProperty(optionsProperty);
             iLGenerator.Emit(OpCodes.Callvirt, includeMethodMetadataProperty.GetMethod!);
             iLGenerator.Emit(OpCodes.Ldc_I4_1);
             iLGenerator.Emit(OpCodes.Ceq);

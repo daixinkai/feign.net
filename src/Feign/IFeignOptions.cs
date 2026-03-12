@@ -4,6 +4,7 @@ using Feign.Reflection;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Feign
 {
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IFeignOptions
     {
         /// <summary>
@@ -30,7 +32,12 @@ namespace Feign
         /// <summary>
         /// Gets the Global Pipeline
         /// </summary>
+        [Obsolete("Use Pipeline")]
         IGlobalFeignClientPipeline FeignClientPipeline { get; }
+        /// <summary>
+        /// Gets the Global Pipeline
+        /// </summary>
+        IGlobalFeignClientPipeline Pipeline { get; }
         /// <summary>
         /// Gets or sets the Lifetime.
         /// default value is <see cref="FeignClientLifetime.Singleton"/>

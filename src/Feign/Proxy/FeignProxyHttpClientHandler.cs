@@ -195,5 +195,18 @@ namespace Feign.Proxy
             }
         }
 
+
+        internal void SetOptions(FeignOptions options)
+        {
+            if (options.Request.AutomaticDecompression.HasValue)
+            {
+                AutomaticDecompression = options.Request.AutomaticDecompression.Value;
+            }
+            if (options.Request.UseCookies.HasValue)
+            {
+                UseCookies = options.Request.UseCookies.Value;
+            }
+        }
+
     }
 }

@@ -20,17 +20,17 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddFeignClients(services, default(FeignOptions));
         }
 
-        public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services, Action<IFeignOptions> setupAction)
+        public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services, Action<FeignOptions> setupAction)
         {
-            FeignOptions options = new FeignOptions();
+            var options = new FeignOptions();
             setupAction?.Invoke(options);
             return AddFeignClients(services, options);
         }
 
-        public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services, IFeignOptions? options)
+        public static IDependencyInjectionFeignBuilder AddFeignClients(this IServiceCollection services, FeignOptions? options)
         {
             options ??= new FeignOptions();
-            DependencyInjectionFeignBuilder feignBuilder = new DependencyInjectionFeignBuilder(options, services);
+            var feignBuilder = new DependencyInjectionFeignBuilder(options, services);
             feignBuilder.AddDefaultFeignClients()
             .AddLoggerFactory<LoggerFactory>()
             .AddCacheProvider<JsonCacheProvider>()

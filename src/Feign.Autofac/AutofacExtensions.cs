@@ -1,8 +1,5 @@
 ﻿using Feign;
 using Feign.Autofac;
-using Feign.Cache;
-using Feign.Discovery;
-using Feign.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,14 +18,14 @@ namespace Autofac
             return AddFeignClients(containerBuilder, (FeignOptions)null);
         }
 
-        public static IAutofacFeignBuilder AddFeignClients(this ContainerBuilder containerBuilder, Action<IFeignOptions> setupAction)
+        public static IAutofacFeignBuilder AddFeignClients(this ContainerBuilder containerBuilder, Action<FeignOptions> setupAction)
         {
-            FeignOptions options = new FeignOptions();
+            var options = new FeignOptions();
             setupAction?.Invoke(options);
             return AddFeignClients(containerBuilder, options);
         }
 
-        public static IAutofacFeignBuilder AddFeignClients(this ContainerBuilder containerBuilder, IFeignOptions options)
+        public static IAutofacFeignBuilder AddFeignClients(this ContainerBuilder containerBuilder, FeignOptions options)
         {
             if (options == null)
             {

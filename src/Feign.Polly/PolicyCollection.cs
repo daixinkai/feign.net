@@ -20,53 +20,49 @@ namespace Feign.Polly
         internal readonly ConcurrentDictionary<Type, List<Func<IAsyncPolicy, IAsyncPolicy>>> _serviceTypePolicySetupsMap = new ConcurrentDictionary<Type, List<Func<IAsyncPolicy, IAsyncPolicy>>>();
         internal readonly ConcurrentDictionary<Type, List<Func<IAsyncPolicy, Task<IAsyncPolicy>>>> _serviceTypePolicyAsyncSetupsMap = new ConcurrentDictionary<Type, List<Func<IAsyncPolicy, Task<IAsyncPolicy>>>>();
 
-        public virtual IAsyncPolicy GetAsyncPolicy(IFeignClient<object> feignClient)
+        public virtual IAsyncPolicy GetAsyncPolicy(string serviceId, Type serviceType)
         {
-            return SetupAllPolly(feignClient);
+            return SetupAllPolly(serviceId, serviceType);
         }
 
 
 
-        internal IAsyncPolicy SetupAllPolly(IFeignClient<object> feignClient)
+        internal IAsyncPolicy SetupAllPolly(string serviceId, Type serviceType)
         {
             IAsyncPolicy asyncPolicy = Policy.NoOpAsync();
-            asyncPolicy = SetupServiceTypePolly(asyncPolicy, feignClient);
-            asyncPolicy = SetupServiceIdPolly(asyncPolicy, feignClient);
-            asyncPolicy = SetupGlobalPolly(asyncPolicy, feignClient);
+            asyncPolicy = SetupServiceTypePolly(asyncPolicy, serviceType);
+            asyncPolicy = SetupServiceIdPolly(asyncPolicy, serviceId);
+            asyncPolicy = SetupGlobalPolly(asyncPolicy);
             return asyncPolicy;
         }
 
-        internal IAsyncPolicy SetupServiceTypePolly(IAsyncPolicy asyncPolicy, IFeignClient<object> feignClient)
+        internal IAsyncPolicy SetupServiceTypePolly(IAsyncPolicy asyncPolicy, Type serviceType)
         {
-            List<Func<IAsyncPolicy, IAsyncPolicy>> setups;
-            List<Func<IAsyncPolicy, Task<IAsyncPolicy>>> asyncSetups;
             //serviceType
-            if (_serviceTypePolicySetupsMap.TryGetValue(feignClient.ServiceType, out setups))
+            if (_serviceTypePolicySetupsMap.TryGetValue(serviceType, out var setups))
             {
                 setups.ForEach(setup => asyncPolicy = setup.Invoke(asyncPolicy));
             }
-            if (_serviceTypePolicyAsyncSetupsMap.TryGetValue(feignClient.ServiceType, out asyncSetups))
+            if (_serviceTypePolicyAsyncSetupsMap.TryGetValue(serviceType, out var asyncSetups))
             {
                 asyncSetups.ForEach(setup => asyncPolicy = setup.Invoke(asyncPolicy).ConfigureAwait(false).GetAwaiter().GetResult());
             }
             return asyncPolicy;
         }
-        internal IAsyncPolicy SetupServiceIdPolly(IAsyncPolicy asyncPolicy, IFeignClient<object> feignClient)
+        internal IAsyncPolicy SetupServiceIdPolly(IAsyncPolicy asyncPolicy, string serviceId)
         {
-            List<Func<IAsyncPolicy, IAsyncPolicy>> setups;
-            List<Func<IAsyncPolicy, Task<IAsyncPolicy>>> asyncSetups;
             //serviceId
-            if (_serviceIdPolicySetupsMap.TryGetValue(feignClient.ServiceId, out setups))
+            if (_serviceIdPolicySetupsMap.TryGetValue(serviceId, out var setups))
             {
                 setups.ForEach(setup => asyncPolicy = setup.Invoke(asyncPolicy));
             }
-            if (_serviceIdPolicyAsyncSetupsMap.TryGetValue(feignClient.ServiceId, out asyncSetups))
+            if (_serviceIdPolicyAsyncSetupsMap.TryGetValue(serviceId, out var asyncSetups))
             {
                 asyncSetups.ForEach(setup => asyncPolicy = setup.Invoke(asyncPolicy).ConfigureAwait(false).GetAwaiter().GetResult());
             }
             return asyncPolicy;
         }
-        internal IAsyncPolicy SetupGlobalPolly(IAsyncPolicy asyncPolicy, IFeignClient<object> feignClient)
+        internal IAsyncPolicy SetupGlobalPolly(IAsyncPolicy asyncPolicy)
         {
             //global
             _globalPolicySetups.ForEach(setup => asyncPolicy = setup.Invoke(asyncPolicy));

@@ -110,7 +110,7 @@ namespace Feign.Request
         /// Gets the HttpContent sent with the request
         /// </summary>
         /// <returns></returns>
-        public HttpContent? GetHttpContent(IFeignOptions options)
+        public HttpContent? GetHttpContent(FeignOptions options)
         {
             return RequestContent?.GetHttpContent(ContentType, options);
         }

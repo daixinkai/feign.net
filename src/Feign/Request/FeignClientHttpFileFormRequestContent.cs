@@ -23,7 +23,7 @@ namespace Feign.Request
         }
         public IHttpRequestFileForm RequestFileForm { get; }
 
-        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, IFeignOptions options)
+        public override HttpContent? GetHttpContent(MediaTypeHeaderValue? contentType, FeignOptions options)
         {
             if (RequestFileForm == null)
             {

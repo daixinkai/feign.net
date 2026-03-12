@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Feign.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -7,6 +8,22 @@ using System.Threading.Tasks;
 
 namespace Feign.Request
 {
+
+    //public class FeignHttpRequestMessage<TService> : FeignHttpRequestMessage
+    //{
+    //    public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest) : base(feignClientRequest)
+    //    {
+    //    }
+
+    //    public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest, HttpMethod method, string? requestUri) : base(feignClientRequest, method, requestUri)
+    //    {
+    //    }
+
+    //    public FeignHttpRequestMessage(FeignClientHttpRequest feignClientRequest, HttpMethod method, Uri? requestUri) : base(feignClientRequest, method, requestUri)
+    //    {
+    //    }
+    //}
+
     /// <summary>
     /// FeignHttpRequestMessage
     /// </summary>
@@ -39,6 +56,9 @@ namespace Feign.Request
         /// Gets or sets the ServiceId
         /// </summary>
         public string? ServiceId { get; set; }
+
+        private IDictionary<string, object?>? _items;
+        public IDictionary<string, object?> Items => _items ??= FeignClientUtils.CreateDictionary<string>();
 
     }
 }

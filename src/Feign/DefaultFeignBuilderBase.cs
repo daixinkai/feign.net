@@ -9,15 +9,17 @@ namespace Feign
 {
     public abstract class DefaultFeignBuilderBase : IFeignBuilder
     {
-        protected DefaultFeignBuilderBase(IFeignOptions options)
+        protected DefaultFeignBuilderBase(FeignOptions options)
         {
             Options = options;
             TypeBuilder = new FeignClientHttpProxyTypeBuilder();
         }
 
-        public IFeignOptions Options { get; }
+        public FeignOptions Options { get; }
 
         public IFeignClientTypeBuilder TypeBuilder { get; set; }
+
+        public virtual bool SupportGenericService => false;
 
         public abstract void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime);
         public abstract void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime);

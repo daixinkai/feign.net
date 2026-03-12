@@ -12,12 +12,14 @@ namespace Feign.DependencyInjection
     internal sealed class DependencyInjectionFeignBuilder : DefaultFeignBuilderBase, IDependencyInjectionFeignBuilder
     {
 
-        public DependencyInjectionFeignBuilder(IFeignOptions options, IServiceCollection services) : base(options)
+        public DependencyInjectionFeignBuilder(FeignOptions options, IServiceCollection services) : base(options)
         {
             Services = services;
         }
 
         public IServiceCollection Services { get; }
+
+        public override bool SupportGenericService => true;
 
         public override void AddService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {

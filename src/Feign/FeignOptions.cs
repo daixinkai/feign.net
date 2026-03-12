@@ -21,7 +21,7 @@ namespace Feign
             AddDefaultConverters();
             MediaTypeFormatters = new MediaTypeFormatterCollection();
             AddDefaultFormatters();
-            FeignClientPipeline = new GlobalFeignClientPipeline();
+            Pipeline = new GlobalFeignClientPipeline();
             Lifetime = FeignClientLifetime.Singleton;
             Types = new List<FeignClientTypeInfo>();
             PropertyNamingPolicy = NamingPolicy.CamelCase;
@@ -71,7 +71,9 @@ namespace Feign
         public IList<Assembly> Assemblies { get; }
         public ConverterCollection Converters { get; }
         public MediaTypeFormatterCollection MediaTypeFormatters { get; }
-        public IGlobalFeignClientPipeline FeignClientPipeline { get; }
+        [Obsolete("Use Pipeline")]
+        public IGlobalFeignClientPipeline FeignClientPipeline => Pipeline;
+        public IGlobalFeignClientPipeline Pipeline { get; }
         public FeignClientLifetime Lifetime { get; set; }
         public bool IncludeMethodMetadata { get; set; }
 
@@ -84,13 +86,15 @@ namespace Feign
         public FeignRequestOptions Request { get; }
 
         /// <inheritdoc/>
-        TimeSpan? IFeignOptions.DiscoverServiceCacheTime
+        [Obsolete("Use Request.DiscoverServiceCacheTime")]
+        public TimeSpan? DiscoverServiceCacheTime
         {
             get => Request.DiscoverServiceCacheTime;
             set => Request.DiscoverServiceCacheTime = value;
         }
 
         /// <inheritdoc/>
+        [Obsolete("Use Request.UseCookies")]
         public bool? UseCookies
         {
             get => Request.UseCookies;
@@ -98,6 +102,7 @@ namespace Feign
         }
 
         /// <inheritdoc/>
+        [Obsolete("Use Request.UseUrlEncode")]
         public bool UseUrlEncode
         {
             get => Request.UseUrlEncode;
@@ -105,6 +110,7 @@ namespace Feign
         }
 
         /// <inheritdoc/>
+        [Obsolete("Use Request.AutomaticDecompression")]
         public DecompressionMethods? AutomaticDecompression
         {
             get => Request.AutomaticDecompression;
@@ -112,6 +118,7 @@ namespace Feign
         }
 
         /// <inheritdoc/>
+        [Obsolete("Use Request.LoadBalancingPolicy")]
         public LoadBalancingPolicy LoadBalancingPolicy
         {
             get => Request.LoadBalancingPolicy;

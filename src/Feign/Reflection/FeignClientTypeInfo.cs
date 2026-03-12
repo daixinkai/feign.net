@@ -39,5 +39,7 @@ namespace Feign.Reflection
         /// </summary>
         public List<FeignClientMethodInfo> Methods { get; }
 
+        public FeignClientLifetime? Lifetime { get; set; }
+
     }
 }

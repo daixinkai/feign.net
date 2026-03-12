@@ -1,6 +1,5 @@
 ﻿#if !USE_SYSTEM_TEXT_JSON
 using Feign.Internal;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +12,7 @@ namespace Feign.Formatting
     internal class NewtonsoftJsonProvider : IJsonProvider
     {
 
-        internal readonly JsonSerializerSettings _jsonSerializerSettings = CreateDefaultSerializerSettings();
+        private readonly JsonSerializerSettings _jsonSerializerSettings = CreateDefaultSerializerSettings();
 
         public TResult? DeserializeObject<TResult>(byte[] buffer, Encoding? encoding)
         {
@@ -58,7 +57,7 @@ namespace Feign.Formatting
 
         private static JsonSerializerSettings CreateDefaultSerializerSettings()
         {
-            return new JsonSerializerSettings()
+            return new JsonSerializerSettings
             {
 #if !NETFX_CORE // DataContractResolver is not supported in portable library
                 //ContractResolver = _defaultContractResolver,

@@ -28,7 +28,7 @@ var feignBuilder = builder.Services.AddFeignClients(options =>
 //.AddServiceDiscovery<TestServiceDiscovery>()
 //.AddSteeltoe()
 ;
-feignBuilder.Options.FeignClientPipeline.Service<IAngleSharpTestService>().AddAngleSharp();
+feignBuilder.Options.Pipeline.Service<IAngleSharpTestService>().AddAngleSharp();
 //feignBuilder.AddPolly(options =>
 //{
 //    options.Configure(asyncPolicy =>
@@ -61,12 +61,12 @@ feignBuilder.Options.FeignClientPipeline.Service<IAngleSharpTestService>().AddAn
 //        );
 //    });
 //});
-feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
+feignBuilder.Options.Pipeline.UseInitializing(context =>
 {
     context.HttpClient.DefaultRequestVersion = new Version(2, 0);
 });
 
-feignBuilder.Options.FeignClientPipeline.UseReceivedResponse(context =>
+feignBuilder.Options.Pipeline.UseReceivedResponse(context =>
 {
     var result = context.Result;
     return default;
@@ -76,7 +76,7 @@ feignBuilder.Options.FeignClientPipeline.UseReceivedResponse(context =>
 
 var app = builder.Build();
 
-feignBuilder.Options.FeignClientPipeline.UseInitializing(context =>
+feignBuilder.Options.Pipeline.UseInitializing(context =>
 {
     context.FeignClient.SetFeature(app.Services);
 });
