@@ -16,12 +16,12 @@
 
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
 	<PackageReference Include="AngleSharp" Version="0.16.1" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net46'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
   	<PackageReference Include="AngleSharp" Version="1.4.0" />
   </ItemGroup>
 
