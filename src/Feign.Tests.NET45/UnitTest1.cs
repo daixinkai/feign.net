@@ -132,7 +132,7 @@ namespace Feign.Tests.NET45
                 ).Result;
             Assert.IsNotNull(value);
 
-            Assert.AreNotEqual(value, "");
+            Assert.AreNotEqual("", value);
             //var result = testService.GetQueryResultValue("", null);
         }
 

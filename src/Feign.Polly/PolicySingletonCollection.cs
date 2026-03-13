@@ -15,8 +15,7 @@ namespace Feign.Polly
 
         public override IAsyncPolicy GetAsyncPolicy(string serviceId, Type serviceType)
         {
-            IAsyncPolicy asyncPolicy;
-            if (_serviceTypePolicyMap.TryGetValue(serviceType, out asyncPolicy))
+            if (_serviceTypePolicyMap.TryGetValue(serviceType, out var asyncPolicy))
             {
                 return asyncPolicy;
             }
