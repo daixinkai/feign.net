@@ -19,16 +19,18 @@ namespace Feign.Proxy
         {
             Options = options.FeignOptions;
 
-            _globalPipeline = Options.Pipeline as GlobalFeignClientPipeline;
+            _globalPipeline = Options.Pipeline as GlobalFeignClientPipeline ?? new();
+
             _serviceIdPipeline = MergePipeline(
-                new ServiceIdFeignClientPipeline(ServiceId), 
-                _globalPipeline?.GetServicePipeline(ServiceId), 
-                _globalPipeline?.GetKeyedServicePipeline(Key, ServiceId)
+                new ServiceIdFeignClientPipeline(ServiceId),
+                _globalPipeline.GetServicePipeline(ServiceId),
+                _globalPipeline.GetKeyedServicePipeline(Key, ServiceId)
                 );
+
             _servicePipeline = MergePipeline(
-                new ServiceFeignClientPipeline<TService>(), 
-                _globalPipeline?.GetServicePipeline<TService>(), 
-                _globalPipeline?.GetKeyedServicePipeline<TService>(Key)
+                new ServiceFeignClientPipeline<TService>(),
+                _globalPipeline.GetServicePipeline<TService>(),
+                _globalPipeline.GetKeyedServicePipeline<TService>(Key)
                 );
 
             _features = FeignClientUtils.CreateDictionary<Type>();

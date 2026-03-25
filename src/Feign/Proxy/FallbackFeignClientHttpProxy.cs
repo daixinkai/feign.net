@@ -198,14 +198,11 @@ namespace Feign.Proxy
 #endif
                     ;
             }
-            if (_globalPipeline != null)
-            {
-                await _globalPipeline.FallbackRequestAsync(context)
+            await _globalPipeline.FallbackRequestAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
+                .ConfigureAwait(false)
 #endif
-                    ;
-            }
+                ;
         }
         /// <summary>
         /// invoke fallback
