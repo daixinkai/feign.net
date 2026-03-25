@@ -10,9 +10,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Feign.DependencyInjection
 {
     internal sealed class DependencyInjectionFeignBuilder : DefaultFeignBuilderBase, IDependencyInjectionFeignBuilder
-#if NET8_0_OR_GREATER
-        , IKeyedFeignBuilder
-#endif
     {
 
         public DependencyInjectionFeignBuilder(FeignOptions options, IServiceCollection services) : base(options)

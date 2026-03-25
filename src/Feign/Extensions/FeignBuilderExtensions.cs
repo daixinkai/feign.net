@@ -140,7 +140,7 @@ namespace Feign
         /// <param name="feignBuilder"></param>
         /// <param name="converter"></param>
         /// <returns></returns>
-        public static IFeignBuilder AddConverter(this IFeignBuilder feignBuilder, IConverter converter)
+        public static TFeignBuilder AddConverter<TFeignBuilder>(this TFeignBuilder feignBuilder, IConverter converter) where TFeignBuilder : IFeignBuilder
         {
             feignBuilder.Options.Converters.AddConverter(converter);
             return feignBuilder;

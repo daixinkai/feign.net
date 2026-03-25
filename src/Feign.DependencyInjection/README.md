@@ -10,6 +10,8 @@
         {
             //options.DiscoverServiceCacheTime = TimeSpan.FromSeconds(10);
         }).AddFeignClients(typeof(ITestService).Assembly, FeignClientLifetime.Singleton)
+        //or add KeyedServices
+        //.AddKeyedFeignClients("key",typeof(ITestService).Assembly, FeignClientLifetime.Singleton)
         .ConfigureJsonSettings(options =>
         {
             options.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
