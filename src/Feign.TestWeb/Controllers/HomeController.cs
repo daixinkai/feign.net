@@ -10,9 +10,9 @@ namespace Feign.TestWeb.Controllers
         [HttpGet("/")]
         public async Task<ActionResult<object>> Index(
             string? id,
-            [FromKeyedServices("test")] ITestService testKeydService,
             [FromServices] ITestService testService,
             [FromServices] ITestControllerService testControllerService,
+            [FromKeyedServices("test")] ITestControllerService keyedTestControllerService,
             [FromServices] ITestServiceClient testServiceClient
             )
         {
@@ -20,6 +20,8 @@ namespace Feign.TestWeb.Controllers
             //testControllerService = ((IFeignClient<ITestControllerService>)testControllerService).CreateScope().Service;
 
             testControllerService.GetQueryResultValue(null, new TestServiceParam(), "api/test", "Key:Value", 1);
+
+            keyedTestControllerService.GetQueryResultValue(null, new TestServiceParam(), "api/test", "Key:Value", 1);
 
             if (id != null)
             {

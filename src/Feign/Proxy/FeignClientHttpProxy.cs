@@ -20,8 +20,17 @@ namespace Feign.Proxy
             Options = options.FeignOptions;
 
             _globalPipeline = Options.Pipeline as GlobalFeignClientPipeline;
-            _serviceIdPipeline = _globalPipeline?.GetServicePipeline(ServiceId);
-            _servicePipeline = _globalPipeline?.GetServicePipeline<TService>();
+            _serviceIdPipeline = MergePipeline(
+                new ServiceIdFeignClientPipeline(ServiceId), 
+                _globalPipeline?.GetServicePipeline(ServiceId), 
+                _globalPipeline?.GetKeyedServicePipeline(Key, ServiceId)
+                );
+            _servicePipeline = MergePipeline(
+                new ServiceFeignClientPipeline<TService>(), 
+                _globalPipeline?.GetServicePipeline<TService>(), 
+                _globalPipeline?.GetKeyedServicePipeline<TService>(Key)
+                );
+
             _features = FeignClientUtils.CreateDictionary<Type>();
 
             _logger = options.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>));
@@ -42,22 +51,14 @@ namespace Feign.Proxy
                 var servicePipeline = new ServiceFeignClientPipeline<TService>();
                 var context = new FeignClientConfigurationContext<TService>(this, servicePipeline, HttpClient, httpClientHandler.HttpHandler);
                 serviceOptions.ServiceConfiguration.Configure(context);
-                if (servicePipeline.HasMiddleware())
-                {
-                    servicePipeline.Add(_servicePipeline);
-                    _servicePipeline = servicePipeline;
-                }
+                _servicePipeline = MergePipeline(servicePipeline, _servicePipeline);
             }
             if (options.Configuration != null)
             {
                 var serviceIdPipeline = new ServiceIdFeignClientPipeline(ServiceId);
                 var context = new FeignClientConfigurationContext(this, serviceIdPipeline, HttpClient, httpClientHandler.HttpHandler);
                 options.Configuration.Configure(context);
-                if (serviceIdPipeline.HasMiddleware())
-                {
-                    serviceIdPipeline.Add(_serviceIdPipeline);
-                    _serviceIdPipeline = serviceIdPipeline;
-                }
+                _serviceIdPipeline = MergePipeline(serviceIdPipeline, _serviceIdPipeline);
             }
             #endregion
 
@@ -99,20 +100,6 @@ namespace Feign.Proxy
             }
             return baseUrl;
         }
-
-
-        /// <summary>
-        /// global pipeline
-        /// </summary>
-        internal readonly GlobalFeignClientPipeline? _globalPipeline;
-        /// <summary>
-        /// serviceId pipeline
-        /// </summary>
-        internal readonly ServiceIdFeignClientPipeline? _serviceIdPipeline;
-        /// <summary>
-        /// TService pipeline
-        /// </summary>
-        internal readonly ServiceFeignClientPipeline<TService>? _servicePipeline;
 
         private readonly IDictionary<Type, object?> _features;
 

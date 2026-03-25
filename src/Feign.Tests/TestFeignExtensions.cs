@@ -56,6 +56,14 @@ namespace Feign.Tests
                 //e.Terminate();
                 return TaskEx.CompletedValueTask;
             });
+#if NET8_0_OR_GREATER
+            feignBuilder.Options.Pipeline.KeyedService<ITestControllerService>("test").UseSendingRequest(context =>
+            {
+                //e.CancellationTokenSource.Cancel();
+                //e.Terminate();
+                return TaskEx.CompletedValueTask;
+            });
+#endif
 
             feignBuilder.Options.Pipeline.Service<ITestControllerService>().UseCancelRequest(context =>
             {

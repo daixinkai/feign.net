@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Pipeline.Internal
 {
-    internal class GlobalFeignClientPipeline : FeignClientPipelineBase<object>, IGlobalFeignClientPipeline
+    internal partial class GlobalFeignClientPipeline : FeignClientPipelineBase<object>, IGlobalFeignClientPipeline
     {
         private readonly IDictionary<string, ServiceIdFeignClientPipeline> _serviceIdPipelineMap = new Dictionary<string, ServiceIdFeignClientPipeline>();
         private readonly IDictionary<Type, IServiceFeignClientPipeline<object>> _serviceTypePipelineMap = new Dictionary<Type, IServiceFeignClientPipeline<object>>();
@@ -21,30 +21,30 @@ namespace Feign.Pipeline.Internal
             {
                 throw new ArgumentException(nameof(serviceId));
             }
-            if (_serviceIdPipelineMap.TryGetValue(serviceId, out var serviceFeignClientPipeline))
+            if (_serviceIdPipelineMap.TryGetValue(serviceId, out var pipeline))
             {
-                return serviceFeignClientPipeline;
+                return pipeline;
             }
-            serviceFeignClientPipeline = new ServiceIdFeignClientPipeline(serviceId);
-            _serviceIdPipelineMap[serviceId] = serviceFeignClientPipeline;
-            return serviceFeignClientPipeline;
+            pipeline = new ServiceIdFeignClientPipeline(serviceId);
+            _serviceIdPipelineMap[serviceId] = pipeline;
+            return pipeline;
         }
 
         public ServiceFeignClientPipeline<TService>? GetServicePipeline<TService>()
         {
-            _serviceTypePipelineMap.TryGetValue(typeof(TService), out var serviceFeignClientPipeline);
-            return serviceFeignClientPipeline as ServiceFeignClientPipeline<TService>;
+            _serviceTypePipelineMap.TryGetValue(typeof(TService), out var pipeline);
+            return pipeline as ServiceFeignClientPipeline<TService>;
         }
         public ServiceFeignClientPipeline<TService> Service<TService>()
         {
-            if (_serviceTypePipelineMap.TryGetValue(typeof(TService), out var serviceFeignClientPipeline))
+            if (_serviceTypePipelineMap.TryGetValue(typeof(TService), out var pipeline))
             {
-                return (ServiceFeignClientPipeline<TService>)serviceFeignClientPipeline;
+                return (ServiceFeignClientPipeline<TService>)pipeline;
             }
             var temp = new ServiceFeignClientPipeline<TService>();
-            serviceFeignClientPipeline = (IServiceFeignClientPipeline<object>)temp;
-            _serviceTypePipelineMap[typeof(TService)] = serviceFeignClientPipeline;
-            return (ServiceFeignClientPipeline<TService>)serviceFeignClientPipeline;
+            pipeline = (IServiceFeignClientPipeline<object>)temp;
+            _serviceTypePipelineMap[typeof(TService)] = pipeline;
+            return (ServiceFeignClientPipeline<TService>)pipeline;
         }
         IFeignClientPipeline<object> IGlobalFeignClientPipeline.Service(string serviceId)
         {

@@ -1,4 +1,5 @@
 ﻿using Feign.Pipeline;
+using Feign.Pipeline.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,77 @@ namespace Feign.Proxy
     partial class FeignClientHttpProxy<TService>
     {
 
+        /// <summary>
+        /// global pipeline
+        /// </summary>
+        internal readonly GlobalFeignClientPipeline? _globalPipeline;
+        /// <summary>
+        /// serviceId pipeline
+        /// </summary>
+        internal readonly ServiceIdFeignClientPipeline? _serviceIdPipeline;
+        /// <summary>
+        /// TService pipeline
+        /// </summary>
+        internal readonly ServiceFeignClientPipeline<TService>? _servicePipeline;
+
+        private ServiceIdFeignClientPipeline? MergePipeline(params ServiceIdFeignClientPipeline?[] pipelines)
+        {
+            if (pipelines.Length == 0)
+            {
+                return null;
+            }
+            ServiceIdFeignClientPipeline? currentPipeline = null;
+            foreach (var pipeline in pipelines)
+            {
+                if (pipeline != null)
+                {
+                    if (currentPipeline == null)
+                    {
+                        currentPipeline = pipeline;
+                    }
+                    else
+                    {
+                        currentPipeline.Add(pipeline);
+                    }
+                }
+            }
+            if (currentPipeline != null && currentPipeline.HasMiddleware())
+            {
+                return currentPipeline;
+            }
+            return null;
+        }
+
+        private ServiceFeignClientPipeline<TService>? MergePipeline(params ServiceFeignClientPipeline<TService>?[] pipelines)
+        {
+            if (pipelines.Length == 0)
+            {
+                return null;
+            }
+            ServiceFeignClientPipeline<TService>? currentPipeline = null;
+            foreach (var pipeline in pipelines)
+            {
+                if (pipeline != null)
+                {
+                    if (currentPipeline == null)
+                    {
+                        currentPipeline = pipeline;
+                    }
+                    else
+                    {
+                        currentPipeline.Add(pipeline);
+                    }
+                }
+            }
+            if (currentPipeline != null && currentPipeline.HasMiddleware())
+            {
+                return currentPipeline;
+            }
+            return null;
+        }
+
         protected internal virtual async Task OnBuildingRequestAsync(IBuildingRequestPipelineContext<TService> context)
-        {            
+        {
             if (_servicePipeline != null)
             {
                 await _servicePipeline.BuildingRequestAsync(context)

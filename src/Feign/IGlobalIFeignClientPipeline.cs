@@ -24,5 +24,19 @@ namespace Feign
         /// <typeparam name="TService"></typeparam>
         /// <returns></returns>
         IFeignClientPipeline<TService> Service<TService>();
+        /// <summary>
+        /// Get the specified service Pipeline
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="serviceId"></param>
+        /// <returns></returns>
+        IFeignClientPipeline<object> KeyedService(string key, string serviceId);
+        /// <summary>
+        /// Get the specified service Pipeline
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        IFeignClientPipeline<TService> KeyedService<TService>(string key);
     }
 }
