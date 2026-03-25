@@ -97,8 +97,8 @@ namespace Feign
         /// <param name="assembly">Assemblies to scan</param>
         /// <param name="lifetime">Service life cycle</param>
         /// <returns></returns>
-        public static TFeignBuilder AddKeydFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, string key, Assembly? assembly, FeignClientLifetime lifetime)
-            where TFeignBuilder : IKeydFeignBuilder
+        public static TFeignBuilder AddKeyedFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, string key, Assembly? assembly, FeignClientLifetime lifetime)
+            where TFeignBuilder : IKeyedFeignBuilder
         {
             if (assembly == null)
             {
@@ -113,22 +113,22 @@ namespace Feign
                 }
                 var feignClientAttribute = feignClientTypeInfo.FeignClient;
                 feignClientTypeInfo.Lifetime = feignClientAttribute.Lifetime ?? lifetime;
-                var keydType = feignBuilder.TypeBuilder.BuildKeydType(key, feignClientTypeInfo);
-                feignBuilder.AddKeydService(key, serviceType, keydType, feignClientTypeInfo.Lifetime.Value);
+                var keydType = feignBuilder.TypeBuilder.BuildKeyedType(key, feignClientTypeInfo);
+                feignBuilder.AddKeyedService(key, serviceType, keydType, feignClientTypeInfo.Lifetime.Value);
                 // add fallback
                 if (feignClientAttribute.Fallback != null)
                 {
-                    feignBuilder.AddKeydService(key, feignClientAttribute.Fallback, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeyedService(key, feignClientAttribute.Fallback, feignClientTypeInfo.Lifetime.Value);
                 }
                 if (feignClientAttribute.FallbackFactory != null)
                 {
-                    feignBuilder.AddKeydService(key, feignClientAttribute.FallbackFactory, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeyedService(key, feignClientAttribute.FallbackFactory, feignClientTypeInfo.Lifetime.Value);
                 }
                 // add feignClient proxy options
                 if (feignClientTypeInfo.ProxyOptionsType != null)
                 {
-                    feignBuilder.AddKeydService(key, feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime.Value);
-                    feignBuilder.AddKeydService(key, feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeyedService(key, feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeyedService(key, feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime.Value);
                 }
             }
             return feignBuilder;

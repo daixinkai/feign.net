@@ -24,6 +24,6 @@ namespace Feign.Reflection
         /// <param name="key"></param>
         /// <param name="feignClientTypeInfo"></param>
         /// <returns></returns>
-        Type BuildKeydType(string key, FeignClientTypeInfo feignClientTypeInfo);
+        Type BuildKeyedType(string key, FeignClientTypeInfo feignClientTypeInfo);
     }
 }

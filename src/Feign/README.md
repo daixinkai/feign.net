@@ -94,6 +94,8 @@
         {
             //options.DiscoverServiceCacheTime = TimeSpan.FromSeconds(10);
         }).AddFeignClients(typeof(ITestService).Assembly, FeignClientLifetime.Singleton)
+        //or add KeyedServices
+        //.AddKeyedFeignClients("key",typeof(ITestService).Assembly, FeignClientLifetime.Singleton)
         .ConfigureJsonSettings(options =>
         {
             options.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
@@ -119,7 +121,7 @@
     {
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> Get(int id, [FromServices] ITestService testService)
+        public async Task<ActionResult<object>> Get(int id, [FromKeyedServices("key")] ITestService keyedTestService, [FromServices] ITestService testService)
         {
             await testService.GetAsync(id);
 	        testService.PostJson(id, new TestServiceParam());

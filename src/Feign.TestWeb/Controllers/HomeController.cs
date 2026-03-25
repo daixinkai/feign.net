@@ -10,7 +10,7 @@ namespace Feign.TestWeb.Controllers
         [HttpGet("/")]
         public async Task<ActionResult<object>> Index(
             string? id,
-            //[FromKeyedServices("test")] ITestService testService,
+            [FromKeyedServices("test")] ITestService testKeydService,
             [FromServices] ITestService testService,
             [FromServices] ITestControllerService testControllerService,
             [FromServices] ITestServiceClient testServiceClient

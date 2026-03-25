@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Feign.Reflection
 {
@@ -182,8 +184,23 @@ namespace Feign.Reflection
 
         }
 
-        public Type BuildKeydType(string key, FeignClientTypeInfo feignClientTypeInfo)
+        private static string GetMd5(string text)
         {
+            using (var md5 = MD5.Create())
+            {
+                byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(text));
+                var sBuilder = new StringBuilder();
+                foreach (byte t in data)
+                {
+                    sBuilder.Append(t.ToString("x2"));
+                }
+                return sBuilder.ToString().ToUpper();
+            }
+        }
+
+        public Type BuildKeyedType(string key, FeignClientTypeInfo feignClientTypeInfo)
+        {
+            string typeName = feignClientTypeInfo.ServiceType.FullName + "_KeyedProxy_" + GetMd5(key);
             var buildType = feignClientTypeInfo.BuildType!;
             //new type
             TypeAttributes typeAttributes = TypeAttributes.Public |
@@ -192,7 +209,7 @@ namespace Feign.Reflection
                      TypeAttributes.AnsiClass |
                      TypeAttributes.BeforeFieldInit |
                      TypeAttributes.AutoLayout;
-            TypeBuilder typeBuilder = _dynamicAssembly.DefineType(buildType + "_" + key, typeAttributes, buildType, ArrayEx.Empty<Type>());
+            TypeBuilder typeBuilder = _dynamicAssembly.DefineType(typeName, typeAttributes, buildType, ArrayEx.Empty<Type>());
             typeBuilder.BuildFirstConstructor(buildType);
             // write key
             typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("Key"), iLGenerator =>

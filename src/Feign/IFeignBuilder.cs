@@ -60,7 +60,7 @@ namespace Feign
 
     }
 
-    public interface IKeydFeignBuilder : IFeignBuilder
+    public interface IKeyedFeignBuilder : IFeignBuilder
     {
         /// <summary>
         /// Adds the specified <paramref name="serviceType"/> as a <see cref="FeignClientLifetime"/> service
@@ -71,7 +71,7 @@ namespace Feign
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implType">The implementation type of the service.</param>
         /// <param name="lifetime">Specifies the lifetime of a service</param>
-        void AddKeydService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime);
+        void AddKeyedService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime);
         /// <summary>
         /// Adds the specified <paramref name="serviceType"/> as a <see cref="FeignClientLifetime"/> service
         /// if the service type hasn't already been registered.
@@ -79,7 +79,7 @@ namespace Feign
         /// <param name="key">key</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="lifetime">Specifies the lifetime of a service</param>
-        void AddKeydService(string key, Type serviceType, FeignClientLifetime lifetime);
+        void AddKeyedService(string key, Type serviceType, FeignClientLifetime lifetime);
         /// <summary>
         /// Add or update the specified <paramref name="serviceType"/> as a <see cref="FeignClientLifetime"/> service
         /// with the <paramref name="implType"/> implementation
@@ -88,7 +88,7 @@ namespace Feign
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implType">The implementation type of the service.</param>
         /// <param name="lifetime">Specifies the lifetime of a service</param>
-        void AddOrUpdateKeydService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime);
+        void AddOrUpdateKeyedService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime);
     }
 
 }

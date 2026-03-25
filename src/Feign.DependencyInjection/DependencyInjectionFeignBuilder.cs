@@ -11,7 +11,7 @@ namespace Feign.DependencyInjection
 {
     internal sealed class DependencyInjectionFeignBuilder : DefaultFeignBuilderBase, IDependencyInjectionFeignBuilder
 #if NET8_0_OR_GREATER
-        , IKeydFeignBuilder
+        , IKeyedFeignBuilder
 #endif
     {
 
@@ -83,7 +83,7 @@ namespace Feign.DependencyInjection
 
 
 #if NET8_0_OR_GREATER
-        public void AddKeydService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public void AddKeyedService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
             object? serviceKey = key;
             switch (lifetime)
@@ -102,7 +102,7 @@ namespace Feign.DependencyInjection
             }
         }
 
-        public void AddKeydService(string key, Type serviceType, FeignClientLifetime lifetime)
+        public void AddKeyedService(string key, Type serviceType, FeignClientLifetime lifetime)
         {
             object? serviceKey = key;
             switch (lifetime)
@@ -121,10 +121,11 @@ namespace Feign.DependencyInjection
             }
         }
 
-        public void AddOrUpdateKeydService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime)
+        public void AddOrUpdateKeyedService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
-            Services.RemoveAllKeyed(serviceType, key);
-            AddKeydService(key, serviceType, implType, lifetime);
+            object? serviceKey = key;
+            Services.RemoveAllKeyed(serviceType, serviceKey);
+            AddKeyedService(key, serviceType, implType, lifetime);
         }
 #endif
     }
