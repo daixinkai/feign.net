@@ -8,8 +8,8 @@ namespace Feign.Pipeline.Internal
 {
     internal partial class GlobalFeignClientPipeline : FeignClientPipelineBase<object>, IGlobalFeignClientPipeline
     {
-        private readonly IDictionary<string, ServiceIdFeignClientPipeline> _serviceIdPipelineMap = new Dictionary<string, ServiceIdFeignClientPipeline>();
-        private readonly IDictionary<Type, IServiceFeignClientPipeline<object>> _serviceTypePipelineMap = new Dictionary<Type, IServiceFeignClientPipeline<object>>();
+        private readonly Dictionary<string, ServiceIdFeignClientPipeline> _serviceIdPipelineMap = new();
+        private readonly Dictionary<Type, FeignClientPipelineBase> _serviceTypePipelineMap = new();
         public ServiceIdFeignClientPipeline? GetServicePipeline(string serviceId)
         {
             _serviceIdPipelineMap.TryGetValue(serviceId, out var serviceFeignClientPipeline);
@@ -41,8 +41,7 @@ namespace Feign.Pipeline.Internal
             {
                 return (ServiceFeignClientPipeline<TService>)pipeline;
             }
-            var temp = new ServiceFeignClientPipeline<TService>();
-            pipeline = (IServiceFeignClientPipeline<object>)temp;
+            pipeline = new ServiceFeignClientPipeline<TService>();
             _serviceTypePipelineMap[typeof(TService)] = pipeline;
             return (ServiceFeignClientPipeline<TService>)pipeline;
         }

@@ -7,10 +7,19 @@ using System.Threading.Tasks;
 
 namespace Feign.Pipeline.Internal
 {
-    internal class FeignClientPipelineBase<TService> : IFeignClientPipeline<TService>
-    {
-        public virtual bool Enabled { get; set; } = true;
 
+    internal abstract class FeignClientPipelineBase
+    {
+        public bool Enabled { get; set; } = true;
+
+        public abstract bool HasMiddleware();
+
+        public abstract void Add(FeignClientPipelineBase? pipeline);
+
+    }
+
+    internal abstract class FeignClientPipelineBase<TService> : FeignClientPipelineBase, IFeignClientPipeline<TService>
+    {
         private readonly List<IBuildingRequestMiddleware<TService>> _buildingRequestMiddlewares = new();
         private readonly List<ICancelRequestMiddleware<TService>> _cancelRequestMiddlewares = new();
         private readonly List<IDisposingMiddleware<TService>> _disposingMiddlewares = new();
@@ -307,7 +316,7 @@ namespace Feign.Pipeline.Internal
         }
 
 
-        public bool HasMiddleware()
+        public sealed override bool HasMiddleware()
         {
             return _buildingRequestMiddlewares.Count > 0
                 || _cancelRequestMiddlewares.Count > 0
@@ -319,6 +328,9 @@ namespace Feign.Pipeline.Internal
                 || _receivedResponseMiddlewares.Count > 0
                 || _sendingRequestMiddlewares.Count > 0;
         }
+
+        public sealed override void Add(FeignClientPipelineBase? pipeline) 
+            => Add(pipeline as FeignClientPipelineBase<TService>);
 
         public void Add(FeignClientPipelineBase<TService>? pipeline)
         {

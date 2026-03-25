@@ -24,41 +24,13 @@ namespace Feign.Proxy
         /// </summary>
         internal readonly ServiceFeignClientPipeline<TService>? _servicePipeline;
 
-        private ServiceIdFeignClientPipeline? MergePipeline(params ServiceIdFeignClientPipeline?[] pipelines)
+        private TPipline? MergePipeline<TPipline>(params TPipline?[] pipelines) where TPipline : FeignClientPipelineBase
         {
             if (pipelines.Length == 0)
             {
                 return null;
             }
-            ServiceIdFeignClientPipeline? currentPipeline = null;
-            foreach (var pipeline in pipelines)
-            {
-                if (pipeline != null)
-                {
-                    if (currentPipeline == null)
-                    {
-                        currentPipeline = pipeline;
-                    }
-                    else
-                    {
-                        currentPipeline.Add(pipeline);
-                    }
-                }
-            }
-            if (currentPipeline != null && currentPipeline.HasMiddleware())
-            {
-                return currentPipeline;
-            }
-            return null;
-        }
-
-        private ServiceFeignClientPipeline<TService>? MergePipeline(params ServiceFeignClientPipeline<TService>?[] pipelines)
-        {
-            if (pipelines.Length == 0)
-            {
-                return null;
-            }
-            ServiceFeignClientPipeline<TService>? currentPipeline = null;
+            TPipline? currentPipeline = null;
             foreach (var pipeline in pipelines)
             {
                 if (pipeline != null)

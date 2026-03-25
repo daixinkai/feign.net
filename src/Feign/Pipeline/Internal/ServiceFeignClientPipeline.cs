@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace Feign.Pipeline.Internal
 {
-    internal interface IServiceFeignClientPipeline<out TService>
-    {
-        Type ServiceType { get; }
-    }
-    internal class ServiceFeignClientPipeline<TService> : FeignClientPipelineBase<TService>, IFeignClientPipeline<TService>, IServiceFeignClientPipeline<TService>
+    internal class ServiceFeignClientPipeline<TService> : FeignClientPipelineBase<TService>, IFeignClientPipeline<TService>
     {
         public ServiceFeignClientPipeline(Type serviceType)
         {
