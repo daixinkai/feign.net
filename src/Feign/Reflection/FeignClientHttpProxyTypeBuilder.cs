@@ -1,4 +1,5 @@
 ﻿using Feign.Configuration;
+using Feign.Internal;
 using Feign.Proxy;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace Feign.Reflection
         public FeignClientTypeInfo? Build(Type serviceType)
         {
             // Check whether the proxy type can be generated
-            if (!NeedBuildType(serviceType))
+            if (!IsServiceType(serviceType))
             {
                 return null;
             }
@@ -90,20 +91,20 @@ namespace Feign.Reflection
 
 
             // write serviceId
-            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("ServiceId"), iLGenerator =>
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("ServiceId"), iLGenerator =>
             {
                 iLGenerator.EmitStringValue(feignClientAttribute.Name);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
             // write baseUri
-            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("BaseUri"), iLGenerator =>
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("BaseUri"), iLGenerator =>
             {
                 var value = serviceType.GetCustomAttribute<RequestMappingAttribute>()?.Value;
                 iLGenerator.EmitStringValue(value);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
             // override UriKind
-            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("UriKind", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("UriKind"), iLGenerator =>
             {
                 iLGenerator.EmitEnumValue(feignClientAttribute.UriKind);
                 iLGenerator.Emit(OpCodes.Ret);
@@ -143,7 +144,7 @@ namespace Feign.Reflection
                 cctorILGenerator.Emit(OpCodes.Ret);
                 #endregion
                 //重写DefaultHeaders
-                typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredProperty("DefaultHeaders", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance), iLGenerator =>
+                typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("DefaultHeaders"), iLGenerator =>
                 {
                     iLGenerator.Emit(OpCodes.Ldsfld, headersFieldBuilder);
                     iLGenerator.Emit(OpCodes.Ret);
@@ -179,6 +180,29 @@ namespace Feign.Reflection
 
             return feignClientTypeInfo;
 
+        }
+
+        public Type BuildKeydType(string key, FeignClientTypeInfo feignClientTypeInfo)
+        {
+            var buildType = feignClientTypeInfo.BuildType!;
+            //new type
+            TypeAttributes typeAttributes = TypeAttributes.Public |
+                     TypeAttributes.Class |
+                     TypeAttributes.AutoClass |
+                     TypeAttributes.AnsiClass |
+                     TypeAttributes.BeforeFieldInit |
+                     TypeAttributes.AutoLayout;
+            TypeBuilder typeBuilder = _dynamicAssembly.DefineType(buildType + "_" + key, typeAttributes, buildType, ArrayEx.Empty<Type>());
+            typeBuilder.BuildFirstConstructor(buildType);
+            // write key
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("Key"), iLGenerator =>
+            {
+                iLGenerator.EmitStringValue(key);
+                iLGenerator.Emit(OpCodes.Ret);
+            }, null);
+            var typeInfo = typeBuilder.CreateTypeInfo();
+            Type type = typeInfo!.AsType();
+            return type;
         }
 
         /// <summary>
@@ -275,7 +299,7 @@ namespace Feign.Reflection
             //return interfaceType.Assembly.GetName().ToString() + "_" + interfaceType.FullName;
         }
 
-        private static bool NeedBuildType(Type type)
+        public bool IsServiceType(Type type)
         {
             return type.IsInterface && type.IsDefinedIncludingBaseInterfaces<FeignClientAttribute>() && !type.IsDefined(typeof(NonFeignClientAttribute)) && !type.IsGenericType;
         }

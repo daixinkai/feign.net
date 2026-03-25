@@ -61,12 +61,11 @@ namespace Feign
             }
             foreach (var serviceType in assembly.GetTypes())
             {
-                var feignClientTypeInfo = feignBuilder.TypeBuilder.Build(serviceType);
+                var feignClientTypeInfo = GetFeignClientTypeInfo(feignBuilder, serviceType);
                 if (feignClientTypeInfo == null || feignClientTypeInfo.BuildType == null)
                 {
                     continue;
                 }
-                feignBuilder.Options.Types.Add(feignClientTypeInfo);
                 var feignClientAttribute = feignClientTypeInfo.FeignClient;
                 feignClientTypeInfo.Lifetime = feignClientAttribute.Lifetime ?? lifetime;
                 feignBuilder.AddService(serviceType, feignClientTypeInfo.BuildType, feignClientTypeInfo.Lifetime.Value);
@@ -84,6 +83,52 @@ namespace Feign
                 {
                     feignBuilder.AddService(feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime.Value);
                     feignBuilder.AddService(feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime.Value);
+                }
+            }
+            return feignBuilder;
+        }
+
+        /// <summary>
+        /// Add keyd FeignClients
+        /// </summary>
+        /// <typeparam name="TFeignBuilder"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="feignBuilder"></param>
+        /// <param name="assembly">Assemblies to scan</param>
+        /// <param name="lifetime">Service life cycle</param>
+        /// <returns></returns>
+        public static TFeignBuilder AddKeydFeignClients<TFeignBuilder>(this TFeignBuilder feignBuilder, string key, Assembly? assembly, FeignClientLifetime lifetime)
+            where TFeignBuilder : IKeydFeignBuilder
+        {
+            if (assembly == null)
+            {
+                return feignBuilder;
+            }
+            foreach (var serviceType in assembly.GetTypes())
+            {
+                var feignClientTypeInfo = GetFeignClientTypeInfo(feignBuilder, serviceType);
+                if (feignClientTypeInfo == null || feignClientTypeInfo.BuildType == null)
+                {
+                    continue;
+                }
+                var feignClientAttribute = feignClientTypeInfo.FeignClient;
+                feignClientTypeInfo.Lifetime = feignClientAttribute.Lifetime ?? lifetime;
+                var keydType = feignBuilder.TypeBuilder.BuildKeydType(key, feignClientTypeInfo);
+                feignBuilder.AddKeydService(key, serviceType, keydType, feignClientTypeInfo.Lifetime.Value);
+                // add fallback
+                if (feignClientAttribute.Fallback != null)
+                {
+                    feignBuilder.AddKeydService(key, feignClientAttribute.Fallback, feignClientTypeInfo.Lifetime.Value);
+                }
+                if (feignClientAttribute.FallbackFactory != null)
+                {
+                    feignBuilder.AddKeydService(key, feignClientAttribute.FallbackFactory, feignClientTypeInfo.Lifetime.Value);
+                }
+                // add feignClient proxy options
+                if (feignClientTypeInfo.ProxyOptionsType != null)
+                {
+                    feignBuilder.AddKeydService(key, feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeydService(key, feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime.Value);
                 }
             }
             return feignBuilder;
@@ -146,6 +191,26 @@ namespace Feign
         {
             feignBuilder.Options.ConfigureJsonSettings(configure);
             return feignBuilder;
+        }
+
+        private static FeignClientTypeInfo? GetFeignClientTypeInfo(IFeignBuilder feignBuilder, Type serviceType)
+        {
+            if (!feignBuilder.TypeBuilder.IsServiceType(serviceType))
+            {
+                return null;
+            }
+            var feignClientTypeInfo = feignBuilder.Options.Types.FirstOrDefault(s => s.ServiceType == serviceType);
+            if (feignClientTypeInfo != null)
+            {
+                return feignClientTypeInfo;
+            }
+            feignClientTypeInfo = feignBuilder.TypeBuilder.Build(serviceType);
+            if (feignClientTypeInfo == null)
+            {
+                return null;
+            }
+            feignBuilder.Options.Types.Add(feignClientTypeInfo);
+            return feignClientTypeInfo;
         }
 
     }

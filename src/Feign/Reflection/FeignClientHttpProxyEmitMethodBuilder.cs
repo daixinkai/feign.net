@@ -318,7 +318,7 @@ namespace Feign.Reflection
 
             // baseUrl
             iLGenerator.Emit(OpCodes.Ldarg_0); //this
-            iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpProxy<>).MakeGenericType(serviceType).GetRequiredProperty("BaseUrl", BindingFlags.Instance | BindingFlags.NonPublic).GetMethod!);
+            iLGenerator.Emit(OpCodes.Callvirt, typeof(FeignClientHttpProxy<>).MakeGenericType(serviceType).GetRequiredNonPublicProperty("BaseUrl").GetMethod!);
 
             //mapping uri
             if (requestMapping.Value == null)
@@ -522,7 +522,7 @@ namespace Feign.Reflection
 
             #region if (base.Options.IncludeMethodMetadata) set the call method
             //这里获取方法元数据
-            PropertyInfo optionsProperty = typeBuilder.BaseType!.GetRequiredProperty(nameof(FeignClientHttpProxy<object>.Options), BindingFlags.Instance | BindingFlags.NonPublic);
+            PropertyInfo optionsProperty = typeBuilder.BaseType!.GetRequiredNonPublicProperty(nameof(FeignClientHttpProxy<object>.Options));
             PropertyInfo includeMethodMetadataProperty = optionsProperty.PropertyType.GetRequiredProperty("IncludeMethodMetadata");
             iLGenerator.Emit(OpCodes.Ldarg_0);
             iLGenerator.EmitGetProperty(optionsProperty);

@@ -41,6 +41,10 @@ namespace Feign.Tests
             feignBuilder.Options.PropertyNamingPolicy = NamingPolicy.SnakeCaseLower;
 #endif
             feignBuilder.AddFeignClients(Assembly.GetExecutingAssembly(), FeignClientLifetime.Singleton);
+            if (feignBuilder is IKeydFeignBuilder keydFeignBuilder)
+            {
+                keydFeignBuilder.AddKeydFeignClients("test", Assembly.GetExecutingAssembly(), FeignClientLifetime.Singleton);
+            }
             feignBuilder.Options.Pipeline.Service<ITestService>().UseSendingRequest(context =>
             {
                 //context.Terminate();

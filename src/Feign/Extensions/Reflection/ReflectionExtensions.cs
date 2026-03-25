@@ -135,7 +135,9 @@ namespace Feign
 
         public static PropertyInfo GetRequiredProperty(this Type type, string name)
             => type.GetProperty(name)!;
-        public static PropertyInfo GetRequiredProperty(this Type type, string name, BindingFlags bindingAttr)
+        public static PropertyInfo GetRequiredNonPublicProperty(this Type type, string name)
+            => type.GetRequiredProperty(name, BindingFlags.Instance | BindingFlags.NonPublic);
+        private static PropertyInfo GetRequiredProperty(this Type type, string name, BindingFlags bindingAttr)
             => type.GetProperty(name, bindingAttr)!;
 
     }

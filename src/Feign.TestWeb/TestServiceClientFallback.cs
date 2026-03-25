@@ -12,7 +12,7 @@ namespace Feign.TestWeb
         {
         }
 
-        public override string ServiceId => throw new NotImplementedException();
+        protected override string ServiceId => throw new NotImplementedException();
 
         public IQueryResult<TestServiceParam> GetQueryResultValue([RequestQuery] string id, [RequestQuery] int[] values)
         {

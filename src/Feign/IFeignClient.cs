@@ -10,6 +10,7 @@ namespace Feign
     /// </summary>
     public interface IFeignClient
     {
+        string? Key { get; }
         /// <summary>
         /// Gets the serviceId
         /// </summary>

@@ -10,6 +10,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Feign.DependencyInjection
 {
     internal sealed class DependencyInjectionFeignBuilder : DefaultFeignBuilderBase, IDependencyInjectionFeignBuilder
+#if NET8_0_OR_GREATER
+        , IKeydFeignBuilder
+#endif
     {
 
         public DependencyInjectionFeignBuilder(FeignOptions options, IServiceCollection services) : base(options)
@@ -63,24 +66,66 @@ namespace Feign.DependencyInjection
 
         public override void AddOrUpdateService(Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
-            RemoveService(serviceType);
+            Services.RemoveAll(serviceType);
             AddService(serviceType, implType, lifetime);
         }
         public override void AddOrUpdateService(Type serviceType, FeignClientLifetime lifetime)
         {
-            RemoveService(serviceType);
+            Services.RemoveAll(serviceType);
             AddService(serviceType, lifetime);
         }
         public override void AddOrUpdateService<TService>(TService service)
         {
-            RemoveService(typeof(TService));
+            Services.RemoveAll(typeof(TService));
             AddService(service);
         }
 
-        private void RemoveService(Type serviceType)
+
+
+#if NET8_0_OR_GREATER
+        public void AddKeydService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime)
         {
-            Services.RemoveAll(serviceType);
+            object? serviceKey = key;
+            switch (lifetime)
+            {
+                case FeignClientLifetime.Singleton:
+                    Services.TryAddKeyedSingleton(serviceType, serviceKey, implType);
+                    break;
+                case FeignClientLifetime.Scoped:
+                    Services.TryAddKeyedScoped(serviceType, serviceKey, implType);
+                    break;
+                case FeignClientLifetime.Transient:
+                    Services.TryAddKeyedTransient(serviceType, serviceKey, implType);
+                    break;
+                default:
+                    break;
+            }
         }
 
+        public void AddKeydService(string key, Type serviceType, FeignClientLifetime lifetime)
+        {
+            object? serviceKey = key;
+            switch (lifetime)
+            {
+                case FeignClientLifetime.Singleton:
+                    Services.TryAddKeyedSingleton(serviceType, serviceKey);
+                    break;
+                case FeignClientLifetime.Scoped:
+                    Services.TryAddKeyedScoped(serviceType, serviceKey);
+                    break;
+                case FeignClientLifetime.Transient:
+                    Services.TryAddKeyedTransient(serviceType, serviceKey);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void AddOrUpdateKeydService(string key, Type serviceType, Type implType, FeignClientLifetime lifetime)
+        {
+            Services.RemoveAllKeyed(serviceType, key);
+            AddKeydService(key, serviceType, implType, lifetime);
+        }
+#endif
     }
 }

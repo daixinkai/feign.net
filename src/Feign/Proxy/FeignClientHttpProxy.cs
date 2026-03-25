@@ -126,15 +126,27 @@ namespace Feign.Proxy
 
         Type IFeignClient<TService>.ServiceType => typeof(TService);
 
+        string? IFeignClient.Key => Key;
+
+        string IFeignClient.ServiceId => ServiceId;
+
         IDictionary<Type, object?> IFeignClient.Features => _features;
 
 
         protected virtual UriKind UriKind => UriKind.Relative;
 
+
+        protected virtual string? Key { get; }
+
+
+
         /// <summary>
         /// Gets the serviceId
         /// </summary>
-        public abstract string ServiceId { get; }
+        protected abstract string ServiceId { get; }
+
+
+
         /// <summary>
         /// Whether to respond to the terminated request? If this value is false, exceptions will continue to be thrown to the upper layer.
         /// </summary>
@@ -143,7 +155,7 @@ namespace Feign.Proxy
         /// <summary>
         /// Gets the base uri
         /// </summary>
-        public virtual string? BaseUri => null;
+        protected virtual string? BaseUri => null;
         /// <summary>
         /// Gets the url
         /// </summary>
