@@ -14,7 +14,7 @@ namespace Feign.Proxy
         /// <summary>
         /// global pipeline
         /// </summary>
-        internal readonly GlobalFeignClientPipeline? _globalPipeline;
+        internal readonly GlobalFeignClientPipeline _globalPipeline;
         /// <summary>
         /// serviceId pipeline
         /// </summary>
@@ -24,41 +24,13 @@ namespace Feign.Proxy
         /// </summary>
         internal readonly ServiceFeignClientPipeline<TService>? _servicePipeline;
 
-        private ServiceIdFeignClientPipeline? MergePipeline(params ServiceIdFeignClientPipeline?[] pipelines)
+        private TPipline? MergePipeline<TPipline>(params TPipline?[] pipelines) where TPipline : FeignClientPipelineBase
         {
             if (pipelines.Length == 0)
             {
                 return null;
             }
-            ServiceIdFeignClientPipeline? currentPipeline = null;
-            foreach (var pipeline in pipelines)
-            {
-                if (pipeline != null)
-                {
-                    if (currentPipeline == null)
-                    {
-                        currentPipeline = pipeline;
-                    }
-                    else
-                    {
-                        currentPipeline.Add(pipeline);
-                    }
-                }
-            }
-            if (currentPipeline != null && currentPipeline.HasMiddleware())
-            {
-                return currentPipeline;
-            }
-            return null;
-        }
-
-        private ServiceFeignClientPipeline<TService>? MergePipeline(params ServiceFeignClientPipeline<TService>?[] pipelines)
-        {
-            if (pipelines.Length == 0)
-            {
-                return null;
-            }
-            ServiceFeignClientPipeline<TService>? currentPipeline = null;
+            TPipline? currentPipeline = null;
             foreach (var pipeline in pipelines)
             {
                 if (pipeline != null)
@@ -98,14 +70,11 @@ namespace Feign.Proxy
 #endif
                     ;
             }
-            if (_globalPipeline != null)
-            {
-                await _globalPipeline.BuildingRequestAsync(context)
+            await _globalPipeline.BuildingRequestAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
+                .ConfigureAwait(false)
 #endif
-                    ;
-            }
+                ;
         }
         protected internal virtual async Task OnSendingRequestAsync(ISendingRequestPipelineContext<TService> context)
         {
@@ -125,14 +94,11 @@ namespace Feign.Proxy
 #endif
                     ;
             }
-            if (_globalPipeline != null)
-            {
-                await _globalPipeline.SendingRequestAsync(context)
+            await _globalPipeline.SendingRequestAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
+                .ConfigureAwait(false)
 #endif
-                    ;
-            }
+                ;
         }
         protected internal virtual async Task OnCancelRequestAsync(ICancelRequestPipelineContext<TService> context)
         {
@@ -152,14 +118,11 @@ namespace Feign.Proxy
 #endif
                     ;
             }
-            if (_globalPipeline != null)
-            {
-                await _globalPipeline.CancelRequestAsync(context)
+            await _globalPipeline.CancelRequestAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
+                .ConfigureAwait(false)
 #endif
-                    ;
-            }
+                ;
         }
         protected internal virtual async Task OnErrorRequestAsync(IErrorRequestPipelineContext<TService> context)
         {
@@ -179,14 +142,11 @@ namespace Feign.Proxy
 #endif
                     ;
             }
-            if (_globalPipeline != null)
-            {
-                await _globalPipeline.ErrorRequestAsync(context)
+            await _globalPipeline.ErrorRequestAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
+                .ConfigureAwait(false)
 #endif
-                    ;
-            }
+                ;
         }
         protected internal virtual async Task OnReceivingResponseAsync(IReceivingResponsePipelineContext<TService> context)
         {
@@ -206,14 +166,11 @@ namespace Feign.Proxy
 #endif
                     ;
             }
-            if (_globalPipeline != null)
-            {
-                await _globalPipeline.ReceivingResponseAsync(context)
+            await _globalPipeline.ReceivingResponseAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
+                .ConfigureAwait(false)
 #endif
-                    ;
-            }
+                ;
         }
         protected internal virtual async Task OnReceivedResponseAsync(IReceivedResponsePipelineContext<TService> context)
         {
@@ -233,20 +190,17 @@ namespace Feign.Proxy
 #endif
                     ;
             }
-            if (_globalPipeline != null)
-            {
-                await _globalPipeline.ReceivedResponseAsync(context)
+            await _globalPipeline.ReceivedResponseAsync(context)
 #if USE_CONFIGUREAWAIT_FALSE
-                    .ConfigureAwait(false)
+                .ConfigureAwait(false)
 #endif
-                    ;
-            }
+                ;
         }
         protected internal virtual void OnDisposing(IDisposingPipelineContext<TService> context)
         {
             _servicePipeline?.Disposing(context);
             _serviceIdPipeline?.Disposing(context);
-            _globalPipeline?.Disposing(context);
+            _globalPipeline.Disposing(context);
         }
 
         /// <summary>
@@ -257,7 +211,7 @@ namespace Feign.Proxy
         {
             _servicePipeline?.Initializing(context);
             _serviceIdPipeline?.Initializing(context);
-            _globalPipeline?.Initializing(context);
+            _globalPipeline.Initializing(context);
         }
     }
 }
