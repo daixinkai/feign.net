@@ -63,7 +63,7 @@ feignBuilder.Options.Pipeline.Service<IAngleSharpTestService>().AddAngleSharp();
 //});
 feignBuilder.Options.Pipeline.UseInitializing(context =>
 {
-    context.HttpClient.DefaultRequestVersion = new Version(2, 0);
+    context.HttpClient.Channel.DefaultRequestVersion = new Version(2, 0);
 });
 
 feignBuilder.Options.Pipeline.UseReceivedResponse(context =>

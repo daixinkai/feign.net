@@ -61,28 +61,27 @@ namespace Feign
             }
             foreach (var serviceType in assembly.GetTypes())
             {
-                var feignClientTypeInfo = GetFeignClientTypeInfo(feignBuilder, serviceType);
+                var feignClientTypeInfo = GetFeignClientTypeInfo(feignBuilder, serviceType, lifetime);
                 if (feignClientTypeInfo == null || feignClientTypeInfo.BuildType == null)
                 {
                     continue;
                 }
                 var feignClientAttribute = feignClientTypeInfo.FeignClient;
-                feignClientTypeInfo.Lifetime = feignClientAttribute.Lifetime ?? lifetime;
-                feignBuilder.AddService(serviceType, feignClientTypeInfo.BuildType, feignClientTypeInfo.Lifetime.Value);
+                feignBuilder.AddService(serviceType, feignClientTypeInfo.BuildType, feignClientTypeInfo.Lifetime);
                 // add fallback
                 if (feignClientAttribute.Fallback != null)
                 {
-                    feignBuilder.AddService(feignClientAttribute.Fallback, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddService(feignClientAttribute.Fallback, feignClientTypeInfo.Lifetime);
                 }
                 if (feignClientAttribute.FallbackFactory != null)
                 {
-                    feignBuilder.AddService(feignClientAttribute.FallbackFactory, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddService(feignClientAttribute.FallbackFactory, feignClientTypeInfo.Lifetime);
                 }
                 // add feignClient proxy options
                 if (feignClientTypeInfo.ProxyOptionsType != null)
                 {
-                    feignBuilder.AddService(feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime.Value);
-                    feignBuilder.AddService(feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddService(feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime);
+                    feignBuilder.AddService(feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime);
                 }
             }
             return feignBuilder;
@@ -106,29 +105,28 @@ namespace Feign
             }
             foreach (var serviceType in assembly.GetTypes())
             {
-                var feignClientTypeInfo = GetFeignClientTypeInfo(feignBuilder, serviceType);
+                var feignClientTypeInfo = GetFeignClientTypeInfo(feignBuilder, serviceType, lifetime);
                 if (feignClientTypeInfo == null || feignClientTypeInfo.BuildType == null)
                 {
                     continue;
                 }
                 var feignClientAttribute = feignClientTypeInfo.FeignClient;
-                feignClientTypeInfo.Lifetime = feignClientAttribute.Lifetime ?? lifetime;
                 var keydType = feignBuilder.TypeBuilder.BuildKeyedType(key, feignClientTypeInfo);
-                feignBuilder.AddKeyedService(key, serviceType, keydType, feignClientTypeInfo.Lifetime.Value);
+                feignBuilder.AddKeyedService(key, serviceType, keydType, feignClientTypeInfo.Lifetime);
                 // add fallback
                 if (feignClientAttribute.Fallback != null)
                 {
-                    feignBuilder.AddKeyedService(key, feignClientAttribute.Fallback, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeyedService(key, feignClientAttribute.Fallback, feignClientTypeInfo.Lifetime);
                 }
                 if (feignClientAttribute.FallbackFactory != null)
                 {
-                    feignBuilder.AddKeyedService(key, feignClientAttribute.FallbackFactory, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeyedService(key, feignClientAttribute.FallbackFactory, feignClientTypeInfo.Lifetime);
                 }
                 // add feignClient proxy options
                 if (feignClientTypeInfo.ProxyOptionsType != null)
                 {
-                    feignBuilder.AddKeyedService(key, feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime.Value);
-                    feignBuilder.AddKeyedService(key, feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime.Value);
+                    feignBuilder.AddKeyedService(key, feignClientTypeInfo.ProxyOptionsType.Type, feignClientTypeInfo.Lifetime);
+                    feignBuilder.AddKeyedService(key, feignClientTypeInfo.ProxyOptionsType.ConfigurationType, feignClientTypeInfo.Lifetime);
                 }
             }
             return feignBuilder;
@@ -193,7 +191,7 @@ namespace Feign
             return feignBuilder;
         }
 
-        private static FeignClientTypeInfo? GetFeignClientTypeInfo(IFeignBuilder feignBuilder, Type serviceType)
+        private static FeignClientTypeInfo? GetFeignClientTypeInfo(IFeignBuilder feignBuilder, Type serviceType, FeignClientLifetime lifetime)
         {
             if (!feignBuilder.TypeBuilder.IsServiceType(serviceType))
             {
@@ -204,7 +202,7 @@ namespace Feign
             {
                 return feignClientTypeInfo;
             }
-            feignClientTypeInfo = feignBuilder.TypeBuilder.Build(serviceType);
+            feignClientTypeInfo = feignBuilder.TypeBuilder.Build(serviceType, lifetime);
             if (feignClientTypeInfo == null)
             {
                 return null;

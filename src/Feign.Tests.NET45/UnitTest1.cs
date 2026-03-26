@@ -33,8 +33,8 @@ namespace Feign.Tests.NET45
             DynamicAssembly dynamicAssembly = new DynamicAssembly();
             dynamicAssembly.DEBUG_MODE = true;
             FeignClientHttpProxyTypeBuilder feignClientTypeBuilder = new FeignClientHttpProxyTypeBuilder(dynamicAssembly);
-            FeignClientTypeInfo feignClientTypeInfo = feignClientTypeBuilder.Build(typeof(ITestService));
-            FeignClientTypeInfo feignClientTypeInfo1 = feignClientTypeBuilder.Build(typeof(ITestControllerService));
+            FeignClientTypeInfo feignClientTypeInfo = feignClientTypeBuilder.Build(typeof(ITestService), FeignClientLifetime.Singleton);
+            FeignClientTypeInfo feignClientTypeInfo1 = feignClientTypeBuilder.Build(typeof(ITestControllerService), FeignClientLifetime.Singleton);
             feignClientTypeBuilder.Save();
         }
 

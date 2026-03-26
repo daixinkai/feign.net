@@ -22,8 +22,8 @@ namespace Feign.Polly
         public void Invoke(IInitializingPipelineContext<TService> context)
         {
             IAsyncPolicy asyncPolicy = _options.GetAsyncPolicy(context.FeignClient.ServiceId, context.FeignClient.ServiceType);
-            PollyDelegatingHandler pollyDelegatingHandler = new PollyDelegatingHandler(asyncPolicy, context.HttpClient.Handler.InnerHandler!);
-            context.HttpClient.Handler.InnerHandler = pollyDelegatingHandler;
+            PollyDelegatingHandler pollyDelegatingHandler = new PollyDelegatingHandler(asyncPolicy, context.HttpClient.Handler);
+            context.HttpClient.Handler = pollyDelegatingHandler;
         }
     }
 }

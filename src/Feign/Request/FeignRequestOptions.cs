@@ -44,5 +44,12 @@ namespace Feign.Request
         /// </summary>
         public bool IncludeRootParameterName { get; set; }
 
+#if NETCOREAPP2_1_OR_GREATER
+        /// <summary>
+        /// HttpClient.Handler.PooledConnectionLifetime
+        /// </summary>
+        public TimeSpan? PooledConnectionLifetime { get; set; }
+#endif
+
     }
 }

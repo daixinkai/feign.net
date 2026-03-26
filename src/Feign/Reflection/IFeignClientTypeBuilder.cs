@@ -16,8 +16,9 @@ namespace Feign.Reflection
         /// 将指定的服务生成代理类型
         /// </summary>
         /// <param name="serviceType"></param>
+        /// <param name="lifetime"></param>
         /// <returns></returns>
-        FeignClientTypeInfo? Build(Type serviceType);
+        FeignClientTypeInfo? Build(Type serviceType, FeignClientLifetime lifetime);
         /// <summary>
         /// 
         /// </summary>

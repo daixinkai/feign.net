@@ -35,7 +35,7 @@ namespace Feign.Tests
 #if NETCOREAPP2_1_OR_GREATER
             feignBuilder.Options.Pipeline.UseInitializing(context =>
             {
-                var httpHandler = context.HttpHandler;
+                var httpHandler = context.HttpHandler!;
                 httpHandler.PooledConnectionLifetime = TimeSpan.FromHours(1);
             });
             feignBuilder.Options.PropertyNamingPolicy = NamingPolicy.SnakeCaseLower;

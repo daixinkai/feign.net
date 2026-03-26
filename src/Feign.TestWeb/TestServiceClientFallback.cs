@@ -14,6 +14,8 @@ namespace Feign.TestWeb
 
         protected override string ServiceId => throw new NotImplementedException();
 
+        protected override FeignClientLifetime Lifetime => throw new NotImplementedException();
+
         public IQueryResult<TestServiceParam> GetQueryResultValue([RequestQuery] string id, [RequestQuery] int[] values)
         {
             throw new NotImplementedException();

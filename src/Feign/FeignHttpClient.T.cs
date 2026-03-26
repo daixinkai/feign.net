@@ -1,90 +1,50 @@
-﻿using Feign.Internal;
+﻿using Feign.Cache;
+using Feign.Discovery;
+using Feign.Discovery.LoadBalancing;
+using Feign.Internal;
 using Feign.Logging;
 using Feign.Pipeline.Internal;
+using Feign.Proxy;
 using Feign.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net.Http;
-using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Feign.Proxy
+namespace Feign
 {
-    /// <summary>
-    /// Message handler used by FeignHttpClient
-    /// </summary>
-    /// <typeparam name="TService"></typeparam>
-    public class FeignProxyHttpClientHandler<TService> : HttpClientHandler where TService : class
+    public class FeignHttpClient<TService> : FeignHttpClient where TService : class
     {
-        private readonly ILogger? _logger;
-        private readonly FeignClientHttpProxy<TService> _feignClient;
-
-        public FeignClientHttpProxy<TService> FeignClient => _feignClient;
-
-#if NETCOREAPP2_1_OR_GREATER
-
-        private static readonly Func<HttpClientHandler, SocketsHttpHandler> SocketsHttpHandlerGetter = CreateSocketsHttpHandlerGetter();
-
-        private static Func<HttpClientHandler, SocketsHttpHandler> CreateSocketsHttpHandlerGetter()
-        {
-            var fieldInfo = typeof(HttpClientHandler).GetField("_underlyingHandler", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (fieldInfo == null || fieldInfo.FieldType != typeof(SocketsHttpHandler))
-            {
-                fieldInfo = typeof(HttpClientHandler).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).First(static s => s.FieldType == typeof(SocketsHttpHandler));
-            }
-            ParameterExpression instance = Expression.Parameter(typeof(HttpClientHandler));
-            Expression body = Expression.Field(instance, fieldInfo);
-            return Expression.Lambda<Func<HttpClientHandler, SocketsHttpHandler>>(body, instance).Compile();
-        }
-
-        internal SocketsHttpHandler HttpHandler
-                    => SocketsHttpHandlerGetter.Invoke(this);
-#else
-        internal HttpClientHandler HttpHandler
-            => this;
-#endif
-
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FeignProxyHttpClientHandler{T}"/> class.
-        /// </summary>
-        /// <param name="feignClient"></param>
-        /// <param name="logger"></param>
-        public FeignProxyHttpClientHandler(FeignClientHttpProxy<TService> feignClient, ILogger? logger)
+        public FeignHttpClient(FeignClientHttpProxy<TService> feignClient, HttpMessageHandler handler) : base(handler)
         {
             _feignClient = feignClient;
-            _logger = logger;
-        }
-        /// <summary>
-        /// Find service uri
-        /// </summary>
-        /// <param name="requestMessage"></param>
-        /// <returns></returns>
-#if USE_VALUE_TASK
-        protected virtual ValueTask<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
-        {
-            return new ValueTask<Uri?>(requestMessage.RequestUri);
-        }
-#else
-        protected virtual Task<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
-        {
-            return Task.FromResult<Uri?>(requestMessage.RequestUri);
-        }
-#endif
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return SendInternalAsync((FeignHttpRequestMessage)request, cancellationToken);
+            ShouldResolveService = _feignClient.Url == null;
+            _serviceResolve = _feignClient.Options.Request.LoadBalancingPolicy switch
+            {
+                LoadBalancingPolicy.FirstAlphabetical => new FirstServiceResolve(_feignClient.Logger),
+                LoadBalancingPolicy.Random => new RandomServiceResolve(_feignClient.Logger),
+                LoadBalancingPolicy.RoundRobin => new RoundRobinServiceResolve(_feignClient.Logger),
+                LoadBalancingPolicy.LeastRequests => new LeastRequestsServiceResolve(_feignClient.Logger),
+                LoadBalancingPolicy.PowerOfTwoChoices => new PowerOfTwoChoicesServiceResolve(_feignClient.Logger),
+                _ => new RandomServiceResolve(_feignClient.Logger)
+            };
+
         }
 
+        private readonly FeignClientHttpProxy<TService> _feignClient;
 
-        private async Task<HttpResponseMessage> SendInternalAsync(FeignHttpRequestMessage request, CancellationToken cancellationToken)
+        private readonly IServiceResolve _serviceResolve;
+
+        public bool ShouldResolveService { get; }
+
+
+        public override async Task<HttpResponseMessage> SendAsync(FeignHttpRequestMessage request, HttpCompletionOption completionOption)
         {
+            var cancellationToken = CancellationToken.None;
             var current = request.RequestUri;
             CancellationTokenSource? cts = null;
             try
@@ -148,7 +108,7 @@ namespace Feign.Proxy
                 request = requestContext.RequestMessage;
                 if (request == null)
                 {
-                    _logger?.LogError($"SendingRequest is null;");
+                    _feignClient.Logger.LogError($"SendingRequest is null;");
                     return new HttpResponseMessage(System.Net.HttpStatusCode.ExpectationFailed)
                     {
                         Content = new StringContent(""),
@@ -166,7 +126,7 @@ namespace Feign.Proxy
                     ;
                 #endregion
 
-                request.ResponseMessage = await base.SendAsync(request, requestContext.CancellationToken)
+                request.ResponseMessage = await Channel.SendAsync(request, completionOption, requestContext.CancellationToken)
 #if USE_CONFIGUREAWAIT_FALSE
                     .ConfigureAwait(false)
 #endif
@@ -178,11 +138,11 @@ namespace Feign.Proxy
             {
                 if (!e.IsSkipLog())
                 {
-                    _logger?.LogError(e, "Exception during SendAsync()");
+                    _feignClient.Logger.LogError(e, "Exception during SendAsync()");
                 }
                 if (e is HttpRequestException exception)
                 {
-                    FeignHttpRequestException feignHttpRequestException = new(_feignClient, request, exception);
+                    var feignHttpRequestException = new FeignHttpRequestException(_feignClient, request, exception);
                     ExceptionDispatchInfo exceptionDispatchInfo = ExceptionDispatchInfo.Capture(feignHttpRequestException);
                     exceptionDispatchInfo.Throw();
                 }
@@ -195,18 +155,43 @@ namespace Feign.Proxy
             }
         }
 
-
-        internal void SetOptions(FeignOptions options)
+#if USE_VALUE_TASK
+        private async ValueTask<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
+#else
+        private async Task<Uri?> LookupRequestUriAsync(FeignHttpRequestMessage requestMessage)
+#endif
         {
-            if (options.Request.AutomaticDecompression.HasValue)
+            if (!ShouldResolveService)
             {
-                AutomaticDecompression = options.Request.AutomaticDecompression.Value;
+                return requestMessage.RequestUri;
             }
-            if (options.Request.UseCookies.HasValue)
+            //if (ServiceDiscovery == null)
+            //{
+            //    ServiceResolveFail(requestMessage);
+            //    return requestMessage.RequestUri;
+            //}
+
+            string serviceId = requestMessage.ServiceId ?? requestMessage.RequestUri!.Host;
+
+            var cacheTime = _feignClient.Options.Request.DiscoverServiceCacheTime;
+            IList<IServiceInstance>? services = cacheTime.HasValue ?
+            await _feignClient.ServiceDiscovery.GetServiceInstancesWithCacheAsync(serviceId, _feignClient.CacheProvider, cacheTime.Value)
+#if USE_CONFIGUREAWAIT_FALSE
+                .ConfigureAwait(false)
+#endif
+            : _feignClient.ServiceDiscovery.GetServiceInstances(serviceId);
+            if (services == null || services.Count == 0)
             {
-                UseCookies = options.Request.UseCookies.Value;
+                ServiceResolveFail(requestMessage);
             }
+            return _serviceResolve.ResolveService(serviceId, requestMessage.RequestUri!, services);
         }
+
+        private static void ServiceResolveFail(FeignHttpRequestMessage requestMessage)
+        {
+            throw new ServiceResolveFailException($"Resolve service fail : {requestMessage.RequestUri}");
+        }
+
 
     }
 }

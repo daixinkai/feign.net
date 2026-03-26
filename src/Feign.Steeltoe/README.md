@@ -1,4 +1,4 @@
-# feign.net Steeltoe组件
+# feign.net for Steeltoe
 
 Usage：
 

@@ -1,4 +1,4 @@
-# feign.net Polly组件
+# feign.net for Polly
 
 Usage：
 

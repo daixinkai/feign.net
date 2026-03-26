@@ -9,17 +9,17 @@ namespace Feign.Discovery.LoadBalancing
 {
     public abstract class ServiceResolveBase : IServiceResolve
     {
-        protected ServiceResolveBase(ILogger? logger)
+        protected ServiceResolveBase(ILogger logger)
         {
             _logger = logger;
         }
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
         public Uri ResolveService(string serviceId, Uri uri, IList<IServiceInstance>? services)
         {
-            _logger?.LogTrace($"ResolveService: {serviceId}");
+            _logger.LogTrace($"ResolveService: {serviceId}");
             if (services == null || services.Count == 0)
             {
-                _logger?.LogWarning($"Attempted to resolve service for {serviceId} but found 0 instances");
+                _logger.LogWarning($"Attempted to resolve service for {serviceId} but found 0 instances");
                 return uri;
             }
 

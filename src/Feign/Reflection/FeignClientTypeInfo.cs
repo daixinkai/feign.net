@@ -11,11 +11,12 @@ namespace Feign.Reflection
     /// </summary>
     public class FeignClientTypeInfo
     {
-        public FeignClientTypeInfo(FeignClientAttribute feignClient, Type serviceType)
+        public FeignClientTypeInfo(FeignClientAttribute feignClient, Type serviceType, FeignClientLifetime lifetime)
         {
             FeignClient = feignClient;
             ServiceType = serviceType;
             Methods = new List<FeignClientMethodInfo>();
+            Lifetime = lifetime;
         }
         public FeignClientAttribute FeignClient { get; }
         /// <summary>
@@ -39,7 +40,7 @@ namespace Feign.Reflection
         /// </summary>
         public List<FeignClientMethodInfo> Methods { get; }
 
-        public FeignClientLifetime? Lifetime { get; set; }
+        public FeignClientLifetime Lifetime { get; }
 
     }
 }

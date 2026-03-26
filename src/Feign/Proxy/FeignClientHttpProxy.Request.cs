@@ -169,7 +169,7 @@ namespace Feign.Proxy
                     .ConfigureAwait(false)
 #endif
                     ;
-                _logger?.LogError($"request on \"{responseMessage.RequestMessage!.RequestUri}\" status code : " + responseMessage.StatusCode.GetHashCode() + " content : " + content);
+                Logger.LogError($"request on \"{responseMessage.RequestMessage!.RequestUri}\" status code : " + responseMessage.StatusCode.GetHashCode() + " content : " + content);
                 throw new FeignHttpRequestException(this,
                     (FeignHttpRequestMessage)responseMessage.RequestMessage!,
                     new HttpRequestException($"Response status code does not indicate success: {responseMessage.StatusCode.GetHashCode()} ({responseMessage.ReasonPhrase}).\r\nContent : {content}"));

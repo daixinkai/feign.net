@@ -8,9 +8,11 @@ namespace Feign.Logging
 {
     public class DefaultLogger : ILogger
     {
+        public static readonly DefaultLogger Logger = new DefaultLogger();
+
         public void LogDebug(string message, params object[] args)
         {
-    
+
         }
 
         public void LogError(string message, params object[] args)
@@ -25,7 +27,7 @@ namespace Feign.Logging
 
         public void LogTrace(string message, params object[] args)
         {
-  
+
         }
 
         public void LogWarning(string message, params object[] args)

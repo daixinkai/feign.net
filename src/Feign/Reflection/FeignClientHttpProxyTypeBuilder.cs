@@ -42,7 +42,7 @@ namespace Feign.Reflection
 
         private readonly Dictionary<Type, Type> _configurationTypeMap = new();
 
-        public FeignClientTypeInfo? Build(Type serviceType)
+        public FeignClientTypeInfo? Build(Type serviceType, FeignClientLifetime lifetime)
         {
             // Check whether the proxy type can be generated
             if (!IsServiceType(serviceType))
@@ -60,7 +60,7 @@ namespace Feign.Reflection
             var methodBuilder = GetMethodBuilder(serviceType, parentType, feignClientAttribute);
 
 
-            var feignClientTypeInfo = new FeignClientTypeInfo(feignClientAttribute, serviceType)
+            var feignClientTypeInfo = new FeignClientTypeInfo(feignClientAttribute, serviceType, feignClientAttribute.Lifetime ?? lifetime)
             {
                 ParentType = parentType
             };
@@ -96,6 +96,12 @@ namespace Feign.Reflection
             typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("ServiceId"), iLGenerator =>
             {
                 iLGenerator.EmitStringValue(feignClientAttribute.Name);
+                iLGenerator.Emit(OpCodes.Ret);
+            }, null);
+            // write lifetime
+            typeBuilder.OverrideProperty(typeBuilder.BaseType!.GetRequiredNonPublicProperty("Lifetime"), iLGenerator =>
+            {
+                iLGenerator.EmitEnumValue(feignClientTypeInfo.Lifetime);
                 iLGenerator.Emit(OpCodes.Ret);
             }, null);
             // write baseUri
