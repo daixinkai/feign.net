@@ -29,18 +29,19 @@ namespace Feign.Proxy
             Logger = options.LoggerFactory?.CreateLogger(typeof(FeignClientHttpProxy<TService>)) ?? DefaultLogger.Logger;
 
             _globalPipeline = Options.Pipeline as GlobalFeignClientPipeline ?? new();
+            _serviceIdPipeline = new ServiceIdFeignClientPipeline(ServiceId);
+            _servicePipeline = new ServiceFeignClientPipeline<TService>();
 
-            _serviceIdPipeline = MergePipeline(
-                new ServiceIdFeignClientPipeline(ServiceId),
-                _globalPipeline.GetServicePipeline(ServiceId),
-                _globalPipeline.GetKeyedServicePipeline(Key, ServiceId)
-                );
-
-            _servicePipeline = MergePipeline(
-                new ServiceFeignClientPipeline<TService>(),
-                _globalPipeline.GetServicePipeline<TService>(),
-                _globalPipeline.GetKeyedServicePipeline<TService>(Key)
-                );
+            if (Key == null)
+            {
+                _serviceIdPipeline = MergePipeline(_serviceIdPipeline, _globalPipeline.GetServicePipeline(ServiceId));
+                _servicePipeline = MergePipeline(_servicePipeline, _globalPipeline.GetServicePipeline<TService>());
+            }
+            else
+            {
+                _serviceIdPipeline = MergePipeline(_serviceIdPipeline, _globalPipeline.GetKeyedServicePipeline(Key, ServiceId));
+                _servicePipeline = MergePipeline(_servicePipeline, _globalPipeline.GetKeyedServicePipeline<TService>(Key));
+            }
 
             _features = FeignClientUtils.CreateDictionary<Type>();
 
